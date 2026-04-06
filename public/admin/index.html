@@ -9,7 +9,6 @@
 </head>
 
 <body>
-    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
     <script>
         if (window.netlifyIdentity) {
             window.netlifyIdentity.on("init", user => {
@@ -19,10 +18,12 @@
                     });
                 }
             });
-            // 橋接 GitHub Pages 到 Netlify 的關鍵
+            // 雖然 config.yml 已經寫死，但這裡留著當雙重保險
             window.localStorage.setItem("netlifySiteURL", "https://remarkable-selkie-7decfb.netlify.app");
         }
     </script>
+
+    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 </body>
 
 </html>

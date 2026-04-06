@@ -2,7 +2,9 @@ backend:
   name: git-gateway
   repo: PopJoker/pop-blog
   branch: main
-  site_domain: remarkable-selkie-7decfb.netlify.app # 務必加上這行
+  # 強制指向 Netlify 的身分驗證網址
+  identity_url: "https://remarkable-selkie-7decfb.netlify.app/.netlify/identity"
+  gateway_url: "https://remarkable-selkie-7decfb.netlify.app/.netlify/git"
 
 media_folder: "public/static/images"
 public_folder: "/static/images"
