@@ -6,13 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>部落格管理後台</title>
 
-    <!-- 🔥 先設定 API（最重要） -->
-    <script>
-        window.NETLIFY_IDENTITY_URL = "https://remarkable-selkie-7decfb.netlify.app/.netlify/identity";
-    </script>
-
     <!-- Identity -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            if (window.netlifyIdentity) {
+                window.netlifyIdentity.setApiUrl(
+                    "https://remarkable-selkie-7decfb.netlify.app/.netlify/identity"
+                );
+            }
+        });
+    </script>
 </head>
 
 <body>
