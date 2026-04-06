@@ -1,10 +1,12 @@
 backend:
   name: git-gateway
-  repo: PopJoker/pop-blog # 換成你的 Repo 路徑
-  branch: main # 或是你主要的分支名稱
+  repo: PopJoker/pop-blog
+  branch: main
+  # 讓 GitHub Pages 的網址也能連回 Netlify 進行驗證
+  site_domain: remarkable-selkie-7decfb.netlify.app
 
-media_folder: "public/static/images" # 圖片上傳存放路徑
-public_folder: "/static/images"      # 文章中引用的路徑
+media_folder: "public/static/images"
+public_folder: "/static/images"
 
 collections:
   - name: "blog"
