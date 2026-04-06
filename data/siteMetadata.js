@@ -13,7 +13,7 @@ const siteMetadata = {
   mastodon: 'https://mastodon.social/@mavericktu0',
   email: 'mavericktu0@gmail.com',
   github: 'https://github.com/PopJoker',
-  // x: 'https://twitter.com/x',
+  x: 'https://x.com/JokerPop19',
   // twitter: 'https://twitter.com/Twitter',
   facebook: 'https://www.facebook.com/daniel.tu.988',
   youtube: 'https://www.youtube.com/@MaverickTu-i8e',
