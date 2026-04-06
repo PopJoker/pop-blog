@@ -5,35 +5,24 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>部落格管理後台</title>
-
-    <!-- Identity -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            if (window.netlifyIdentity) {
-                window.netlifyIdentity.setApiUrl(
-                    "https://remarkable-selkie-7decfb.netlify.app/.netlify/identity"
-                );
-            }
-        });
-    </script>
 </head>
 
 <body>
-    <!-- CMS -->
+    <script>
+        if (window.netlifyIdentity) {
+            // 強制指向 Netlify 網址
+            window.netlifyIdentity.setApiUrl("https://remarkable-selkie-7decfb.netlify.app/.netlify/identity");
+        }
+    </script>
+
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
     <script>
-        if (window.netlifyIdentity) {
-            window.netlifyIdentity.on("init", user => {
-                if (!user) {
-                    window.netlifyIdentity.on("login", () => {
-                        document.location.href = "/pop-blog/admin/";
-                    });
-                }
-            });
-        }
+        // 登入後的導向邏輯
+        window.netlifyIdentity.on("login", () => {
+            document.location.href = "/pop-blog/admin/";
+        });
     </script>
 </body>
 
