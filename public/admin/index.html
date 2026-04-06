@@ -6,27 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>部落格管理後台</title>
 
-    <!-- Netlify Identity -->
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-
+    <!-- 🔥 先設定 API（最重要） -->
     <script>
-        // 🔥 指定 Identity API（這行是關鍵）
-        window.netlifyIdentity = window.netlifyIdentity || {};
-        window.netlifyIdentity.on = window.netlifyIdentity.on || function () { };
-
-        // 等 widget 載入後設定 API
-        document.addEventListener("DOMContentLoaded", function () {
-            if (window.netlifyIdentity) {
-                window.netlifyIdentity.init({
-                    APIUrl: "https://remarkable-selkie-7decfb.netlify.app/.netlify/identity"
-                });
-            }
-        });
+        window.NETLIFY_IDENTITY_URL = "https://remarkable-selkie-7decfb.netlify.app/.netlify/identity";
     </script>
+
+    <!-- Identity -->
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 
 <body>
-    <!-- Decap CMS -->
+    <!-- CMS -->
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
     <script>
