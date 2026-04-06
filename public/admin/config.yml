@@ -1,9 +1,12 @@
 backend:
   name: git-gateway
-  repo: popjoker/pop-blog # 換成你的使用者名稱/專案名
-  branch: main # 或是 master，看你的預設分支是什麼
+  repo: popjoker/pop-blog
+  branch: main
 
-media_folder: "assets/img" # 圖片上傳後的存放位置
+site_url: https://remarkable-selkie-7decfb.netlify.app
+display_url: https://popjoker.github.io/pop-blog
+
+media_folder: "assets/img"
 public_folder: "/assets/img"
 
 collections:
@@ -13,7 +16,7 @@ collections:
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
-      - {label: "Layout", name: "layout", widget: "hidden", default: "post"}
-      - {label: "Title", name: "title", widget: "string"}
-      - {label: "Publish Date", name: "date", widget: "datetime"}
-      - {label: "Body", name: "body", widget: "markdown"}
+      - { label: "Layout", name: "layout", widget: "hidden", default: "post" }
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Publish Date", name: "date", widget: "datetime" }
+      - { label: "Body", name: "body", widget: "markdown" }
