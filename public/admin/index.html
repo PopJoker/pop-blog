@@ -12,7 +12,7 @@
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
     <script>
-        // 確保登入後會自動跳轉
+        // 強制指定 Netlify API 的網址，解決 GitHub Pages 找不到 Identity 的問題
         if (window.netlifyIdentity) {
             window.netlifyIdentity.on("init", user => {
                 if (!user) {
@@ -21,6 +21,8 @@
                     });
                 }
             });
+            // 這行是關鍵：手動連接到你的 Netlify API
+            window.localStorage.setItem("netlifySiteURL", "https://remarkable-selkie-7decfb.netlify.app");
         }
     </script>
 </body>
