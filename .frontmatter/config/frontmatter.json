@@ -1,0 +1,47 @@
+{
+    "$schema": "https://frontmatter.codes/frontmatter.schema.json",
+    "frontMatter.content.publicFolder": "public",
+    "frontMatter.content.folders": [
+        {
+            "title": "Blog Posts",
+            "path": "data/blog"
+        }
+    ],
+    "frontMatter.content.types": [
+        {
+            "name": "default",
+            "filePrefix": "",
+            "fileExtension": "mdx",
+            "fields": [
+                {
+                    "title": "Title",
+                    "name": "title",
+                    "type": "string"
+                },
+                {
+                    "title": "Date",
+                    "name": "date",
+                    "type": "datetime",
+                    "default": "{{now}}"
+                },
+                {
+                    "title": "Tags",
+                    "name": "tags",
+                    "type": "tags"
+                },
+                {
+                    "title": "Draft",
+                    "name": "draft",
+                    "type": "boolean",
+                    "default": false
+                },
+                {
+                    "title": "Summary",
+                    "name": "summary",
+                    "type": "string"
+                }
+            ]
+        }
+    ],
+    "frontMatter.framework.id": "nextjs"
+}
