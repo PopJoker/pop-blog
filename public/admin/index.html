@@ -3,17 +3,26 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Redirecting to Admin...</title>
-    <script>
-        // 如果偵測到使用者是在 github.io，就自動轉跳到 netlify 的後台網址
-        if (window.location.hostname.includes("github.io")) {
-            window.location.href = "https://remarkable-selkie-7decfb.netlify.app/admin/";
-        }
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>部落格管理後台</title>
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 
 <body>
-    頁面跳轉中，請稍候...
+    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+
+    <script>
+        // 當登入成功後，自動導向到管理介面
+        if (window.netlifyIdentity) {
+            window.netlifyIdentity.on("init", user => {
+                if (!user) {
+                    window.netlifyIdentity.on("login", () => {
+                        document.location.href = "/admin/";
+                    });
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>
