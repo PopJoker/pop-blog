@@ -2,9 +2,8 @@
   "$schema": "https://frontmatter.codes/frontmatter.schema.json",
   "frontMatter.taxonomy.contentTypes": [
     {
-      "name": "default",
+      "name": "post",
       "pageBundle": false,
-      "previewPath": null,
       "fields": [
         {
           "title": "Title",
@@ -12,8 +11,8 @@
           "type": "string"
         },
         {
-          "title": "Description",
-          "name": "description",
+          "title": "Summary",
+          "name": "summary",
           "type": "string"
         },
         {
@@ -24,12 +23,17 @@
           "isPublishDate": true
         },
         {
-          "title": "Content preview",
-          "name": "preview",
+          "title": "Last modified",
+          "name": "lastmod",
+          "type": "datetime"
+        },
+        {
+          "title": "Cover image",
+          "name": "images",
           "type": "image"
         },
         {
-          "title": "Is in draft",
+          "title": "Draft",
           "name": "draft",
           "type": "draft"
         },
@@ -37,11 +41,6 @@
           "title": "Tags",
           "name": "tags",
           "type": "tags"
-        },
-        {
-          "title": "Categories",
-          "name": "categories",
-          "type": "categories"
         }
       ]
     }
