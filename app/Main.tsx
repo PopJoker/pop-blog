@@ -24,7 +24,6 @@ export default function Home({ posts }) {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-
             <h1 className="text-3xl leading-9 font-extrabold tracking-tight text-gray-900 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14 dark:text-gray-100">
               Latest
             </h1>
@@ -53,9 +52,7 @@ export default function Home({ posts }) {
                       <dl>
                         <dt className="sr-only">Published on</dt>
                         <dd className="text-base leading-6 font-medium text-gray-500 dark:text-gray-400">
-                          <time dateTime={date}>
-                            {formatDate(date, siteMetadata.locale)}
-                          </time>
+                          <time dateTime={date}>{formatDate(date, siteMetadata.locale)}</time>
                         </dd>
                       </dl>
 
@@ -135,8 +132,8 @@ export default function Home({ posts }) {
         )}
       </motion.div>
       <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute top-[-100px] left-1/2 w-[600px] h-[600px] bg-cyan-500/10 blur-[120px] -translate-x-1/2" />
-        <div className="absolute bottom-[-100px] right-1/3 w-[500px] h-[500px] bg-purple-500/10 blur-[120px]" />
+        <div className="absolute top-[-100px] left-1/2 h-[600px] w-[600px] -translate-x-1/2 bg-cyan-500/10 blur-[120px]" />
+        <div className="absolute right-1/3 bottom-[-100px] h-[500px] w-[500px] bg-purple-500/10 blur-[120px]" />
       </div>
     </div>
   )
