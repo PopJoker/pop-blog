@@ -9,7 +9,6 @@ import NewsletterForm from 'pliny/ui/NewsletterForm'
 
 const MAX_DISPLAY = 5
 
-// 定義動畫變體
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -65,10 +64,11 @@ export default function Home({ posts }) {
         <div className="space-y-2 pt-6 pb-8 md:space-y-5">
           <motion.h1
             variants={itemVariants}
-            className="text-4xl leading-9 font-extrabold tracking-tight text-gray-900 sm:text-5xl sm:leading-10 md:text-6xl md:leading-14 dark:text-gray-100"
+            className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-6xl dark:text-gray-100"
           >
             Latest Updates
           </motion.h1>
+
           <motion.p
             variants={itemVariants}
             className="text-lg leading-7 text-gray-500 dark:text-gray-400"
@@ -79,9 +79,13 @@ export default function Home({ posts }) {
 
         {/* 📝 文章列表 */}
         <ul className="divide-y divide-gray-100 dark:divide-gray-800">
-          {!posts.length && <p className="py-10 text-center text-gray-500">No posts found.</p>}
+          {!posts.length && (
+            <p className="py-10 text-center text-gray-500">No posts found.</p>
+          )}
+
           {posts.slice(0, MAX_DISPLAY).map((post) => {
             const { slug, date, title, summary, tags } = post
+
             return (
               <motion.li
                 key={slug}
@@ -93,16 +97,19 @@ export default function Home({ posts }) {
                   <div className="space-y-2 xl:grid xl:grid-cols-4 xl:items-baseline xl:space-y-0">
                     <dl>
                       <dt className="sr-only">Published on</dt>
-                      <dd className="text-base leading-6 font-medium text-gray-500 dark:text-gray-400">
-                        <time dateTime={date}>{formatDate(date, siteMetadata.locale)}</time>
+                      <dd className="text-base font-medium leading-6 text-gray-500 dark:text-gray-400">
+                        <time dateTime={date}>
+                          {formatDate(date, siteMetadata.locale)}
+                        </time>
                       </dd>
                     </dl>
+
                     <div className="space-y-5 xl:col-span-3">
                       <div className="space-y-6">
                         <div>
                           <motion.h2
                             whileHover={{ x: 4 }}
-                            className="text-2xl leading-8 font-bold tracking-tight"
+                            className="text-2xl font-bold tracking-tight"
                           >
                             <Link
                               href={`/blog/${slug}`}
@@ -111,25 +118,28 @@ export default function Home({ posts }) {
                               {title}
                             </Link>
                           </motion.h2>
+
                           <div className="mt-3 flex flex-wrap gap-2">
                             {tags.map((tag) => (
                               <Tag key={tag} text={tag} />
                             ))}
                           </div>
                         </div>
+
                         <div className="prose line-clamp-2 max-w-none text-gray-500 dark:text-gray-400">
                           {summary}
                         </div>
                       </div>
-                      <div className="text-base leading-6 font-medium">
+
+                      <div className="text-base font-medium leading-6">
                         <Link
                           href={`/blog/${slug}`}
-                          className="group inline-flex items-center text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
+                          className="inline-flex items-center text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
                           aria-label={`Read "${title}"`}
                         >
                           Read more
                           <span className="ml-1 transition-transform duration-300 group-hover:translate-x-1">
-                            &rarr;
+                            →
                           </span>
                         </Link>
                       </div>
@@ -142,16 +152,16 @@ export default function Home({ posts }) {
         </ul>
       </motion.div>
 
-      {/* 🔗 Footer 區域 */}
+      {/* 🔗 Footer */}
       <footer className="mt-8 space-y-12">
         {posts.length > MAX_DISPLAY && (
-          <div className="flex justify-end text-base leading-6 font-medium">
+          <div className="flex justify-end text-base font-medium leading-6">
             <Link
               href="/blog"
               className="text-primary-500 transition-all hover:text-primary-600 dark:hover:text-primary-400"
               aria-label="All posts"
             >
-              All Posts &rarr;
+              All Posts →
             </Link>
           </div>
         )}
