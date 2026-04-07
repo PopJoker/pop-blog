@@ -1,1 +1,28 @@
-{"taxonomy":{"tags":["book","canada","code","feature","features","flutter","github","guide","hello","holiday","images","markdown","math","multi-author","next js","next-js","ols","reflection","supabase","tailwind","writings"],"categories":["test"]}}
+{
+  "taxonomy": {
+    "tags": [
+      "book",
+      "canada",
+      "code",
+      "feature",
+      "features",
+      "flutter",
+      "github",
+      "guide",
+      "hello",
+      "holiday",
+      "images",
+      "markdown",
+      "math",
+      "multi-author",
+      "next js",
+      "next-js",
+      "ols",
+      "reflection",
+      "supabase",
+      "tailwind",
+      "writings"
+    ],
+    "categories": ["test"]
+  }
+}

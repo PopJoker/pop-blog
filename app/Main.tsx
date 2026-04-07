@@ -79,9 +79,7 @@ export default function Home({ posts }) {
 
         {/* 📝 文章列表 */}
         <ul className="divide-y divide-gray-100 dark:divide-gray-800">
-          {!posts.length && (
-            <p className="py-10 text-center text-gray-500">No posts found.</p>
-          )}
+          {!posts.length && <p className="py-10 text-center text-gray-500">No posts found.</p>}
 
           {posts.slice(0, MAX_DISPLAY).map((post) => {
             const { slug, date, title, summary, tags } = post
@@ -97,10 +95,8 @@ export default function Home({ posts }) {
                   <div className="space-y-2 xl:grid xl:grid-cols-4 xl:items-baseline xl:space-y-0">
                     <dl>
                       <dt className="sr-only">Published on</dt>
-                      <dd className="text-base font-medium leading-6 text-gray-500 dark:text-gray-400">
-                        <time dateTime={date}>
-                          {formatDate(date, siteMetadata.locale)}
-                        </time>
+                      <dd className="text-base leading-6 font-medium text-gray-500 dark:text-gray-400">
+                        <time dateTime={date}>{formatDate(date, siteMetadata.locale)}</time>
                       </dd>
                     </dl>
 
@@ -113,7 +109,7 @@ export default function Home({ posts }) {
                           >
                             <Link
                               href={`/blog/${slug}`}
-                              className="text-gray-900 transition-colors duration-300 hover:text-primary-500 dark:text-gray-100 dark:hover:text-primary-400"
+                              className="hover:text-primary-500 dark:hover:text-primary-400 text-gray-900 transition-colors duration-300 dark:text-gray-100"
                             >
                               {title}
                             </Link>
@@ -131,10 +127,10 @@ export default function Home({ posts }) {
                         </div>
                       </div>
 
-                      <div className="text-base font-medium leading-6">
+                      <div className="text-base leading-6 font-medium">
                         <Link
                           href={`/blog/${slug}`}
-                          className="inline-flex items-center text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
+                          className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400 inline-flex items-center"
                           aria-label={`Read "${title}"`}
                         >
                           Read more
@@ -155,10 +151,10 @@ export default function Home({ posts }) {
       {/* 🔗 Footer */}
       <footer className="mt-8 space-y-12">
         {posts.length > MAX_DISPLAY && (
-          <div className="flex justify-end text-base font-medium leading-6">
+          <div className="flex justify-end text-base leading-6 font-medium">
             <Link
               href="/blog"
-              className="text-primary-500 transition-all hover:text-primary-600 dark:hover:text-primary-400"
+              className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400 transition-all"
               aria-label="All posts"
             >
               All Posts →
