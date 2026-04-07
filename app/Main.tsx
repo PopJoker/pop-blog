@@ -9,7 +9,7 @@ import NewsletterForm from 'pliny/ui/NewsletterForm'
 
 const MAX_DISPLAY = 5
 
-// 定義動畫變體，讓代碼更乾淨
+// 定義動畫變體
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -25,8 +25,7 @@ const itemVariants: Variants = {
     y: 0,
     transition: {
       duration: 0.5,
-      // 重點：在數組後面加上 as const，告訴 TS 這是一個固定的值
-      ease: [0.21, 0.47, 0.32, 0.98] as const
+      ease: [0.21, 0.47, 0.32, 0.98] as const,
     },
   },
 }
@@ -34,25 +33,25 @@ const itemVariants: Variants = {
 export default function Home({ posts }) {
   return (
     <div className="relative overflow-hidden">
-      {/* 🔮 背景光暈優化：更緩慢的漂浮感 */}
+      {/* 🔮 背景光暈優化 */}
       <div className="pointer-events-none absolute inset-0 -z-10">
         <motion.div
           animate={{
             scale: [1, 1.2, 1],
             x: [0, 40, 0],
-            opacity: [0.1, 0.15, 0.1]
+            opacity: [0.1, 0.15, 0.1],
           }}
-          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+          transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
           className="absolute -top-24 left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-cyan-500/20 blur-[120px]"
         />
         <motion.div
           animate={{
             scale: [1, 1.3, 1],
             x: [0, -30, 0],
-            opacity: [0.05, 0.1, 0.05]
+            opacity: [0.05, 0.1, 0.05],
           }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="absolute bottom-0 right-1/4 h-[500px] w-[500px] rounded-full bg-purple-500/20 blur-[100px]"
+          transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+          className="absolute right-1/4 bottom-0 h-[500px] w-[500px] rounded-full bg-purple-500/20 blur-[100px]"
         />
       </div>
 
@@ -66,7 +65,7 @@ export default function Home({ posts }) {
         <div className="space-y-2 pt-6 pb-8 md:space-y-5">
           <motion.h1
             variants={itemVariants}
-            className="text-4xl font-extrabold leading-9 tracking-tight text-gray-900 sm:text-5xl sm:leading-10 md:text-6xl md:leading-14 dark:text-gray-100"
+            className="leading-9 font-extrabold tracking-tight text-gray-900 sm:text-5xl sm:leading-10 md:text-6xl md:leading-14 dark:text-gray-100 text-4xl"
           >
             Latest Updates
           </motion.h1>
@@ -81,7 +80,7 @@ export default function Home({ posts }) {
         {/* 📝 文章列表 */}
         <ul className="divide-y divide-gray-100 dark:divide-gray-800">
           {!posts.length && <p className="py-10 text-center text-gray-500">No posts found.</p>}
-          {posts.slice(0, MAX_DISPLAY).map((post, i) => {
+          {posts.slice(0, MAX_DISPLAY).map((post) => {
             const { slug, date, title, summary, tags } = post
             return (
               <motion.li
@@ -94,7 +93,7 @@ export default function Home({ posts }) {
                   <div className="space-y-2 xl:grid xl:grid-cols-4 xl:items-baseline xl:space-y-0">
                     <dl>
                       <dt className="sr-only">Published on</dt>
-                      <dd className="text-base font-medium leading-6 text-gray-500 dark:text-gray-400">
+                      <dd className="leading-6 font-medium text-gray-500 dark:text-gray-400 text-base">
                         <time dateTime={date}>{formatDate(date, siteMetadata.locale)}</time>
                       </dd>
                     </dl>
@@ -103,11 +102,11 @@ export default function Home({ posts }) {
                         <div>
                           <motion.h2
                             whileHover={{ x: 4 }}
-                            className="text-2xl font-bold leading-8 tracking-tight"
+                            className="leading-8 font-bold tracking-tight text-2xl"
                           >
                             <Link
                               href={`/blog/${slug}`}
-                              className="text-gray-900 transition-colors duration-300 hover:text-primary-500 dark:text-gray-100 dark:hover:text-primary-400"
+                              className="hover:text-primary-500 dark:hover:text-primary-400 text-gray-900 transition-colors duration-300 dark:text-gray-100"
                             >
                               {title}
                             </Link>
@@ -122,14 +121,16 @@ export default function Home({ posts }) {
                           {summary}
                         </div>
                       </div>
-                      <div className="text-base font-medium leading-6">
+                      <div className="leading-6 font-medium text-base">
                         <Link
                           href={`/blog/${slug}`}
-                          className="group inline-flex items-center text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
+                          className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400 inline-flex items-center"
                           aria-label={`Read "${title}"`}
                         >
                           Read more
-                          <span className="ml-1 transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+                          <span className="ml-1 transition-transform duration-300 group-hover:translate-x-1">
+                            &rarr;
+                          </span>
                         </Link>
                       </div>
                     </div>
@@ -141,13 +142,13 @@ export default function Home({ posts }) {
         </ul>
       </motion.div>
 
-      {/* 🔗 Footer 區域：All Posts & Newsletter */}
+      {/* 🔗 Footer 區域 */}
       <footer className="mt-8 space-y-12">
         {posts.length > MAX_DISPLAY && (
-          <div className="flex justify-end text-base font-medium leading-6">
+          <div className="leading-6 font-medium text-base flex justify-end">
             <Link
               href="/blog"
-              className="text-primary-500 transition-all hover:text-primary-600 dark:hover:text-primary-400"
+              className="hover:text-primary-600 dark:hover:text-primary-400 text-primary-500 transition-all"
               aria-label="All posts"
             >
               All Posts &rarr;
