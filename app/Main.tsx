@@ -65,7 +65,7 @@ export default function Home({ posts }) {
         <div className="space-y-2 pt-6 pb-8 md:space-y-5">
           <motion.h1
             variants={itemVariants}
-            className="leading-9 font-extrabold tracking-tight text-gray-900 sm:text-5xl sm:leading-10 md:text-6xl md:leading-14 dark:text-gray-100 text-4xl"
+            className="text-4xl leading-9 font-extrabold tracking-tight text-gray-900 sm:text-5xl sm:leading-10 md:text-6xl md:leading-14 dark:text-gray-100"
           >
             Latest Updates
           </motion.h1>
@@ -93,7 +93,7 @@ export default function Home({ posts }) {
                   <div className="space-y-2 xl:grid xl:grid-cols-4 xl:items-baseline xl:space-y-0">
                     <dl>
                       <dt className="sr-only">Published on</dt>
-                      <dd className="leading-6 font-medium text-gray-500 dark:text-gray-400 text-base">
+                      <dd className="text-base leading-6 font-medium text-gray-500 dark:text-gray-400">
                         <time dateTime={date}>{formatDate(date, siteMetadata.locale)}</time>
                       </dd>
                     </dl>
@@ -102,11 +102,11 @@ export default function Home({ posts }) {
                         <div>
                           <motion.h2
                             whileHover={{ x: 4 }}
-                            className="leading-8 font-bold tracking-tight text-2xl"
+                            className="text-2xl leading-8 font-bold tracking-tight"
                           >
                             <Link
                               href={`/blog/${slug}`}
-                              className="hover:text-primary-500 dark:hover:text-primary-400 text-gray-900 transition-colors duration-300 dark:text-gray-100"
+                              className="text-gray-900 transition-colors duration-300 hover:text-primary-500 dark:text-gray-100 dark:hover:text-primary-400"
                             >
                               {title}
                             </Link>
@@ -121,10 +121,10 @@ export default function Home({ posts }) {
                           {summary}
                         </div>
                       </div>
-                      <div className="leading-6 font-medium text-base">
+                      <div className="text-base leading-6 font-medium">
                         <Link
                           href={`/blog/${slug}`}
-                          className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400 inline-flex items-center"
+                          className="group inline-flex items-center text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
                           aria-label={`Read "${title}"`}
                         >
                           Read more
@@ -145,10 +145,10 @@ export default function Home({ posts }) {
       {/* 🔗 Footer 區域 */}
       <footer className="mt-8 space-y-12">
         {posts.length > MAX_DISPLAY && (
-          <div className="leading-6 font-medium text-base flex justify-end">
+          <div className="flex justify-end text-base leading-6 font-medium">
             <Link
               href="/blog"
-              className="hover:text-primary-600 dark:hover:text-primary-400 text-primary-500 transition-all"
+              className="text-primary-500 transition-all hover:text-primary-600 dark:hover:text-primary-400"
               aria-label="All posts"
             >
               All Posts &rarr;
