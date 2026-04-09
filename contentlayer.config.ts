@@ -125,6 +125,10 @@ export const Blog = defineDocumentType(() => ({
         url: `${siteMetadata.siteUrl}/${doc._raw.flattenedPath}`,
       }),
     },
+    readingTime: {
+      type: 'json',
+      resolve: (doc) => readingTime(doc.body.raw)
+    },
   },
 }))
 
