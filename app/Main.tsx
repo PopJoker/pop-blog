@@ -108,9 +108,9 @@ export default function Home({ posts }) {
             </div>
 
             {/* 下方 Email 快速複製小工具 */}
-            <div
+            <button
               onClick={handleCopy}
-              className="group hover:text-primary-500 flex cursor-pointer items-center gap-2 text-xs text-gray-500 transition-colors"
+              className="group hover:text-primary-500 flex items-center gap-2 text-xs text-gray-500 transition-colors"
             >
               <span>或來信談談：</span>
               <span className="font-mono underline underline-offset-4">{copyLabel}</span>
@@ -127,7 +127,7 @@ export default function Home({ posts }) {
                   d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
                 />
               </svg>
-            </div>
+            </button>
           </motion.div>
         </motion.div>
       </section>
@@ -178,9 +178,8 @@ function PostCard({ post, featured = false }) {
   return (
     <motion.div
       whileHover={{ y: -5 }}
-      className={`group hover:border-primary-500/50 hover:shadow-primary-500/10 relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 transition-all hover:shadow-2xl dark:border-gray-800 dark:bg-gray-900/50 ${
-        featured ? 'min-h-[320px] md:p-8' : 'min-h-[240px]'
-      }`}
+      className={`group hover:border-primary-500/50 hover:shadow-primary-500/10 relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 transition-all hover:shadow-2xl dark:border-gray-800 dark:bg-gray-900/50 ${featured ? 'min-h-[320px] md:p-8' : 'min-h-[240px]'
+        }`}
     >
       <div>
         <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
