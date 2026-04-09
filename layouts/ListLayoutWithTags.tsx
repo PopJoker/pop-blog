@@ -135,6 +135,8 @@ export default function ListLayoutWithTags({
                         <dd className="text-base leading-6 font-medium text-gray-500 dark:text-gray-400">
                           <time dateTime={date} suppressHydrationWarning>
                             {formatDate(date, siteMetadata.locale)}
+                            <span className="mr-2 ml-2">•</span>
+                            <span>{post.readingTime.text}</span>
                           </time>
                         </dd>
                       </dl>

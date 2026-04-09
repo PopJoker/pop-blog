@@ -109,7 +109,6 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
 
   const mainContent = coreContent(post)
 
-  // --- ✅ 修正這裡：補回 jsonLd 定義 ---
   const jsonLd = post.structuredData
   jsonLd['author'] = authorDetails.map((author) => {
     return {
