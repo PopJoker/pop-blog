@@ -80,7 +80,8 @@ export default function PostLayout({
                     <li className="flex items-center space-x-2" key={author.name}>
                       {author.avatar && (
                         <Image
-                          src={author.avatar}
+                          // 修改這裡：手動補上前綴，確保在 blog 深層網址也能讀到
+                          src={author.avatar.startsWith('/pop-blog') ? author.avatar : `/pop-blog${author.avatar}`}
                           width={38}
                           height={38}
                           alt="avatar"
