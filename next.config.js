@@ -55,7 +55,7 @@ const securityHeaders = [
 ]
 
 const output = process.env.EXPORT ? 'export' : undefined
-const basePath = process.env.NODE_ENV === 'production' ? '/pop-blog' : ''
+const basePath = '/pop-blog'
 const unoptimized = process.env.UNOPTIMIZED ? true : undefined
 
 /**
