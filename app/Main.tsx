@@ -178,8 +178,9 @@ function PostCard({ post, featured = false }) {
   return (
     <motion.div
       whileHover={{ y: -5 }}
-      className={`group hover:border-primary-500/50 hover:shadow-primary-500/10 relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 transition-all hover:shadow-2xl dark:border-gray-800 dark:bg-gray-900/50 ${featured ? 'min-h-[320px] md:p-8' : 'min-h-[240px]'
-        }`}
+      className={`group hover:border-primary-500/50 hover:shadow-primary-500/10 relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 transition-all hover:shadow-2xl dark:border-gray-800 dark:bg-gray-900/50 ${
+        featured ? 'min-h-[320px] md:p-8' : 'min-h-[240px]'
+      }`}
     >
       <div>
         <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
