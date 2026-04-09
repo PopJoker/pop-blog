@@ -9,9 +9,9 @@ const siteMetadata = {
   siteUrl: 'https://popjoker.github.io/pop-blog', // 已修正為你的網址
   siteRepo: 'https://github.com/PopJoker/pop-blog',
   // 這裡統一使用絕對路徑，確保 GitHub Pages 子目錄能抓到
-  siteLogo: '/pop-blog/static/images/logo.png',
-  socialBanner: '/pop-blog/static/images/twitter-card.png',
-  avatar: '/pop-blog/public/static/images/avatar.png',
+  siteLogo: `${process.env.BASE_PATH || ''}/static/images/logo.png`,
+  socialBanner: `${process.env.BASE_PATH || ''}/static/images/twitter-card.png`,
+  avatar: `${process.env.BASE_PATH || ''}/static/images/avatar.png`,
   mastodon: 'https://mastodon.social/@mavericktu0',
   email: 'mavericktu0@gmail.com',
   github: 'https://github.com/PopJoker',
