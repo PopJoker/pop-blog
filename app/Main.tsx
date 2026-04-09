@@ -54,16 +54,19 @@ export default function Home({ posts }) {
             variants={fadeInUp}
             className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-400 bg-clip-text text-5xl font-extrabold tracking-tight text-transparent sm:text-6xl md:text-7xl dark:from-white dark:via-gray-200 dark:to-gray-500"
           >
-            把想法轉化成<br />可被看見的作品
+            把想法轉化成
+            <br />
+            可被看見的作品
           </motion.h1>
           <motion.p
             variants={fadeInUp}
             className="mt-6 max-w-2xl text-lg leading-8 text-gray-600 dark:text-gray-400"
           >
             {siteMetadata.description}
-            <br /><br />
-            在工作的推動下，我的技術領域持續擴展。從最初的 App 與 Web 應用開發出發，逐步接觸 PLC 控制系統，並延伸至韌體、硬體與通訊開發，進一步參與 Server 建置與系統架構設計與重構。
-
+            <br />
+            <br />
+            在工作的推動下，我的技術領域持續擴展。從最初的 App 與 Web 應用開發出發，逐步接觸 PLC
+            控制系統，並延伸至韌體、硬體與通訊開發，進一步參與 Server 建置與系統架構設計與重構。
             這段歷程讓我從單一領域的工程師，逐漸成長為具備跨系統整合能力的開發者。
           </motion.p>
           <motion.div variants={fadeInUp} className="mt-10 flex gap-4">
@@ -123,14 +126,15 @@ function PostCard({ post, featured = false }) {
   const { slug, date, title, summary, tags, body } = post
 
   // 修正：優先使用 body 內容計算，如果都沒有則給預設值避免錯誤
-  const contentToEstimate = body?.raw || summary || ""
+  const contentToEstimate = body?.raw || summary || ''
   const stats = readingTimeEstimator(contentToEstimate)
 
   return (
     <motion.div
       whileHover={{ y: -5 }}
-      className={`group hover:border-primary-500/50 hover:shadow-primary-500/10 relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 transition-all hover:shadow-2xl dark:border-gray-800 dark:bg-gray-900/50 ${featured ? 'min-h-[320px] md:p-8' : 'min-h-[240px]'
-        }`}
+      className={`group hover:border-primary-500/50 hover:shadow-primary-500/10 relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 transition-all hover:shadow-2xl dark:border-gray-800 dark:bg-gray-900/50 ${
+        featured ? 'min-h-[320px] md:p-8' : 'min-h-[240px]'
+      }`}
     >
       <div>
         <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">

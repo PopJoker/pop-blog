@@ -127,7 +127,7 @@ export const Blog = defineDocumentType(() => ({
     },
     readingTime: {
       type: 'json',
-      resolve: (doc) => readingTime(doc.body.raw)
+      resolve: (doc) => readingTime(doc.body.raw),
     },
   },
 }))
