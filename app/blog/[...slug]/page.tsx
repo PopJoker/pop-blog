@@ -80,22 +80,36 @@ export const generateStaticParams = async () => {
 export default async function Page(props: { params: Promise<{ slug: string[] }> }) {
   const params = await props.params
   const slug = decodeURI(params.slug.join('/'))
-  // Filter out drafts in production
   const sortedCoreContents = allCoreContent(sortPosts(allBlogs))
   const postIndex = sortedCoreContents.findIndex((p) => p.slug === slug)
-  if (postIndex === -1) {
-    return notFound()
-  }
+
+  if (postIndex === -1) return notFound()
 
   const prev = sortedCoreContents[postIndex + 1]
   const next = sortedCoreContents[postIndex - 1]
   const post = allBlogs.find((p) => p.slug === slug) as Blog
+
+  // --- 🚀 相關閱讀邏輯 ---
+  const currentTags = post.tags || []
+  const relatedPosts = sortedCoreContents
+    .filter((p) => p.slug !== slug)
+    .map((p) => {
+      const overlap = p.tags?.filter((tag) => currentTags.includes(tag)).length || 0
+      return { ...p, overlap }
+    })
+    .filter((p) => p.overlap > 0)
+    .sort((a, b) => b.overlap - a.overlap)
+    .slice(0, 3)
+
   const authorList = post?.authors || ['default']
   const authorDetails = authorList.map((author) => {
     const authorResults = allAuthors.find((p) => p.slug === author)
     return coreContent(authorResults as Authors)
   })
+
   const mainContent = coreContent(post)
+
+  // --- ✅ 修正這裡：補回 jsonLd 定義 ---
   const jsonLd = post.structuredData
   jsonLd['author'] = authorDetails.map((author) => {
     return {
@@ -112,7 +126,13 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <Layout content={mainContent} authorDetails={authorDetails} next={next} prev={prev}>
+      <Layout
+        content={mainContent}
+        authorDetails={authorDetails}
+        next={next}
+        prev={prev}
+        relatedPosts={relatedPosts}
+      >
         <MDXLayoutRenderer code={post.body.code} components={components} toc={post.toc} />
       </Layout>
     </>

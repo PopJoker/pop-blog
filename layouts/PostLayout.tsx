@@ -12,6 +12,7 @@ import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
 import ScrollTopAndComment from '@/components/ScrollTopAndComment'
 import TableOfContents from '@/components/TableOfContents'
+import RelatedPosts from '@/components/RelatedPosts'
 
 const editUrl = (path) => `${siteMetadata.siteRepo}/blob/main/data/${path}`
 const discussUrl = (path) =>
@@ -29,10 +30,18 @@ interface LayoutProps {
   authorDetails: CoreContent<Authors>[]
   next?: { path: string; title: string }
   prev?: { path: string; title: string }
+  relatedPosts: CoreContent<Blog>[]
   children: ReactNode
 }
 
-export default function PostLayout({ content, authorDetails, next, prev, children }: LayoutProps) {
+export default function PostLayout({
+  content,
+  authorDetails,
+  next,
+  prev,
+  relatedPosts,
+  children,
+}: LayoutProps) {
   // 💡 從 content 中解構出 toc (你之前在 contentlayer.config 設定好了)
   const { filePath, path, slug, date, title, tags, toc } = content
   const basePath = path.split('/')[0]
@@ -116,6 +125,7 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
             {/* 中間欄：文章主體 (💡 從 col-span-3 改為 col-span-2) */}
             <div className="divide-y divide-gray-200 xl:col-span-2 xl:row-span-2 xl:pb-0 dark:divide-gray-700">
               <div className="prose dark:prose-invert max-w-none pt-10 pb-8">{children}</div>
+              <RelatedPosts posts={relatedPosts} />
               <div className="pt-6 pb-6 text-sm text-gray-700 dark:text-gray-300">
                 <Link href={discussUrl(path)} rel="nofollow">
                   Discuss on Twitter
