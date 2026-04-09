@@ -17,8 +17,8 @@ const fadeInUp: Variants = {
     y: 0,
     transition: {
       duration: 0.6,
-      ease: [0.22, 1, 0.36, 1] as const // This 'as const' is the key fix
-    }
+      ease: [0.22, 1, 0.36, 1] as const, // This 'as const' is the key fix
+    },
   },
 }
 
@@ -38,8 +38,16 @@ export default function Home({ posts }) {
     <div className="mb-20 space-y-24">
       {/* 🚀 Hero Section */}
       <section className="relative pt-20 pb-16 md:pt-32">
-        <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="flex flex-col items-center text-center">
-          <motion.div variants={fadeInUp} className="mb-4 rounded-full bg-primary-500/10 px-3 py-1 text-sm font-medium text-primary-500 dark:bg-primary-500/20">
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={staggerContainer}
+          className="flex flex-col items-center text-center"
+        >
+          <motion.div
+            variants={fadeInUp}
+            className="bg-primary-500/10 text-primary-500 dark:bg-primary-500/20 mb-4 rounded-full px-3 py-1 text-sm font-medium"
+          >
             Available for new projects
           </motion.div>
           <motion.h1
@@ -48,7 +56,10 @@ export default function Home({ posts }) {
           >
             Crafting digital <br /> experiences with soul.
           </motion.h1>
-          <motion.p variants={fadeInUp} className="mt-6 max-w-2xl text-lg leading-8 text-gray-600 dark:text-gray-400">
+          <motion.p
+            variants={fadeInUp}
+            className="mt-6 max-w-2xl text-lg leading-8 text-gray-600 dark:text-gray-400"
+          >
             {siteMetadata.description} I specialize in React, Next.js, and modern web aesthetics.
             Welcome to my corner of the internet.
           </motion.p>
@@ -89,8 +100,9 @@ export default function Home({ posts }) {
       <section className="space-y-8">
         <div className="flex items-end justify-between">
           <h2 className="text-2xl font-bold tracking-tight">Recent Updates</h2>
-          <Link href="/blog" className="group text-sm font-semibold text-primary-500">
-            View all posts <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
+          <Link href="/blog" className="group text-primary-500 text-sm font-semibold">
+            View all posts{' '}
+            <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
           </Link>
         </div>
 
@@ -108,14 +120,15 @@ function PostCard({ post, featured = false }) {
   const { slug, date, title, summary, tags, body } = post
 
   // 修正：優先使用 body 內容計算，如果都沒有則給預設值避免錯誤
-  const contentToEstimate = body?.code || summary || ""
+  const contentToEstimate = body?.code || summary || ''
   const stats = readingTimeEstimator(contentToEstimate)
 
   return (
     <motion.div
       whileHover={{ y: -5 }}
-      className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 transition-all hover:border-primary-500/50 hover:shadow-2xl hover:shadow-primary-500/10 dark:border-gray-800 dark:bg-gray-900/50 ${featured ? 'min-h-[320px] md:p-8' : 'min-h-[240px]'
-        }`}
+      className={`group hover:border-primary-500/50 hover:shadow-primary-500/10 relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 transition-all hover:shadow-2xl dark:border-gray-800 dark:bg-gray-900/50 ${
+        featured ? 'min-h-[320px] md:p-8' : 'min-h-[240px]'
+      }`}
     >
       <div>
         <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
@@ -126,14 +139,19 @@ function PostCard({ post, featured = false }) {
           </div>
           <div className="flex gap-2">
             {tags.slice(0, 1).map((tag) => (
-              <span key={tag} className="text-xs font-medium uppercase tracking-wider text-primary-500">
+              <span
+                key={tag}
+                className="text-primary-500 text-xs font-medium tracking-wider uppercase"
+              >
                 #{tag}
               </span>
             ))}
           </div>
         </div>
         <Link href={`/blog/${slug}`} className="mt-4 block">
-          <h3 className={`${featured ? 'text-2xl' : 'text-xl'} font-bold leading-tight text-gray-900 dark:text-gray-100`}>
+          <h3
+            className={`${featured ? 'text-2xl' : 'text-xl'} leading-tight font-bold text-gray-900 dark:text-gray-100`}
+          >
             {title}
           </h3>
           <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
@@ -143,11 +161,11 @@ function PostCard({ post, featured = false }) {
       </div>
 
       <div className="mt-6 flex items-center">
-        <Link
-          href={`/blog/${slug}`}
-          className="text-sm font-bold text-gray-900 dark:text-white"
-        >
-          Read Article <span className="ml-1 inline-block transition-transform group-hover:translate-x-1">→</span>
+        <Link href={`/blog/${slug}`} className="text-sm font-bold text-gray-900 dark:text-white">
+          Read Article{' '}
+          <span className="ml-1 inline-block transition-transform group-hover:translate-x-1">
+            →
+          </span>
         </Link>
       </div>
     </motion.div>
