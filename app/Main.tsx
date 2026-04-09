@@ -1,178 +1,148 @@
 'use client'
 
-import { motion, Variants } from 'framer-motion'
+import { motion } from 'framer-motion'
 import Link from '@/components/Link'
 import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
 import { formatDate } from 'pliny/utils/formatDate'
 import NewsletterForm from 'pliny/ui/NewsletterForm'
+import readingTimeEstimator from 'reading-time' // 建議改用 import
 
-const MAX_DISPLAY = 5
+const MAX_DISPLAY = 6
 
-const containerVariants = {
+const fadeInUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
+}
+
+const staggerContainer = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.1, delayChildren: 0.2 },
-  },
-}
-
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      ease: [0.21, 0.47, 0.32, 0.98] as const,
-    },
+    transition: { staggerChildren: 0.1 },
   },
 }
 
 export default function Home({ posts }) {
+  const featuredPosts = posts.slice(0, 2)
+  const recentPosts = posts.slice(2, MAX_DISPLAY)
+
   return (
-    <div className="relative overflow-hidden">
-      {/* 🔮 背景光暈優化 */}
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <motion.div
-          animate={{
-            scale: [1, 1.2, 1],
-            x: [0, 40, 0],
-            opacity: [0.1, 0.15, 0.1],
-          }}
-          transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
-          className="absolute -top-24 left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-cyan-500/20 blur-[120px]"
-        />
-        <motion.div
-          animate={{
-            scale: [1, 1.3, 1],
-            x: [0, -30, 0],
-            opacity: [0.05, 0.1, 0.05],
-          }}
-          transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-          className="absolute right-1/4 bottom-0 h-[500px] w-[500px] rounded-full bg-purple-500/20 blur-[100px]"
-        />
-      </div>
-
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="divide-y divide-gray-200 dark:divide-gray-700"
-      >
-        {/* 🚀 標題區塊 */}
-        <div className="space-y-2 pt-6 pb-8 md:space-y-5">
+    <div className="mb-20 space-y-24">
+      {/* 🚀 Hero Section */}
+      <section className="relative pt-20 pb-16 md:pt-32">
+        <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="flex flex-col items-center text-center">
+          <motion.div variants={fadeInUp} className="mb-4 rounded-full bg-primary-500/10 px-3 py-1 text-sm font-medium text-primary-500 dark:bg-primary-500/20">
+            Available for new projects
+          </motion.div>
           <motion.h1
-            variants={itemVariants}
-            className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-6xl dark:text-gray-100"
+            variants={fadeInUp}
+            className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-400 bg-clip-text text-5xl font-extrabold tracking-tight text-transparent sm:text-6xl md:text-7xl dark:from-white dark:via-gray-200 dark:to-gray-500"
           >
-            Latest Updates
+            Crafting digital <br /> experiences with soul.
           </motion.h1>
-
-          <motion.p
-            variants={itemVariants}
-            className="text-lg leading-7 text-gray-500 dark:text-gray-400"
-          >
-            {siteMetadata.description}
+          <motion.p variants={fadeInUp} className="mt-6 max-w-2xl text-lg leading-8 text-gray-600 dark:text-gray-400">
+            {siteMetadata.description} I specialize in React, Next.js, and modern web aesthetics.
+            Welcome to my corner of the internet.
           </motion.p>
-        </div>
-
-        {/* 📝 文章列表 */}
-        <ul className="divide-y divide-gray-100 dark:divide-gray-800">
-          {!posts.length && <p className="py-10 text-center text-gray-500">No posts found.</p>}
-
-          {posts.slice(0, MAX_DISPLAY).map((post) => {
-            const { slug, date, title, summary, tags } = post
-
-            return (
-              <motion.li
-                key={slug}
-                variants={itemVariants}
-                viewport={{ once: true }}
-                className="group py-12 transition-all duration-300"
-              >
-                <article>
-                  <div className="space-y-2 xl:grid xl:grid-cols-4 xl:items-baseline xl:space-y-0">
-                    <dl>
-                      <dt className="sr-only">Published on</dt>
-                      <dd className="text-base leading-6 font-medium text-gray-500 dark:text-gray-400">
-                        <time dateTime={date}>{formatDate(date, siteMetadata.locale)}</time>
-                      </dd>
-                    </dl>
-
-                    <div className="space-y-5 xl:col-span-3">
-                      <div className="space-y-6">
-                        <div>
-                          <motion.h2
-                            whileHover={{ x: 4 }}
-                            className="text-2xl font-bold tracking-tight"
-                          >
-                            <Link
-                              href={`/blog/${slug}`}
-                              className="hover:text-primary-500 dark:hover:text-primary-400 text-gray-900 transition-colors duration-300 dark:text-gray-100"
-                            >
-                              {title}
-                            </Link>
-                          </motion.h2>
-
-                          <div className="mt-3 flex flex-wrap gap-2">
-                            {tags.map((tag) => (
-                              <Tag key={tag} text={tag} />
-                            ))}
-                          </div>
-                        </div>
-
-                        <div className="prose line-clamp-2 max-w-none text-gray-500 dark:text-gray-400">
-                          {summary}
-                        </div>
-                      </div>
-
-                      <div className="text-base leading-6 font-medium">
-                        <Link
-                          href={`/blog/${slug}`}
-                          className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400 inline-flex items-center"
-                          aria-label={`Read "${title}"`}
-                        >
-                          Read more
-                          <span className="ml-1 transition-transform duration-300 group-hover:translate-x-1">
-                            →
-                          </span>
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </article>
-              </motion.li>
-            )
-          })}
-        </ul>
-      </motion.div>
-
-      {/* 🔗 Footer */}
-      <footer className="mt-8 space-y-12">
-        {posts.length > MAX_DISPLAY && (
-          <div className="flex justify-end text-base leading-6 font-medium">
+          <motion.div variants={fadeInUp} className="mt-10 flex gap-4">
             <Link
               href="/blog"
-              className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400 transition-all"
-              aria-label="All posts"
+              className="rounded-full bg-gray-900 px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
             >
-              All Posts →
+              Read Blog
             </Link>
-          </div>
-        )}
-
-        {siteMetadata.newsletter?.provider && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.98 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="flex items-center justify-center rounded-2xl bg-gray-50 p-8 dark:bg-gray-800/50"
-          >
-            <NewsletterForm />
+            <Link
+              href="/about"
+              className="rounded-full border border-gray-200 px-6 py-3 text-sm font-semibold transition-all hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+            >
+              About Me
+            </Link>
           </motion.div>
-        )}
-      </footer>
+        </motion.div>
+      </section>
+
+      {/* 🌟 Featured Posts */}
+      <section className="space-y-8">
+        <div className="flex items-end justify-between">
+          <div className="space-y-1">
+            <h2 className="text-3xl font-bold tracking-tight">Featured Posts</h2>
+            <p className="text-gray-500 dark:text-gray-400">Hand-picked stories worth your time.</p>
+          </div>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2">
+          {featuredPosts.map((post) => (
+            <PostCard key={post.slug} post={post} featured />
+          ))}
+        </div>
+      </section>
+
+      {/* 📝 Recent Posts */}
+      <section className="space-y-8">
+        <div className="flex items-end justify-between">
+          <h2 className="text-2xl font-bold tracking-tight">Recent Updates</h2>
+          <Link href="/blog" className="group text-sm font-semibold text-primary-500">
+            View all posts <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
+          </Link>
+        </div>
+
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2">
+          {recentPosts.map((post) => (
+            <PostCard key={post.slug} post={post} />
+          ))}
+        </div>
+      </section>
     </div>
+  )
+}
+
+function PostCard({ post, featured = false }) {
+  const { slug, date, title, summary, tags, body } = post
+
+  // 修正：優先使用 body 內容計算，如果都沒有則給預設值避免錯誤
+  const contentToEstimate = body?.code || summary || ""
+  const stats = readingTimeEstimator(contentToEstimate)
+
+  return (
+    <motion.div
+      whileHover={{ y: -5 }}
+      className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 transition-all hover:border-primary-500/50 hover:shadow-2xl hover:shadow-primary-500/10 dark:border-gray-800 dark:bg-gray-900/50 ${featured ? 'min-h-[320px] md:p-8' : 'min-h-[240px]'
+        }`}
+    >
+      <div>
+        <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+          <div className="flex items-center gap-2">
+            <time dateTime={date}>{formatDate(date, siteMetadata.locale)}</time>
+            <span className="text-gray-300 dark:text-gray-600">•</span>
+            <span>{stats.text}</span>
+          </div>
+          <div className="flex gap-2">
+            {tags.slice(0, 1).map((tag) => (
+              <span key={tag} className="text-xs font-medium uppercase tracking-wider text-primary-500">
+                #{tag}
+              </span>
+            ))}
+          </div>
+        </div>
+        <Link href={`/blog/${slug}`} className="mt-4 block">
+          <h3 className={`${featured ? 'text-2xl' : 'text-xl'} font-bold leading-tight text-gray-900 dark:text-gray-100`}>
+            {title}
+          </h3>
+          <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+            {summary}
+          </p>
+        </Link>
+      </div>
+
+      <div className="mt-6 flex items-center">
+        <Link
+          href={`/blog/${slug}`}
+          className="text-sm font-bold text-gray-900 dark:text-white"
+        >
+          Read Article <span className="ml-1 inline-block transition-transform group-hover:translate-x-1">→</span>
+        </Link>
+      </div>
+    </motion.div>
   )
 }
