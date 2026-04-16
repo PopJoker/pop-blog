@@ -81,7 +81,11 @@ export default function PostLayout({
                       {author.avatar && (
                         <Image
                           // 修改這裡：手動補上前綴，確保在 blog 深層網址也能讀到
-                          src={author.avatar.startsWith('/pop-blog') ? author.avatar : `/pop-blog${author.avatar}`}
+                          src={
+                            author.avatar.startsWith('/pop-blog')
+                              ? author.avatar
+                              : `/pop-blog${author.avatar}`
+                          }
                           width={38}
                           height={38}
                           alt="avatar"

@@ -16,13 +16,13 @@
   --color-primary-100: oklch(0.92 0.04 265);
   --color-primary-200: oklch(0.86 0.08 265);
   --color-primary-300: oklch(0.78 0.14 265);
-  --color-primary-400: oklch(0.68 0.20 265);
+  --color-primary-400: oklch(0.68 0.2 265);
   --color-primary-500: oklch(0.58 0.24 265);
   /* 核心主色 */
   --color-primary-600: oklch(0.48 0.22 265);
   --color-primary-700: oklch(0.38 0.18 265);
   --color-primary-800: oklch(0.28 0.14 265);
-  --color-primary-900: oklch(0.20 0.10 265);
+  --color-primary-900: oklch(0.2 0.1 265);
   --color-primary-950: oklch(0.12 0.08 265);
 
   /* 背景色微調 - 帶有高級感的暗藍灰 */
@@ -36,7 +36,6 @@
 }
 
 @layer base {
-
   *,
   ::after,
   ::before,
@@ -117,7 +116,7 @@
       &:hover {
         color: var(--color-primary-300);
         /* 深色模式下的微發光效果 */
-        text-shadow: 0 0 8px oklch(0.68 0.20 265 / 0.4);
+        text-shadow: 0 0 8px oklch(0.68 0.2 265 / 0.4);
       }
     }
 

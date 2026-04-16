@@ -5,31 +5,31 @@ backend:
   base_url: https://decap-cms-oauth.vercel.app
   auth_endpoint: auth
 
-media_folder: "public/static/images"
-public_folder: "/static/images"
+media_folder: 'public/static/images'
+public_folder: '/static/images'
 
 collections:
-  - name: "blog"
-    label: "Blog"
-    folder: "content/blog"
+  - name: 'blog'
+    label: 'Blog'
+    folder: 'content/blog'
     create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    slug: '{{year}}-{{month}}-{{day}}-{{slug}}'
 
     fields:
-      - { label: "標題", name: "title", widget: "string" }
+      - { label: '標題', name: 'title', widget: 'string' }
 
-      - { label: "網址 Slug", name: "slug", widget: "string" }
+      - { label: '網址 Slug', name: 'slug', widget: 'string' }
 
-      - { label: "發布日期", name: "date", widget: "datetime" }
+      - { label: '發布日期', name: 'date', widget: 'datetime' }
 
-      - { label: "摘要", name: "summary", widget: "text" }
+      - { label: '摘要', name: 'summary', widget: 'text' }
 
-      - { label: "封面圖", name: "cover", widget: "image" }
+      - { label: '封面圖', name: 'cover', widget: 'image' }
 
-      - { label: "標籤", name: "tags", widget: "list" }
+      - { label: '標籤', name: 'tags', widget: 'list' }
 
-      - { label: "作者", name: "author", widget: "string", default: "PopJoker" }
+      - { label: '作者', name: 'author', widget: 'string', default: 'PopJoker' }
 
-      - { label: "是否草稿", name: "draft", widget: "boolean", default: false }
+      - { label: '是否草稿', name: 'draft', widget: 'boolean', default: false }
 
-      - { label: "內容", name: "body", widget: "markdown" }
+      - { label: '內容', name: 'body', widget: 'markdown' }

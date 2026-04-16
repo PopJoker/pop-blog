@@ -35,7 +35,8 @@ module.exports = () => {
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
             {
               key: 'Content-Security-Policy',
-              value: 'default-src \'self\'; script-src \'self\' \'unsafe-eval\' \'unsafe-inline\' giscus.app analytics.umami.is;',
+              value:
+                "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' giscus.app analytics.umami.is;",
             },
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy
             {
