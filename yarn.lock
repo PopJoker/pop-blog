@@ -13647,6 +13647,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"next-contentlayer@npm:^0.3.4":
+  version: 0.3.4
+  resolution: "next-contentlayer@npm:0.3.4"
+  dependencies:
+    "@contentlayer/core": 0.3.4
+    "@contentlayer/utils": 0.3.4
+  peerDependencies:
+    contentlayer: 0.3.4
+    next: ^12 || ^13
+    react: "*"
+    react-dom: "*"
+  checksum: fd741aa5fcefe545dedbe34780e05a18fd2ce7b3620e5d528358dfe3152fa9d795fbc68738ffa6d001db1c7de9e0500f06bc6600dfdd37b4f831158f9c6f0832
+  languageName: node
+  linkType: hard
+
 "next-navigation-guard@npm:0.2.0":
   version: 0.2.0
   resolution: "next-navigation-guard@npm:0.2.0"
@@ -16954,6 +16969,7 @@ __metadata:
     image-size: 2.0.2
     lint-staged: ^16.2.7
     next: ^15.5.15
+    next-contentlayer: ^0.3.4
     next-contentlayer2: 0.5.8
     next-themes: ^0.4.6
     outstatic: ^2.1.5
