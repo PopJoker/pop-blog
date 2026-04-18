@@ -2,11 +2,7 @@
   "compilerOptions": {
     "incremental": true,
     "target": "ES6",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
@@ -22,27 +18,13 @@
     // "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
-      "@/components/*": [
-        "components/*"
-      ],
-      "@/data/*": [
-        "data/*"
-      ],
-      "@/layouts/*": [
-        "layouts/*"
-      ],
-      "@/css/*": [
-        "css/*"
-      ],
-      "contentlayer/generated": [
-        "./.contentlayer/generated"
-      ],
-      "contentlayer2/generated": [
-        "./.contentlayer/generated"
-      ], // Add this for safety
-      "pliny/*": [
-        "node_modules/pliny/*"
-      ]
+      "@/components/*": ["components/*"],
+      "@/data/*": ["data/*"],
+      "@/layouts/*": ["layouts/*"],
+      "@/css/*": ["css/*"],
+      "contentlayer/generated": ["./.contentlayer/generated"],
+      "contentlayer2/generated": ["./.contentlayer/generated"], // Add this for safety
+      "pliny/*": ["node_modules/pliny/*"]
     },
     "plugins": [
       {
@@ -62,7 +44,5 @@
     ".contentlayer/generated/index.mjs", // Add this explicit path
     ".next/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

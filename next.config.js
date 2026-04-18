@@ -9,7 +9,7 @@ const nextConfig = {
   basePath: process.env.BASE_PATH || undefined,
   reactStrictMode: true,
   trailingSlash: true,
-  // Note: Contentlayer does not support Turbopack yet. 
+  // Note: Contentlayer does not support Turbopack yet.
   // If you use 'next dev --turbo', Contentlayer won't auto-generate.
   turbopack: {
     root: process.cwd(),
@@ -40,7 +40,8 @@ const nextConfig = {
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' giscus.app analytics.umami.is;",
+            value:
+              "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' giscus.app analytics.umami.is;",
           },
           {
             key: 'Referrer-Policy',

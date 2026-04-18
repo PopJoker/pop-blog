@@ -11,9 +11,9 @@ import Footer from '@/components/Footer'
 import siteMetadata from '@/data/siteMetadata'
 import { ThemeProviders } from './theme-providers'
 import { Metadata } from 'next'
-import { cn } from "@/components/lib/utils";
+import { cn } from '@/components/lib/utils'
 
-const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
+const geist = Geist({ subsets: ['latin'], variable: '--font-sans' })
 
 const space_grotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -67,7 +67,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang={siteMetadata.language}
-      className={cn("scroll-smooth", space_grotesk.variable, "font-sans", geist.variable)}
+      className={cn('scroll-smooth', space_grotesk.variable, 'font-sans', geist.variable)}
       suppressHydrationWarning
     >
       <link
