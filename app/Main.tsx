@@ -59,12 +59,14 @@ export default function Home({ posts }) {
   const [index, setIndex] = useState(0)
 
   useEffect(() => {
+    const len = slogans.length
+
     const timer = setInterval(() => {
-      setIndex((prev) => (prev + 1) % slogans.length)
+      setIndex((prev) => (prev + 1) % len)
     }, 8000)
 
     return () => clearInterval(timer)
-  }, [])
+  }, [slogans.length])
 
   return (
     <div className="mb-20 space-y-10">
