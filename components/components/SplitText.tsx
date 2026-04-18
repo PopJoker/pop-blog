@@ -132,7 +132,9 @@ const SplitText: React.FC<SplitTextProps> = ({
       el._rbsplitInstance = splitInstance
       return () => {
         ScrollTrigger.getAll().forEach((st) => {
-          if (st.trigger === el) st.kill()
+          if (st.trigger === el) {
+            st.kill()
+          }
         })
         try {
           splitInstance.revert()
