@@ -69,7 +69,9 @@ const SplitText: React.FC<SplitTextProps> = ({
       if (el._rbsplitInstance) {
         try {
           el._rbsplitInstance.revert()
-        } catch (_) { }
+        } catch (_) {
+          void 0
+        }
         el._rbsplitInstance = undefined
       }
 
