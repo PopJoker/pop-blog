@@ -1,51 +1,109 @@
 'use client'
 
-import { motion, Variants } from 'framer-motion'
+import { AnimatePresence, motion, motionValue, useMotionTemplate, useSpring, Variants } from 'framer-motion'
 import Link from '@/components/Link'
-import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
 import { formatDate } from 'pliny/utils/formatDate'
-import NewsletterForm from 'pliny/ui/NewsletterForm'
-import readingTimeEstimator from 'reading-time' // 建議改用 import
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import readingTimeEstimator from 'reading-time'
 
 const MAX_DISPLAY = 6
 
 const fadeInUp: Variants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
       duration: 0.6,
-      ease: [0.22, 1, 0.36, 1] as const, // This 'as const' is the key fix
+      ease: [0.22, 1, 0.36, 1],
     },
   },
 }
 
 const staggerContainer = {
-  hidden: { opacity: 0 },
+  hidden: {},
   visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1 },
+    transition: { staggerChildren: 0.08 },
   },
 }
 
 export default function Home({ posts }) {
   const featuredPosts = posts.slice(0, 2)
   const recentPosts = posts.slice(2, MAX_DISPLAY)
+
   const [copyLabel, setCopyLabel] = useState('mavericktu0@gmail.com')
-  const discordLink = 'https://discord.gg/b5QSSdu3VW'
+
   const handleCopy = () => {
     navigator.clipboard.writeText('mavericktu0@gmail.com')
     setCopyLabel('已複製 Email！')
     setTimeout(() => setCopyLabel('mavericktu0@gmail.com'), 2000)
   }
 
+  const discordLink = 'https://discord.gg/b5QSSdu3VW'
+
+  const slogans = [
+    '把想法轉化成可被看見的作品',
+    '用程式打造你的第二個大腦',
+    '讓設計與工程一起發生',
+    '從靈感到實作，只差一個開始',
+  ]
+
+  const [index, setIndex] = useState(0)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIndex((prev) => (prev + 1) % slogans.length)
+    }, 8000)
+
+    return () => clearInterval(timer)
+  }, [])
+
   return (
-    <div className="mb-20 space-y-24">
-      {/* 🚀 Hero Section */}
-      <section className="relative pt-20 pb-16 md:pt-32">
+    <div className="mb-20 space-y-10">
+      {/* 🚀 HERO */}
+      <section className="relative overflow-hidden pt-24 pb-20">
+        {/* 🌈 背景（低調 Aurora） */}
+        <div className="relative inset-0 -z-10 overflow-hidden">
+          <motion.div
+            className="fixed -top-32 -left-32 h-[400px] w-[400px] rounded-full bg-indigo-500/20 blur-3xl"
+            animate={{
+              x: [0, 80, -40, 0],
+              y: [0, 60, -30, 0],
+            }}
+            transition={{
+              duration: 12,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+          />
+
+          <motion.div
+            className="fixed -bottom-32 -right-32 h-[500px] w-[500px] rounded-full bg-cyan-500/20 blur-3xl"
+            animate={{
+              x: [0, -60, 40, 0],
+              y: [0, -40, 60, 0],
+            }}
+            transition={{
+              duration: 15,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+          />
+
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-cyan-500/10"
+            animate={{
+              opacity: [0.4, 0.7, 0.4],
+            }}
+            transition={{
+              duration: 6,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+          />
+        </div>
+
         <motion.div
           initial="hidden"
           animate="visible"
@@ -54,113 +112,131 @@ export default function Home({ posts }) {
         >
           <motion.div
             variants={fadeInUp}
-            className="bg-primary-500/10 text-primary-500 dark:bg-primary-500/20 mb-4 rounded-full px-3 py-1 text-sm font-medium"
+            className="bg-primary-500/10 text-primary-500 mb-4 rounded-full px-3 py-1 text-sm font-medium dark:bg-primary-500/20"
           >
-            PopJ0ker.exe
+            PopJ0ker Workshop
           </motion.div>
-          <motion.h1
-            variants={fadeInUp}
-            className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-400 bg-clip-text text-5xl font-extrabold tracking-tight text-transparent sm:text-6xl md:text-7xl dark:from-white dark:via-gray-200 dark:to-gray-500"
-          >
-            把想法轉化成
-            <br />
-            可被看見的作品
-          </motion.h1>
+
+          {/* ✨ Split Text（核心升級） */}
+          <h1 className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-400 bg-clip-text text-5xl font-extrabold tracking-tight text-transparent sm:text-6xl md:text-7xl dark:from-white dark:via-gray-200 dark:to-gray-500">
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={slogans[index]}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                className="inline-block"
+              >
+                {slogans[index].split('').map((char, i) => (
+                  <motion.span
+                    key={`${slogans[index]}-${i}`}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      delay: i * 0.03,
+                      duration: 0.4,
+                    }}
+                    className="inline-block"
+                  >
+                    {char}
+                  </motion.span>
+                ))}
+              </motion.span>
+            </AnimatePresence>
+          </h1>
+          {/* <h1 className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-400 bg-clip-text text-5xl font-extrabold tracking-tight text-transparent sm:text-6xl md:text-7xl dark:from-white dark:via-gray-200 dark:to-gray-500">
+            <motion.span
+              key={index}
+              initial={{ opacity: 0, y: 20, filter: 'blur(6px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className="inline-block"
+            >
+              {slogans[index]}
+            </motion.span>
+          </h1> */}
+
           <motion.p
             variants={fadeInUp}
             className="mt-6 max-w-2xl text-lg leading-8 text-gray-600 dark:text-gray-400"
           >
             {siteMetadata.description}
-            <br />
-            <br />
-            在工作的推動下，我的技術領域持續擴展。從最初的 App 與 Web 應用開發出發，逐步接觸 PLC
-            控制系統，並延伸至韌體、硬體與通訊開發，進一步參與 Server 建置與系統架構設計與重構。
-            這段歷程讓我從單一領域的工程師，逐漸成長為具備跨系統整合能力的開發者。
           </motion.p>
-          <motion.div variants={fadeInUp} className="mt-10 flex flex-col items-center gap-6">
-            {/* 按鈕組：現在有三個主要動作 */}
-            <div className="flex flex-wrap justify-center gap-4">
-              <Link
-                href="/blog"
-                className="rounded-full bg-gray-900 px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
-              >
-                Read Blog
-              </Link>
 
-              <Link
-                href="/about"
-                className="rounded-full border border-gray-200 px-6 py-3 text-sm font-semibold transition-all hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
-              >
-                About Me
-              </Link>
-
-              {/* 👾 Discord 按鈕 */}
-              <Link
-                href={discordLink}
-                className="flex items-center gap-2 rounded-full border border-[#5865F2] px-6 py-3 text-sm font-semibold text-[#5865F2] transition-all hover:bg-[#5865F2] hover:text-white dark:border-[#5865F2]"
-              >
-                <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                  {/* 這次是有眼睛的版本 👀 */}
-                  <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.076.076 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.086 2.157 2.419c0 1.334-.947 2.419-2.157 2.419zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.086 2.157 2.419c0 1.334-.946 2.419-2.157 2.419z" />
-                </svg>
-                Discord
-              </Link>
-            </div>
-
-            {/* 下方 Email 快速複製小工具 */}
-            <button
-              onClick={handleCopy}
-              className="group hover:text-primary-500 flex items-center gap-2 text-xs text-gray-500 transition-colors"
+          {/* ⚡ CTA */}
+          <motion.div variants={fadeInUp} className="mt-10 flex flex-wrap justify-center gap-4">
+            <Link
+              href="/blog"
+              className="group relative overflow-hidden rounded-full bg-gray-900 px-6 py-3 text-sm font-semibold text-white transition hover:scale-105 dark:bg-white dark:text-black"
             >
-              <span>或來信談談：</span>
-              <span className="font-mono underline underline-offset-4">{copyLabel}</span>
+              <span className="relative z-10">Read Blog</span>
+              <span className="absolute inset-0 opacity-0 transition duration-300 group-hover:opacity-40">
+                <span className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-500 blur-md" />
+              </span>
+            </Link>
+
+            <Link
+              href="/about"
+              className="rounded-full border border-gray-200 px-6 py-3 text-sm font-semibold transition hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+            >
+              About Me
+            </Link>
+            <Link
+              href={discordLink}
+              className="group relative flex items-center gap-2 overflow-hidden rounded-full border border-[#5865F2] px-6 py-3 text-sm font-semibold text-[#5865F2] transition hover:scale-105 hover:text-white"
+            >
+              {/* 背景動畫 */}
+              <span className="absolute inset-0 scale-0 rounded-full bg-[#5865F2] transition-transform duration-300 group-hover:scale-100" />
+
+              {/* icon */}
               <svg
-                className="h-3.5 w-3.5 opacity-50 group-hover:opacity-100"
-                fill="none"
+                className="relative z-10 h-4 w-4"
+                fill="currentColor"
                 viewBox="0 0 24 24"
-                stroke="currentColor"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                />
+                <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.076.076 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.086 2.157 2.419c0 1.334-.947 2.419-2.157 2.419zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.086 2.157 2.419c0 1.334-.946 2.419-2.157 2.419z" />
+
               </svg>
-            </button>
+
+              <span className="relative z-10">Discord</span>
+            </Link>
           </motion.div>
+
+          {/* 📩 Email */}
+          <button
+            onClick={handleCopy}
+            className="group mt-6 flex items-center gap-2 text-xs text-gray-500 transition hover:text-primary-500"
+          >
+            <span>或來信談談：</span>
+            <span className="font-mono underline underline-offset-4">{copyLabel}</span>
+          </button>
         </motion.div>
       </section>
 
-      {/* 🌟 Featured Posts */}
+      {/* 🌟 Featured */}
       <section className="space-y-8">
-        <div className="flex items-end justify-between">
-          <div className="space-y-1">
-            <h2 className="text-3xl font-bold tracking-tight">Featured Posts</h2>
-            <p className="text-gray-500 dark:text-gray-400">Hand-picked stories worth your time.</p>
-          </div>
-        </div>
-
+        <h2 className="text-3xl font-bold">Featured Posts</h2>
         <div className="grid gap-6 md:grid-cols-2">
-          {featuredPosts.map((post) => (
-            <PostCard key={post.slug} post={post} featured />
+          {featuredPosts.map((post, i) => (
+            <PostCard key={post.slug} post={post} index={i} featured />
           ))}
         </div>
       </section>
 
-      {/* 📝 Recent Posts */}
+      {/* 📝 Recent */}
       <section className="space-y-8">
-        <div className="flex items-end justify-between">
-          <h2 className="text-2xl font-bold tracking-tight">Recent Updates</h2>
-          <Link href="/blog" className="group text-primary-500 text-sm font-semibold">
-            View all posts{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold">Recent Updates</h2>
+          <Link href="/blog" className="text-primary-500 text-sm font-semibold">
+            View all →
           </Link>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2">
-          {recentPosts.map((post) => (
-            <PostCard key={post.slug} post={post} />
+        <div className="grid gap-6 sm:grid-cols-2">
+          {recentPosts.map((post, i) => (
+            <PostCard key={post.slug} post={post} index={i} />
           ))}
         </div>
       </section>
@@ -168,57 +244,78 @@ export default function Home({ posts }) {
   )
 }
 
-function PostCard({ post, featured = false }) {
-  const { slug, date, title, summary, tags, body } = post
+function PostCard({ post, index, featured = false }) {
+  const { slug, date, title, summary, body } = post
+  const stats = readingTimeEstimator(body?.raw || summary || '')
 
-  // 修正：優先使用 body 內容計算，如果都沒有則給預設值避免錯誤
-  const contentToEstimate = body?.raw || summary || ''
-  const stats = readingTimeEstimator(contentToEstimate)
+  // --- 滑鼠追蹤邏輯開始 ---
+  const mouseX = motionValue(0)
+  const mouseY = motionValue(0)
+
+  // 使用 spring 讓光效跟隨時更平滑，不會太生硬
+  const springConfig = { damping: 20, stiffness: 150 }
+  const smoothX = useSpring(mouseX, springConfig)
+  const smoothY = useSpring(mouseY, springConfig)
+
+  // 將座標轉換為 CSS 變數或直接應用於 background
+  const background = useMotionTemplate`
+    radial-gradient(
+      650px circle at ${smoothX}px ${smoothY}px,
+      rgba(99, 102, 241, 0.15),
+      transparent 80%
+    )
+  `
+
+  function handleMouseMove({ currentTarget, clientX, clientY }) {
+    const { left, top } = currentTarget.getBoundingClientRect()
+    mouseX.set(clientX - left)
+    mouseY.set(clientY - top)
+  }
+  // --- 滑鼠追蹤邏輯結束 ---
 
   return (
     <motion.div
-      whileHover={{ y: -5 }}
-      className={`group hover:border-primary-500/50 hover:shadow-primary-500/10 relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 transition-all hover:shadow-2xl dark:border-gray-800 dark:bg-gray-900/50 ${
-        featured ? 'min-h-[320px] md:p-8' : 'min-h-[240px]'
-      }`}
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.06 }}
+      onMouseMove={handleMouseMove} // 綁定滑鼠移動事件
+      whileHover={{
+        scale: 1.02,
+        y: -5,
+      }}
+      className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 transition-colors dark:border-gray-800 dark:bg-gray-900/50"
     >
-      <div>
-        <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-          <div className="flex items-center gap-2">
-            <time dateTime={date}>{formatDate(date, siteMetadata.locale)}</time>
-            <span className="text-gray-300 dark:text-gray-600">•</span>
-            <span>{post.readingTime.text}</span>
-          </div>
-          <div className="flex gap-2">
-            {tags.slice(0, 1).map((tag) => (
-              <span
-                key={tag}
-                className="text-primary-500 text-xs font-medium tracking-wider uppercase"
-              >
-                #{tag}
-              </span>
-            ))}
-          </div>
+      {/* ✨ 滑鼠跟隨光效 (Spotlight) */}
+      <motion.div
+        className="pointer-events-none absolute -inset-px rounded-2xl opacity-0 transition duration-300 group-hover:opacity-100"
+        style={{ background }}
+      />
+
+      {/* 為了防止光效遮擋文字，內容需放在 relative 層 */}
+      <div className="relative z-10">
+        <div className="text-sm text-gray-500">
+          {formatDate(date)} • {stats.text}
         </div>
-        <Link href={`/blog/${slug}`} className="mt-4 block">
-          <h3
-            className={`${featured ? 'text-2xl' : 'text-xl'} leading-tight font-bold text-gray-900 dark:text-gray-100`}
-          >
+
+        <Link href={`/blog/${slug}`}>
+          <h3 className="mt-3 text-xl font-bold transition-colors group-hover:text-indigo-500 dark:group-hover:text-indigo-400">
             {title}
           </h3>
-          <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
             {summary}
           </p>
         </Link>
-      </div>
 
-      <div className="mt-6 flex items-center">
-        <Link href={`/blog/${slug}`} className="text-sm font-bold text-gray-900 dark:text-white">
-          Read Article{' '}
-          <span className="ml-1 inline-block transition-transform group-hover:translate-x-1">
+        <div className="mt-4 flex items-center text-sm font-semibold text-gray-900 dark:text-white">
+          <span>Read Article</span>
+          <motion.span
+            className="ml-1"
+            animate={{ x: [0, 4, 0] }}
+            transition={{ repeat: Infinity, duration: 1.5 }}
+          >
             →
-          </span>
-        </Link>
+          </motion.span>
+        </div>
       </div>
     </motion.div>
   )
