@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    // ignoreDeprecations: "6.0",
     "baseUrl": ".",
     "paths": {
       "@/components/*": [
@@ -18,5 +17,6 @@
       "contentlayer/generated": [
         "./.contentlayer/generated"
       ]
-    },
+    }
   }
+}
