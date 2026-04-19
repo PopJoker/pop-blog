@@ -91,11 +91,7 @@ export default function PostLayout({
                     <li className="flex items-center space-x-2" key={author.name}>
                       {author.avatar && (
                         <Image
-                          src={
-                            author.avatar.startsWith('/pop-blog')
-                              ? author.avatar
-                              : `/pop-blog${author.avatar}`
-                          }
+                          src={author.avatar}
                           width={38}
                           height={38}
                           alt="avatar"

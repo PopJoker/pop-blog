@@ -6,7 +6,7 @@ backend:
   auth_endpoint: auth
 
 media_folder: 'public/static/images'
-public_folder: '/static/images'
+public_folder: 'public/static/images'
 
 collections:
   - name: 'blog'
@@ -30,7 +30,7 @@ collections:
 
       - { label: '標籤', name: 'tags', widget: 'list' }
 
-      - { label: '作者', name: 'author', widget: 'string', default: 'Maverick Tu' }
+      - {  label: '作者', name: 'authors', widget: 'list' ,default: ['default'] }
 
       - { label: '是否草稿', name: 'draft', widget: 'boolean', default: false }
 
