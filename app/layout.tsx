@@ -101,15 +101,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProviders>
           <Analytics analyticsConfig={siteMetadata.analytics as AnalyticsConfig} />
 
-          {/* 🔥 FULL WIDTH HEADER */}
-          <Header />
+          {/* 修正：將 SearchProvider 提至最外層，包裹 Header 與 Main */}
+          <SearchProvider searchConfig={siteMetadata.search as SearchConfig}>
 
-          {/* 📦 CONTENT CONTAINER ONLY */}
-          <div className="mx-auto max-w-5xl px-4 sm:px-6">
-            <SearchProvider searchConfig={siteMetadata.search as SearchConfig}>
+            {/* 🔥 FULL WIDTH HEADER 現在可以抓到 Search context 了 */}
+            <Header />
+
+            {/* 📦 CONTENT CONTAINER */}
+            <div className="mx-auto max-w-5xl px-4 sm:px-6">
               <main className="mb-auto">{children}</main>
-            </SearchProvider>
-          </div>
+            </div>
+
+          </SearchProvider>
 
           <Footer />
         </ThemeProviders>

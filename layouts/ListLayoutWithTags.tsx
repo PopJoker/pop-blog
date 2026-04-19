@@ -9,6 +9,8 @@ import Link from '@/components/Link'
 import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
 import tagData from 'app/tag-data.json'
+import { motion } from 'framer-motion'
+import { useRef, useState } from 'react'
 
 interface PaginationProps {
   totalPages: number
@@ -21,44 +23,77 @@ interface ListLayoutProps {
   pagination?: PaginationProps
 }
 
+// 模擬 React Bits 的 Spotlight Card 效果
+const SpotlightCard = ({ children, className = "" }) => {
+  const divRef = useRef<HTMLDivElement>(null)
+  const [isFocused, setIsFocused] = useState(false)
+  const [position, setPosition] = useState({ x: 0, y: 0 })
+  const [opacity, setOpacity] = useState(0)
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!divRef.current || isFocused) return
+
+    const div = divRef.current
+    const rect = div.getBoundingClientRect()
+
+    setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top })
+  }
+
+  const handleMouseEnter = () => {
+    setOpacity(1)
+  }
+
+  const handleMouseLeave = () => {
+    setOpacity(0)
+  }
+
+  return (
+    <div
+      ref={divRef}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className={`relative overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800 bg-transparent px-8 py-6 transition-all duration-300 ${className}`}
+    >
+      <div
+        className="pointer-events-none absolute -inset-px opacity-0 transition duration-300"
+        style={{
+          opacity,
+          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(var(--primary-rgb), 0.1), transparent 40%)`,
+        }}
+      />
+      {children}
+    </div>
+  )
+}
+
 function Pagination({ totalPages, currentPage }: PaginationProps) {
   const pathname = usePathname()
-  const segments = pathname.split('/')
-  const lastSegment = segments[segments.length - 1]
   const basePath = pathname
-    .replace(/^\//, '') // Remove leading slash
-    .replace(/\/page\/\d+\/?$/, '') // Remove any trailing /page
-    .replace(/\/$/, '') // Remove trailing slash
+    .replace(/^\//, '')
+    .replace(/\/page\/\d+\/?$/, '')
+    .replace(/\/$/, '')
   const prevPage = currentPage - 1 > 0
   const nextPage = currentPage + 1 <= totalPages
 
   return (
-    <div className="space-y-2 pt-6 pb-8 md:space-y-5">
-      <nav className="flex justify-between">
-        {!prevPage && (
-          <button className="cursor-auto disabled:opacity-50" disabled={!prevPage}>
-            Previous
-          </button>
-        )}
-        {prevPage && (
-          <Link
-            href={currentPage - 1 === 1 ? `/${basePath}/` : `/${basePath}/page/${currentPage - 1}`}
-            rel="prev"
-          >
-            Previous
+    <div className="space-y-2 pt-10 pb-8 md:space-y-5">
+      <nav className="flex justify-between items-center">
+        {!prevPage ? (
+          <button className="cursor-auto disabled:opacity-50 text-sm" disabled>上一個</button>
+        ) : (
+          <Link href={currentPage - 1 === 1 ? `/${basePath}/` : `/${basePath}/page/${currentPage - 1}`} className="hover:text-primary-500 transition-colors text-sm">
+            ← Previous
           </Link>
         )}
-        <span>
-          {currentPage} of {totalPages}
+        <span className="text-sm font-medium text-gray-500">
+          {currentPage} / {totalPages}
         </span>
-        {!nextPage && (
-          <button className="cursor-auto disabled:opacity-50" disabled={!nextPage}>
-            Next
-          </button>
-        )}
-        {nextPage && (
-          <Link href={`/${basePath}/page/${currentPage + 1}`} rel="next">
-            Next
+        {!nextPage ? (
+          <button className="cursor-auto disabled:opacity-50 text-sm" disabled>下一個</button>
+        ) : (
+          <Link href={`/${basePath}/page/${currentPage + 1}`} className="hover:text-primary-500 transition-colors text-sm">
+            Next →
           </Link>
         )}
       </nav>
@@ -80,94 +115,107 @@ export default function ListLayoutWithTags({
   const displayPosts = initialDisplayPosts.length > 0 ? initialDisplayPosts : posts
 
   return (
-    <>
-      <div>
-        <div className="pt-6 pb-6">
-          <h1 className="text-3xl leading-9 font-extrabold tracking-tight text-gray-900 sm:hidden sm:text-4xl sm:leading-10 md:text-6xl md:leading-14 dark:text-gray-100">
-            {title}
-          </h1>
-        </div>
-        <div className="flex sm:space-x-24">
-          <div className="hidden h-full max-h-screen max-w-[280px] min-w-[280px] flex-wrap overflow-auto rounded-sm bg-gray-50 pt-5 shadow-md sm:flex dark:bg-gray-900/70 dark:shadow-gray-800/40">
-            <div className="px-6 py-4">
-              {pathname.startsWith('/blog') ? (
-                <h3 className="text-primary-500 font-bold uppercase">All Posts</h3>
-              ) : (
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      <div className="py-10">
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100 sm:text-5xl md:text-6xl"
+        >
+          {title}
+        </motion.h1>
+      </div>
+
+      <div className="flex flex-col lg:flex-row lg:space-x-16">
+        {/* Sidebar Tags */}
+        <aside className="hidden lg:block w-64 flex-none">
+          <div className="sticky top-24 rounded-2xl bg-gray-50/50 p-6 dark:bg-gray-800/30 backdrop-blur-md border border-gray-100 dark:border-gray-800">
+            <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-primary-500">
+              文章分類
+            </h3>
+            <nav className="space-y-1">
+              <Link
+                href="/blog"
+                className={`block rounded-lg px-3 py-2 text-sm font-medium transition-colors ${pathname === '/blog'
+                    ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-400'
+                    : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
+                  }`}
+              >
+                全部文章 ({posts.length})
+              </Link>
+              {sortedTags.map((t) => (
                 <Link
-                  href={`/blog`}
-                  className="hover:text-primary-500 dark:hover:text-primary-500 font-bold text-gray-700 uppercase dark:text-gray-300"
+                  key={t}
+                  href={`/tags/${slug(t)}`}
+                  className={`block rounded-lg px-3 py-2 text-sm font-medium transition-colors ${decodeURI(pathname.split('/tags/')[1]) === slug(t)
+                      ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-400'
+                      : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
+                    }`}
                 >
-                  All Posts
+                  {`${t} (${tagCounts[t]})`}
                 </Link>
-              )}
-              <ul>
-                {sortedTags.map((t) => {
-                  return (
-                    <li key={t} className="my-3">
-                      {decodeURI(pathname.split('/tags/')[1]) === slug(t) ? (
-                        <h3 className="text-primary-500 inline px-3 py-2 text-sm font-bold uppercase">
-                          {`${t} (${tagCounts[t]})`}
-                        </h3>
-                      ) : (
-                        <Link
-                          href={`/tags/${slug(t)}`}
-                          className="hover:text-primary-500 dark:hover:text-primary-500 px-3 py-2 text-sm font-medium text-gray-500 uppercase dark:text-gray-300"
-                          aria-label={`View posts tagged ${t}`}
-                        >
-                          {`${t} (${tagCounts[t]})`}
-                        </Link>
-                      )}
-                    </li>
-                  )
-                })}
-              </ul>
-            </div>
+              ))}
+            </nav>
           </div>
-          <div>
-            <ul>
-              {displayPosts.map((post) => {
-                const { path, date, title, summary, tags } = post
-                return (
-                  <li key={path} className="py-5">
-                    <article className="flex flex-col space-y-2 xl:space-y-0">
-                      <dl>
-                        <dt className="sr-only">Published on</dt>
-                        <dd className="text-base leading-6 font-medium text-gray-500 dark:text-gray-400">
-                          <time dateTime={date} suppressHydrationWarning>
-                            {formatDate(date, siteMetadata.locale)}
-                            <span className="mr-2 ml-2">•</span>
-                            <span>{post.readingTime.text}</span>
-                          </time>
-                        </dd>
-                      </dl>
-                      <div className="space-y-3">
-                        <div>
-                          <h2 className="text-2xl leading-8 font-bold tracking-tight">
-                            <Link href={`/${path}`} className="text-gray-900 dark:text-gray-100">
-                              {title}
-                            </Link>
-                          </h2>
-                          <div className="flex flex-wrap">
-                            {tags?.map((tag) => (
-                              <Tag key={tag} text={tag} />
-                            ))}
-                          </div>
-                        </div>
-                        <div className="prose max-w-none text-gray-500 dark:text-gray-400">
-                          {summary}
+        </aside>
+
+        {/* Post List */}
+        <main className="flex-1">
+          <ul className="space-y-8">
+            {displayPosts.map((post, index) => {
+              const { path, date, title, summary, tags } = post
+              return (
+                <motion.li
+                  key={path}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                >
+                  <SpotlightCard>
+                    <article className="space-y-4">
+                      <div className="space-y-2">
+                        <dl className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                          <dt className="sr-only">Published on</dt>
+                          <dd className="font-medium">
+                            <time dateTime={date}>{formatDate(date, siteMetadata.locale)}</time>
+                          </dd>
+                          <span className="mx-2 text-gray-300 dark:text-gray-600">/</span>
+                          <dd>{post.readingTime.text}</dd>
+                        </dl>
+                        <h2 className="text-2xl font-bold leading-8 tracking-tight">
+                          <Link href={`/${path}`} className="text-gray-900 transition-colors hover:text-primary-500 dark:text-gray-100 dark:hover:text-primary-400">
+                            {title}
+                          </Link>
+                        </h2>
+                        <div className="flex flex-wrap gap-2 pt-1">
+                          {tags?.map((tag) => (
+                            <Tag key={tag} text={tag} />
+                          ))}
                         </div>
                       </div>
+                      <div className="prose max-w-none text-gray-600 dark:text-gray-400 line-clamp-3">
+                        {summary}
+                      </div>
+                      <div className="pt-2">
+                        <Link
+                          href={`/${path}`}
+                          className="text-sm font-semibold text-primary-500 hover:text-primary-600 dark:hover:text-primary-400 inline-flex items-center"
+                          aria-label={`Read "${title}"`}
+                        >
+                          閱讀更多 <span className="ml-1">→</span>
+                        </Link>
+                      </div>
                     </article>
-                  </li>
-                )
-              })}
-            </ul>
-            {pagination && pagination.totalPages > 1 && (
-              <Pagination currentPage={pagination.currentPage} totalPages={pagination.totalPages} />
-            )}
-          </div>
-        </div>
+                  </SpotlightCard>
+                </motion.li>
+              )
+            })}
+          </ul>
+          {pagination && pagination.totalPages > 1 && (
+            <Pagination currentPage={pagination.currentPage} totalPages={pagination.totalPages} />
+          )}
+        </main>
       </div>
-    </>
+    </div>
   )
 }

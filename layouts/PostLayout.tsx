@@ -13,6 +13,7 @@ import siteMetadata from '@/data/siteMetadata'
 import ScrollTopAndComment from '@/components/ScrollTopAndComment'
 import TableOfContents from '@/components/TableOfContents'
 import RelatedPosts from '@/components/RelatedPosts'
+import { motion } from 'framer-motion'
 
 const editUrl = (path) => `${siteMetadata.siteRepo}/blob/main/data/${path}`
 const discussUrl = (path) =>
@@ -42,7 +43,6 @@ export default function PostLayout({
   relatedPosts,
   children,
 }: LayoutProps) {
-  // 💡 從 content 中解構出 toc (你之前在 contentlayer.config 設定好了)
   const { filePath, path, slug, date, title, tags, toc } = content
   const basePath = path.split('/')[0]
 
@@ -51,27 +51,38 @@ export default function PostLayout({
       <ScrollTopAndComment />
       <article>
         <div className="xl:divide-y xl:divide-gray-200 xl:dark:divide-gray-700">
-          <header className="pt-6 xl:pb-6">
-            <div className="space-y-1 text-center">
-              <dl className="space-y-10">
+          <header className="pt-6 xl:pb-10">
+            <div className="space-y-4 text-center">
+              <motion.dl
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="space-y-10"
+              >
                 <div>
                   <dt className="sr-only">Published on</dt>
-                  <dd className="text-base leading-6 font-medium text-gray-500 dark:text-gray-400">
+                  <dd className="text-base font-medium leading-6 text-gray-500 dark:text-gray-400">
                     <time dateTime={date}>
                       {new Date(date).toLocaleDateString(siteMetadata.locale, postDateTemplate)}
                     </time>
                   </dd>
                 </div>
-              </dl>
+              </motion.dl>
               <div>
-                <PageTitle>{title}</PageTitle>
+                {/* 標題進場動畫 */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                >
+                  <PageTitle>{title}</PageTitle>
+                </motion.div>
               </div>
             </div>
           </header>
 
-          {/* 💡 修改 Grid 配置：xl:grid-cols-4 */}
           <div className="grid-rows-[auto_1fr] divide-y divide-gray-200 pb-8 xl:grid xl:grid-cols-4 xl:gap-x-12 xl:divide-y-0 dark:divide-gray-700">
-            {/* 左側欄：作者與標籤導覽 (佔 1 欄) */}
+            {/* 左側欄：作者與標籤 */}
             <aside className="pt-6 pb-10 xl:border-b xl:border-gray-200 xl:pt-11 xl:dark:border-gray-700">
               <dt className="sr-only">Authors</dt>
               <dd>
@@ -80,7 +91,6 @@ export default function PostLayout({
                     <li className="flex items-center space-x-2" key={author.name}>
                       {author.avatar && (
                         <Image
-                          // 修改這裡：手動補上前綴，確保在 blog 深層網址也能讀到
                           src={
                             author.avatar.startsWith('/pop-blog')
                               ? author.avatar
@@ -89,10 +99,10 @@ export default function PostLayout({
                           width={38}
                           height={38}
                           alt="avatar"
-                          className="h-10 w-10 rounded-full"
+                          className="h-10 w-10 rounded-full ring-2 ring-primary-500/20"
                         />
                       )}
-                      <dl className="text-sm leading-5 font-medium whitespace-nowrap">
+                      <dl className="whitespace-nowrap text-sm font-medium leading-5">
                         <dt className="sr-only">Name</dt>
                         <dd className="text-gray-900 dark:text-gray-100">{author.name}</dd>
                         <dt className="sr-only">Twitter</dt>
@@ -112,11 +122,10 @@ export default function PostLayout({
                 </ul>
               </dd>
 
-              {/* 將原本 footer 的內容搬一部分到左側，讓畫面平衡 */}
               <div className="hidden xl:block">
                 <div className="py-8">
-                  <h2 className="text-xs font-bold tracking-wide text-gray-500 uppercase dark:text-gray-400">
-                    Tags
+                  <h2 className="text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                    文章標籤
                   </h2>
                   <div className="mt-4 flex flex-wrap gap-2">
                     {tags?.map((tag) => (
@@ -127,55 +136,69 @@ export default function PostLayout({
               </div>
             </aside>
 
-            {/* 中間欄：文章主體 (💡 從 col-span-3 改為 col-span-2) */}
+            {/* 中間欄：文章主體 */}
             <div className="divide-y divide-gray-200 xl:col-span-2 xl:row-span-2 xl:pb-0 dark:divide-gray-700">
-              <div className="prose dark:prose-invert max-w-none pt-10 pb-8">{children}</div>
-              <RelatedPosts posts={relatedPosts} />
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+                className="prose max-w-none pt-10 pb-8 dark:prose-invert"
+              >
+                {children}
+              </motion.div>
+
+              <div className="py-6">
+                <RelatedPosts posts={relatedPosts} />
+              </div>
+
               <div className="pt-6 pb-6 text-sm text-gray-700 dark:text-gray-300">
-                <Link href={discussUrl(path)} rel="nofollow">
+                <Link href={discussUrl(path)} rel="nofollow" className="hover:text-primary-500">
                   Discuss on Twitter
                 </Link>
                 {` • `}
-                <Link href={editUrl(filePath)}>View on GitHub</Link>
+                <Link href={editUrl(filePath)} className="hover:text-primary-500">View on GitHub</Link>
               </div>
+
               {siteMetadata.comments && (
-                <div
-                  className="pt-6 pb-6 text-center text-gray-700 dark:text-gray-300"
-                  id="comment"
-                >
+                <div className="pt-6 pb-6 text-center text-gray-700 dark:text-gray-300" id="comment">
                   <Comments slug={slug} />
                 </div>
               )}
             </div>
 
-            {/* 🚀 右側欄：Sticky TOC (佔 1 欄) */}
+            {/* 右側欄：Sticky TOC */}
             <aside className="hidden xl:block">
               <div className="sticky top-24 pt-11">
-                <TableOfContents toc={toc} />
+                <div className="rounded-2xl border border-gray-100 bg-gray-50/30 p-4 backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900/30">
+                  <h2 className="mb-4 text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                    目錄導覽
+                  </h2>
+                  <TableOfContents toc={toc} />
+                </div>
               </div>
             </aside>
 
             {/* 底部導覽 */}
-            <footer>
-              <div className="divide-gray-200 text-sm leading-5 font-medium xl:col-start-1 xl:row-start-2 xl:divide-y dark:divide-gray-700">
+            <footer className="xl:col-start-1 xl:row-start-2">
+              <div className="divide-gray-200 text-sm font-medium leading-5 xl:divide-y dark:divide-gray-700">
                 {(next || prev) && (
                   <div className="flex justify-between py-4 xl:block xl:space-y-8 xl:py-8">
                     {prev && prev.path && (
                       <div>
-                        <h2 className="text-xs tracking-wide text-gray-500 uppercase dark:text-gray-400">
-                          Previous
+                        <h2 className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                          Previous Article
                         </h2>
-                        <div className="text-primary-500 hover:text-primary-600">
+                        <div className="text-primary-500 hover:text-primary-600 transition-colors">
                           <Link href={`/${prev.path}`}>{prev.title}</Link>
                         </div>
                       </div>
                     )}
                     {next && next.path && (
                       <div>
-                        <h2 className="text-xs tracking-wide text-gray-500 uppercase dark:text-gray-400">
-                          Next
+                        <h2 className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                          Next Article
                         </h2>
-                        <div className="text-primary-500 hover:text-primary-600">
+                        <div className="text-primary-500 hover:text-primary-600 transition-colors">
                           <Link href={`/${next.path}`}>{next.title}</Link>
                         </div>
                       </div>
@@ -183,8 +206,8 @@ export default function PostLayout({
                   </div>
                 )}
                 <div className="pt-4 xl:pt-8">
-                  <Link href={`/${basePath}`} className="text-primary-500 hover:text-primary-600">
-                    &larr; Back to blog
+                  <Link href={`/${basePath}`} className="text-primary-500 hover:text-primary-600 inline-flex items-center transition-colors">
+                    <span className="mr-2">←</span> Back to blog
                   </Link>
                 </div>
               </div>
