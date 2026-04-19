@@ -29,7 +29,7 @@ export default function Projects() {
           <motion.h1
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="text-3xl font-extrabold leading-9 tracking-tight text-gray-900 dark:text-gray-100 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14"
+            className="text-3xl leading-9 font-extrabold tracking-tight text-gray-900 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14 dark:text-gray-100"
           >
             Projects
           </motion.h1>
@@ -55,7 +55,7 @@ export default function Projects() {
                 key={d.title}
                 variants={itemVariants}
                 // 把原本在 Card 上的佈局類名移到這裡
-                className="p-4 md:w-1/2 w-full"
+                className="w-full p-4 md:w-1/2"
               >
                 <motion.div
                   whileHover={{ scale: 1.02 }} // 直接用 framer-motion 做 hover 縮放更平滑

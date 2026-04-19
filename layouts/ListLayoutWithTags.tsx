@@ -24,7 +24,7 @@ interface ListLayoutProps {
 }
 
 // 模擬 React Bits 的 Spotlight Card 效果
-const SpotlightCard = ({ children, className = "" }) => {
+const SpotlightCard = ({ children, className = '' }) => {
   const divRef = useRef<HTMLDivElement>(null)
   const [isFocused, setIsFocused] = useState(false)
   const [position, setPosition] = useState({ x: 0, y: 0 })
@@ -53,7 +53,7 @@ const SpotlightCard = ({ children, className = "" }) => {
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className={`relative overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800 bg-transparent px-8 py-6 transition-all duration-300 ${className}`}
+      className={`relative overflow-hidden rounded-xl border border-gray-200 bg-transparent px-8 py-6 transition-all duration-300 dark:border-gray-800 ${className}`}
     >
       <div
         className="pointer-events-none absolute -inset-px opacity-0 transition duration-300"
@@ -78,11 +78,16 @@ function Pagination({ totalPages, currentPage }: PaginationProps) {
 
   return (
     <div className="space-y-2 pt-10 pb-8 md:space-y-5">
-      <nav className="flex justify-between items-center">
+      <nav className="flex items-center justify-between">
         {!prevPage ? (
-          <button className="cursor-auto disabled:opacity-50 text-sm" disabled>上一個</button>
+          <button className="cursor-auto text-sm disabled:opacity-50" disabled>
+            上一個
+          </button>
         ) : (
-          <Link href={currentPage - 1 === 1 ? `/${basePath}/` : `/${basePath}/page/${currentPage - 1}`} className="hover:text-primary-500 transition-colors text-sm">
+          <Link
+            href={currentPage - 1 === 1 ? `/${basePath}/` : `/${basePath}/page/${currentPage - 1}`}
+            className="hover:text-primary-500 text-sm transition-colors"
+          >
             ← Previous
           </Link>
         )}
@@ -90,9 +95,14 @@ function Pagination({ totalPages, currentPage }: PaginationProps) {
           {currentPage} / {totalPages}
         </span>
         {!nextPage ? (
-          <button className="cursor-auto disabled:opacity-50 text-sm" disabled>下一個</button>
+          <button className="cursor-auto text-sm disabled:opacity-50" disabled>
+            下一個
+          </button>
         ) : (
-          <Link href={`/${basePath}/page/${currentPage + 1}`} className="hover:text-primary-500 transition-colors text-sm">
+          <Link
+            href={`/${basePath}/page/${currentPage + 1}`}
+            className="hover:text-primary-500 text-sm transition-colors"
+          >
             Next →
           </Link>
         )}
@@ -120,7 +130,7 @@ export default function ListLayoutWithTags({
         <motion.h1
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100 sm:text-5xl md:text-6xl"
+          className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-6xl dark:text-gray-100"
         >
           {title}
         </motion.h1>
@@ -128,18 +138,19 @@ export default function ListLayoutWithTags({
 
       <div className="flex flex-col lg:flex-row lg:space-x-16">
         {/* Sidebar Tags */}
-        <aside className="hidden lg:block w-64 flex-none">
-          <div className="sticky top-24 rounded-2xl bg-gray-50/50 p-6 dark:bg-gray-800/30 backdrop-blur-md border border-gray-100 dark:border-gray-800">
-            <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-primary-500">
+        <aside className="hidden w-64 flex-none lg:block">
+          <div className="sticky top-24 rounded-2xl border border-gray-100 bg-gray-50/50 p-6 backdrop-blur-md dark:border-gray-800 dark:bg-gray-800/30">
+            <h3 className="text-primary-500 mb-4 text-xs font-bold tracking-widest uppercase">
               文章分類
             </h3>
             <nav className="space-y-1">
               <Link
                 href="/blog"
-                className={`block rounded-lg px-3 py-2 text-sm font-medium transition-colors ${pathname === '/blog'
+                className={`block rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                  pathname === '/blog'
                     ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-400'
                     : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
-                  }`}
+                }`}
               >
                 全部文章 ({posts.length})
               </Link>
@@ -147,10 +158,11 @@ export default function ListLayoutWithTags({
                 <Link
                   key={t}
                   href={`/tags/${slug(t)}`}
-                  className={`block rounded-lg px-3 py-2 text-sm font-medium transition-colors ${decodeURI(pathname.split('/tags/')[1]) === slug(t)
+                  className={`block rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                    decodeURI(pathname.split('/tags/')[1]) === slug(t)
                       ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-400'
                       : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
-                    }`}
+                  }`}
                 >
                   {`${t} (${tagCounts[t]})`}
                 </Link>
@@ -182,8 +194,11 @@ export default function ListLayoutWithTags({
                           <span className="mx-2 text-gray-300 dark:text-gray-600">/</span>
                           <dd>{post.readingTime.text}</dd>
                         </dl>
-                        <h2 className="text-2xl font-bold leading-8 tracking-tight">
-                          <Link href={`/${path}`} className="text-gray-900 transition-colors hover:text-primary-500 dark:text-gray-100 dark:hover:text-primary-400">
+                        <h2 className="text-2xl leading-8 font-bold tracking-tight">
+                          <Link
+                            href={`/${path}`}
+                            className="hover:text-primary-500 dark:hover:text-primary-400 text-gray-900 transition-colors dark:text-gray-100"
+                          >
                             {title}
                           </Link>
                         </h2>
@@ -193,13 +208,13 @@ export default function ListLayoutWithTags({
                           ))}
                         </div>
                       </div>
-                      <div className="prose max-w-none text-gray-600 dark:text-gray-400 line-clamp-3">
+                      <div className="prose line-clamp-3 max-w-none text-gray-600 dark:text-gray-400">
                         {summary}
                       </div>
                       <div className="pt-2">
                         <Link
                           href={`/${path}`}
-                          className="text-sm font-semibold text-primary-500 hover:text-primary-600 dark:hover:text-primary-400 inline-flex items-center"
+                          className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400 inline-flex items-center text-sm font-semibold"
                           aria-label={`Read "${title}"`}
                         >
                           閱讀更多 <span className="ml-1">→</span>

@@ -44,11 +44,8 @@ const Card = ({ title, description, imgSrc, href, tags }) => {
         }}
         className="relative h-full overflow-hidden rounded-xl bg-white dark:bg-gray-800"
       >
-
-
         {/* 內層容器 (用來遮掉跑馬燈中心，只留下邊緣 2px) */}
         <div className="relative z-10 h-full w-full overflow-hidden rounded-[calc(0.75rem-1px)] bg-blue-200 dark:bg-blue-950">
-
           {/* 聚光燈背景層 (Spotlight) */}
           <div
             className="pointer-events-none absolute -inset-px z-0 transition duration-300"
@@ -64,11 +61,11 @@ const Card = ({ title, description, imgSrc, href, tags }) => {
               style={{ transform: 'translateZ(50px)' }}
             >
               {/* 💡 2. 技術棧標籤 (Tech Stack Badges) */}
-              <div className="absolute right-3 top-3 z-20 flex flex-wrap gap-2">
+              <div className="absolute top-3 right-3 z-20 flex flex-wrap gap-2">
                 {tags?.map((tag) => (
                   <span
                     key={tag}
-                    className="rounded-md border border-white/20 bg-black/40 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-md"
+                    className="rounded-md border border-white/20 bg-black/40 px-2 py-1 text-[10px] font-bold tracking-wider text-white uppercase backdrop-blur-md"
                   >
                     {tag}
                   </span>
@@ -98,7 +95,7 @@ const Card = ({ title, description, imgSrc, href, tags }) => {
           )}
 
           <div className="relative z-10 p-6" style={{ transform: 'translateZ(30px)' }}>
-            <h2 className="mb-3 text-2xl font-bold leading-8 tracking-tight">
+            <h2 className="mb-3 text-2xl leading-8 font-bold tracking-tight">
               {href ? (
                 <Link
                   href={href}
@@ -111,13 +108,11 @@ const Card = ({ title, description, imgSrc, href, tags }) => {
                 title
               )}
             </h2>
-            <p className="prose mb-3 max-w-none text-gray-500 dark:text-gray-400">
-              {description}
-            </p>
+            <p className="prose mb-3 max-w-none text-gray-500 dark:text-gray-400">{description}</p>
             {href && (
               <Link
                 href={href}
-                className="text-base font-medium leading-6 text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
+                className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400 text-base leading-6 font-medium"
                 aria-label={`Link to ${title}`}
               >
                 Learn more &rarr;

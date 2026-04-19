@@ -6,7 +6,15 @@ import Image from '@/components/Image'
 import SocialIcon from '@/components/social-icons'
 
 // 💡 技能數據 (可以根據你的情況修改)
-const skills = ['React', 'Next.js', 'TypeScript', 'Tailwind CSS', 'Framer Motion', 'UI/UX Design', 'Node.js']
+const skills = [
+  'React',
+  'Next.js',
+  'TypeScript',
+  'Tailwind CSS',
+  'Framer Motion',
+  'UI/UX Design',
+  'Node.js',
+]
 
 export default function About() {
   const ref = useRef<HTMLDivElement>(null)
@@ -43,13 +51,13 @@ export default function About() {
         <motion.h1
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-3xl font-extrabold leading-9 tracking-tight text-gray-900 dark:text-gray-100 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14"
+          className="text-3xl leading-9 font-extrabold tracking-tight text-gray-900 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14 dark:text-gray-100"
         >
           About Me
         </motion.h1>
       </div>
 
-      <div className="items-start space-y-2 xl:grid xl:grid-cols-3 xl:gap-x-8 xl:space-y-0">
+      <div className="items-start space-y-2 xl:grid xl:grid-cols-3 xl:space-y-0 xl:gap-x-8">
         {/* 左側：個人資料卡片 */}
         <div className="flex flex-col items-center pt-8">
           <motion.div
@@ -60,7 +68,7 @@ export default function About() {
             className="relative h-48 w-48 transition-all duration-200 ease-out"
           >
             {/* 頭像裝飾背景 */}
-            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-primary-500 to-blue-400 opacity-20 blur-2xl" />
+            <div className="from-primary-500 absolute inset-0 rounded-full bg-gradient-to-tr to-blue-400 opacity-20 blur-2xl" />
 
             <div className="relative overflow-hidden rounded-full border-4 border-white shadow-2xl dark:border-gray-800">
               <Image
@@ -73,7 +81,7 @@ export default function About() {
             </div>
           </motion.div>
 
-          <h3 className="pt-4 pb-2 text-2xl font-bold leading-8 tracking-tight text-gray-900 dark:text-gray-100">
+          <h3 className="pt-4 pb-2 text-2xl leading-8 font-bold tracking-tight text-gray-900 dark:text-gray-100">
             Maverick Tu
           </h3>
           <div className="text-gray-500 dark:text-gray-400">Full-stack Developer</div>
@@ -87,7 +95,7 @@ export default function About() {
         </div>
 
         {/* 右側：文案內容 */}
-        <div className="prose max-w-none pt-8 pb-8 dark:prose-invert xl:col-span-2">
+        <div className="prose dark:prose-invert max-w-none pt-8 pb-8 xl:col-span-2">
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -97,7 +105,8 @@ export default function About() {
               你好！我是一位熱衷於打造精緻網頁體驗的開發者。我喜歡將複雜的邏輯轉化為直覺且優雅的介面。
             </p>
             <p>
-              除了編寫代碼，我對 UI/UX 設計與動態特效也有深厚的興趣。我相信優秀的網站不僅要能正常運作，更要能與使用者產生情感上的共鳴。
+              除了編寫代碼，我對 UI/UX
+              設計與動態特效也有深厚的興趣。我相信優秀的網站不僅要能正常運作，更要能與使用者產生情感上的共鳴。
             </p>
 
             {/* 💡 技能標籤雲 */}
@@ -113,7 +122,7 @@ export default function About() {
                     scale: 1.1,
                     backgroundColor: '#3b82f6',
                     color: '#fff',
-                    y: -5
+                    y: -5,
                   }}
                   className="cursor-default rounded-lg border border-gray-200 bg-gray-50 px-3 py-1 text-sm font-medium text-gray-600 transition-colors dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
                 >
