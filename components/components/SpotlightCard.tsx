@@ -32,10 +32,7 @@ export default function SpotlightCard({
   `
 
   return (
-    <div
-      onMouseMove={handleMouseMove}
-      className={`group relative overflow-hidden ${className}`}
-    >
+    <div onMouseMove={handleMouseMove} className={`group relative overflow-hidden ${className}`}>
       {/* spotlight */}
       <motion.div
         className="pointer-events-none absolute inset-0 opacity-0 transition duration-300 group-hover:opacity-100"

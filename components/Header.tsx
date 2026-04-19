@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import React, { useRef, useEffect, useState } from 'react'
 import siteMetadata from '@/data/siteMetadata'
@@ -61,7 +61,7 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
   }
 
   const createParticle = (i: number, t: number, d: [number, number], r: number): ParticleConfig => {
-    let rotate = noise(r / 10)
+    const rotate = noise(r / 10)
     return {
       start: getXY(d[0], particleCount - i, particleCount),
       end: getXY(d[1] + noise(7), particleCount - i, particleCount),
@@ -104,7 +104,7 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
         setTimeout(() => {
           try {
             element.removeChild(particle)
-          } catch (e) { }
+          } catch (e) {}
         }, t)
       }, 30)
     }
@@ -179,15 +179,19 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
       `}</style>
 
       <nav className="relative z-10">
-        <ul ref={navRef} className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 m-0 p-0">
+        <ul
+          ref={navRef}
+          className="m-0 flex flex-col space-y-2 p-0 sm:flex-row sm:space-y-0 sm:space-x-2"
+        >
           {items.map((item, index) => (
             <li key={item.label} className="relative">
               <Link
                 href={item.href}
-                className={`block px-4 py-2 text-sm font-medium transition-colors duration-300 ${activeIndex === index
-                  ? 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100' // 隱藏原本文字，讓 effect.text 顯示
-                  : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100'
-                  }`}
+                className={`block px-4 py-2 text-sm font-medium transition-colors duration-300 ${
+                  activeIndex === index
+                    ? 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100' // 隱藏原本文字，讓 effect.text 顯示
+                    : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100'
+                }`}
                 onClick={() => setActiveIndex(index)}
                 onMouseEnter={(e) => {
                   updateEffectPosition(e.currentTarget.parentElement!)

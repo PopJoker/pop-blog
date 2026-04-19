@@ -49,28 +49,29 @@ const FlowingItem = ({ link, onClick }: FlowingItemProps) => {
     }
   }, [])
 
-
-
   return (
     <div
       ref={itemRef}
-      className="group relative w-full border-b border-gray-200 dark:border-gray-800 overflow-hidden"
+      className="group relative w-full overflow-hidden border-b border-gray-200 dark:border-gray-800"
     >
       <Link
         href={link.href}
         onClick={onClick}
-        className="relative z-10 block w-full py-8 px-6 text-4xl font-black uppercase italic tracking-tighter text-gray-900 dark:text-gray-100 transition-colors duration-300 group-hover:text-white"
+        className="relative z-10 block w-full px-6 py-8 text-4xl font-black tracking-tighter text-gray-900 uppercase italic transition-colors duration-300 group-hover:text-white dark:text-gray-100"
       >
         <span className="relative z-20">{link.title}</span>
 
         {/* 背景跑馬燈效果 */}
         <div
           ref={marqueeRef}
-          className="absolute inset-0 z-10 flex items-center bg-primary-500 pointer-events-none"
+          className="bg-primary-500 pointer-events-none absolute inset-0 z-10 flex items-center"
         >
-          <div className="flex whitespace-nowrap py-2 animate-infinite-scroll">
+          <div className="animate-infinite-scroll flex py-2 whitespace-nowrap">
             {[...Array(4)].map((_, i) => (
-              <span key={i} className="mx-4 text-4xl font-black uppercase italic text-white  dark:text-blue-950">
+              <span
+                key={i}
+                className="mx-4 text-4xl font-black text-white uppercase italic dark:text-blue-950"
+              >
                 {link.title} —
               </span>
             ))}
@@ -111,7 +112,7 @@ const MobileNav = () => {
 
   return (
     <>
-      <button aria-label="Toggle Menu" onClick={onToggleNav} className="sm:hidden p-2">
+      <button aria-label="Toggle Menu" onClick={onToggleNav} className="p-2 sm:hidden">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
@@ -163,10 +164,7 @@ const MobileNav = () => {
                 </svg>
               </button>
 
-              <nav
-                ref={navRef}
-                className="flex h-full flex-col justify-center overflow-y-auto"
-              >
+              <nav ref={navRef} className="flex h-full flex-col justify-center overflow-y-auto">
                 {headerNavLinks.map((link) => (
                   <FlowingItem key={link.title} link={link} onClick={handleLinkClick} />
                 ))}

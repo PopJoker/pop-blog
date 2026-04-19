@@ -90,7 +90,7 @@ export default function Home({ posts }) {
     '用程式打造有價值的體驗',
     '定義/實踐/進化',
     '不預測未來，我們編寫它',
-    '創意值得一個更強大的載體'
+    '創意值得一個更強大的載體',
   ]
 
   const displayText = useTypewriter(slogans)
@@ -184,9 +184,7 @@ export default function Home({ posts }) {
                 className="ml-2 inline-block"
                 animate={{ opacity: [0, 1, 0] }}
                 transition={{ repeat: Infinity, duration: 1.2 }}
-              >
-
-              </motion.span>
+              ></motion.span>
             </span>
           </h1>
           {/* <h1 className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-400 bg-clip-text text-5xl font-extrabold tracking-tight text-transparent sm:text-6xl md:text-7xl dark:from-white dark:via-gray-200 dark:to-gray-500">
@@ -229,7 +227,8 @@ export default function Home({ posts }) {
             </Link>
             <Link
               href={discordLink}
-              className="group relative flex items-center gap-2 overflow-hidden rounded-full border border-[#5865F2] px-6 py-3 text-sm font-semibold text-[#5865F2] transition hover:scale-105 hover:text-white">
+              className="group relative flex items-center gap-2 overflow-hidden rounded-full border border-[#5865F2] px-6 py-3 text-sm font-semibold text-[#5865F2] transition hover:scale-105 hover:text-white"
+            >
               {/* 背景動畫 */}
               <span className="absolute inset-0 w-0 bg-[#5865F2] transition-all duration-300 group-hover:w-full" />
 
@@ -308,9 +307,7 @@ function PostCard({ post, index, featured = false }) {
             <h3 className="mt-3 text-xl font-bold transition-colors group-hover:text-indigo-500 dark:group-hover:text-indigo-400">
               {title}
             </h3>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-              {summary}
-            </p>
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{summary}</p>
           </Link>
 
           <div className="mt-4 flex items-center text-sm font-semibold text-gray-900 dark:text-white">
