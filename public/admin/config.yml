@@ -38,18 +38,16 @@ collections:
 
   - name: 'settings'
     label: '設定'
-    delete: false # 不允許刪除整個檔案
-    editor:
-      preview: false
     files:
-      - name: 'projects'
+      - name: 'projects_file' # 檔案 ID
         label: '專案管理 (Projects)'
         file: 'data/projectsData.json'
+        format: 'json' # 明確指定格式
         fields:
-          - label: '所有專案'
-            name: 'projects' # 注意：這會讓 JSON 變成 { "projects": [...] }，稍後說明
+          - label: '所有專案列表'
+            name: 'projects' # 這裡必須對應 JSON 裡的 Key
             widget: 'list'
-            allow_add: true
+            summary: '{{fields.title}}' # 讓列表顯示標題，方便管理
             fields:
               - { label: '標題', name: 'title', widget: 'string' }
               - { label: '描述', name: 'description', widget: 'text' }

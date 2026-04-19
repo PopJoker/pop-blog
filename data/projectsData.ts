@@ -8,6 +8,7 @@ interface Project {
   tags: string[]
 }
 
-const projectsData: Project[] = projectsDataRaw as Project[]
+// 指向 .projects 陣列
+const projectsData: Project[] = (projectsDataRaw as { projects: Project[] }).projects
 
 export default projectsData
