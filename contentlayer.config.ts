@@ -109,6 +109,12 @@ export const Blog = defineDocumentType(() => ({
     layout: { type: 'string' },
     bibliography: { type: 'string' },
     canonicalUrl: { type: 'string' },
+    // --- 新增以下欄位以解決警告 ---
+    preview: { type: 'string' },
+    categories: { type: 'list', of: { type: 'string' } },
+    keywords: { type: 'list', of: { type: 'string' } },
+    // 雖然你有 authors (複數)，但你的 md 檔用了 author (單數)
+    author: { type: 'string' },
   },
   computedFields: {
     ...computedFields,

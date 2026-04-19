@@ -104,7 +104,9 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
         setTimeout(() => {
           try {
             element.removeChild(particle)
-          } catch (e) {}
+          } catch (e) {
+            // 忽略節點已被移除的情況
+          }
         }, t)
       }, 30)
     }

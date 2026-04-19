@@ -98,7 +98,7 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
           try {
             element.removeChild(particle)
           } catch {
-            // do nothing
+            /* 節點可能已不存在，忽略錯誤 */
           }
         }, t)
       }, 30)
@@ -332,15 +332,21 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
             {items.map((item, index) => (
               <li
                 key={index}
-                className={`ease relative cursor-pointer rounded-full text-white shadow-[0_0_0.5px_1.5px_transparent] transition-[background-color_color_box-shadow] duration-300 ${
+                className={`ease relative rounded-full text-white shadow-[0_0_0.5px_1.5px_transparent] transition-[background-color_color_box-shadow] duration-300 ${
                   activeIndex === index ? 'active' : ''
                 }`}
-                onClick={(e) => handleClick(e, index)}
+                // ❌ 移除這裡的 onClick，因為 li 不是互動元素
               >
                 <a
                   href={item.href}
+                  className="inline-block cursor-pointer px-[1em] py-[0.6em] outline-none"
+                  // ✅ 將點擊事件移到這裡，這是一個天然的互動元素
+                  onClick={(e) => {
+                    // 如果你使用的是 Next.js Link 行為，可以視情況加入 e.preventDefault()
+                    // 但這裡為了觸發動畫，我們需要抓取父元素 li
+                    handleClick({ currentTarget: e.currentTarget.parentElement! }, index)
+                  }}
                   onKeyDown={(e) => handleKeyDown(e, index)}
-                  className="inline-block px-[1em] py-[0.6em] outline-none"
                 >
                   {item.label}
                 </a>
