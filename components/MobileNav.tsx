@@ -5,45 +5,128 @@ import { disableBodyScroll, enableBodyScroll, clearAllBodyScrollLocks } from 'bo
 import { Fragment, useState, useEffect, useRef } from 'react'
 import Link from './Link'
 import headerNavLinks from '@/data/headerNavLinks'
+import gsap from 'gsap'
+
+interface NavLink {
+  title: string
+  href: string
+}
+
+interface FlowingItemProps {
+  link: NavLink
+  onClick: () => void
+}
+
+// 內部組件：單個流動選單項
+const FlowingItem = ({ link, onClick }: FlowingItemProps) => {
+  // 1. 指定 Ref 的型別為 HTMLDivElement
+  const itemRef = useRef<HTMLDivElement>(null)
+  const marqueeRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const item = itemRef.current
+    const marquee = marqueeRef.current
+
+    // 2. 加入安全檢查，確保 item 和 marquee 存在
+    if (!item || !marquee) return
+
+    // 初始隱藏跑馬燈
+    gsap.set(marquee, { xPercent: -100, opacity: 0 })
+
+    const onMouseEnter = () => {
+      gsap.to(marquee, { xPercent: 0, opacity: 1, duration: 0.4, ease: 'power2.out' })
+    }
+    const onMouseLeave = () => {
+      gsap.to(marquee, { xPercent: -100, opacity: 0, duration: 0.4, ease: 'power2.in' })
+    }
+
+    item.addEventListener('mouseenter', onMouseEnter)
+    item.addEventListener('mouseleave', onMouseLeave)
+
+    return () => {
+      item.removeEventListener('mouseenter', onMouseEnter)
+      item.removeEventListener('mouseleave', onMouseLeave)
+    }
+  }, [])
+
+
+
+  return (
+    <div
+      ref={itemRef}
+      className="group relative w-full border-b border-gray-200 dark:border-gray-800 overflow-hidden"
+    >
+      <Link
+        href={link.href}
+        onClick={onClick}
+        className="relative z-10 block w-full py-8 px-6 text-4xl font-black uppercase italic tracking-tighter text-gray-900 dark:text-gray-100 transition-colors duration-300 group-hover:text-white"
+      >
+        <span className="relative z-20">{link.title}</span>
+
+        {/* 背景跑馬燈效果 */}
+        <div
+          ref={marqueeRef}
+          className="absolute inset-0 z-10 flex items-center bg-primary-500 pointer-events-none"
+        >
+          <div className="flex whitespace-nowrap py-2 animate-infinite-scroll">
+            {[...Array(4)].map((_, i) => (
+              <span key={i} className="mx-4 text-4xl font-black uppercase italic text-white  dark:text-blue-950">
+                {link.title} —
+              </span>
+            ))}
+          </div>
+        </div>
+      </Link>
+    </div>
+  )
+}
 
 const MobileNav = () => {
   const [navShow, setNavShow] = useState(false)
-  const navRef = useRef(null)
+  // 3. 同樣為 navRef 指定型別
+  const navRef = useRef<HTMLElement>(null)
 
   const onToggleNav = () => {
     setNavShow((status) => {
       if (status) {
-        enableBodyScroll(navRef.current)
+        if (navRef.current) enableBodyScroll(navRef.current)
       } else {
-        // Prevent scrolling
-        disableBodyScroll(navRef.current)
+        if (navRef.current) disableBodyScroll(navRef.current)
       }
       return !status
     })
   }
 
+  // 新增：專門給 Link 使用的關閉邏輯
+  const handleLinkClick = () => {
+    // 給予 150ms - 200ms 的緩衝，讓點擊回饋感更好
+    setTimeout(() => {
+      onToggleNav()
+    }, 500)
+  }
+
   useEffect(() => {
-    return clearAllBodyScrollLocks
-  })
+    return () => clearAllBodyScrollLocks()
+  }, [])
 
   return (
     <>
-      <button aria-label="Toggle Menu" onClick={onToggleNav} className="sm:hidden">
+      <button aria-label="Toggle Menu" onClick={onToggleNav} className="sm:hidden p-2">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
           fill="currentColor"
-          className="hover:text-primary-500 dark:hover:text-primary-400 h-8 w-8 text-gray-900 dark:text-gray-100"
+          className="h-8 w-8 text-gray-900 dark:text-gray-100"
         >
           <path
             fillRule="evenodd"
-            d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-            clipRule="evenodd"
+            d="M3 5h14a1 1 0 110 2H3a1 1 0 110-2zm0 5h14a1 1 0 110 2H3a1 1 0 110-2zm0 5h14a1 1 0 110 2H3a1 1 0 110-2z"
           />
         </svg>
       </button>
-      <Transition appear show={navShow} as={Fragment} unmount={false}>
-        <Dialog as="div" onClose={onToggleNav} unmount={false}>
+
+      <Transition appear show={navShow} as={Fragment}>
+        <Dialog as="div" onClose={onToggleNav} className="relative z-50">
           <TransitionChild
             as={Fragment}
             enter="ease-out duration-300"
@@ -52,51 +135,42 @@ const MobileNav = () => {
             leave="ease-in duration-200"
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
-            unmount={false}
           >
-            <div className="fixed inset-0 z-60 bg-black/25" />
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
           </TransitionChild>
 
           <TransitionChild
             as={Fragment}
-            enter="transition ease-in-out duration-300 transform"
-            enterFrom="translate-x-full opacity-0"
-            enterTo="translate-x-0 opacity-95"
-            leave="transition ease-in duration-200 transform"
-            leaveFrom="translate-x-0 opacity-95"
-            leaveTo="translate-x-full opacity-0"
-            unmount={false}
+            enter="transition ease-in-out duration-500 transform"
+            enterFrom="translate-y-full"
+            enterTo="translate-y-0"
+            leave="transition ease-in-out duration-500 transform"
+            leaveFrom="translate-y-0"
+            leaveTo="translate-y-full"
           >
-            <DialogPanel className="fixed top-0 left-0 z-70 h-full w-full bg-white/95 duration-300 dark:bg-gray-950/98">
-              <nav
-                ref={navRef}
-                className="mt-8 flex h-full basis-0 flex-col items-start overflow-y-auto pt-2 pl-12 text-left"
-              >
-                {headerNavLinks.map((link) => (
-                  <Link
-                    key={link.title}
-                    href={link.href}
-                    className="hover:text-primary-500 dark:hover:text-primary-400 mb-4 py-2 pr-4 text-2xl font-bold tracking-widest text-gray-900 outline outline-0 dark:text-gray-100"
-                    onClick={onToggleNav}
-                  >
-                    {link.title}
-                  </Link>
-                ))}
-              </nav>
-
+            <DialogPanel className="fixed inset-0 z-70 flex flex-col bg-white dark:bg-gray-950">
               <button
-                className="hover:text-primary-500 dark:hover:text-primary-400 fixed top-7 right-4 z-80 h-16 w-16 p-4 text-gray-900 dark:text-gray-100"
-                aria-label="Toggle Menu"
+                className="absolute top-6 right-6 z-80 p-2 text-gray-900 dark:text-gray-100"
                 onClick={onToggleNav}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <svg className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
-                    fillRule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clipRule="evenodd"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
                   />
                 </svg>
               </button>
+
+              <nav
+                ref={navRef}
+                className="flex h-full flex-col justify-center overflow-y-auto"
+              >
+                {headerNavLinks.map((link) => (
+                  <FlowingItem key={link.title} link={link} onClick={handleLinkClick} />
+                ))}
+              </nav>
             </DialogPanel>
           </TransitionChild>
         </Dialog>

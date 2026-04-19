@@ -20,6 +20,19 @@ const nextConfig = {
       },
     },
   },
+  theme: {
+    extend: {
+      animation: {
+        'infinite-scroll': 'infinite-scroll 10s linear infinite',
+      },
+      keyframes: {
+        'infinite-scroll': {
+          from: { transform: 'translateX(0)' },
+          to: { transform: 'translateX(-50%)' },
+        }
+      }
+    },
+  },
   pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
   images: {
     remotePatterns: [

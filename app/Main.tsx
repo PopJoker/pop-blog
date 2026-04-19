@@ -35,6 +35,42 @@ const staggerContainer = {
   },
 }
 
+function useTypewriter(slogans: string[]) {
+  const [displayText, setDisplayText] = useState('')
+  const [index, setIndex] = useState(0)
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  useEffect(() => {
+    const current = slogans[index]
+    let timeout: NodeJS.Timeout
+
+    const typingSpeed = isDeleting ? 35 : 70
+
+    if (!isDeleting) {
+      if (displayText.length < current.length) {
+        timeout = setTimeout(() => {
+          setDisplayText(current.slice(0, displayText.length + 1))
+        }, typingSpeed)
+      } else {
+        timeout = setTimeout(() => setIsDeleting(true), 5000)
+      }
+    } else {
+      if (displayText.length > 0) {
+        timeout = setTimeout(() => {
+          setDisplayText(current.slice(0, displayText.length - 1))
+        }, typingSpeed)
+      } else {
+        setIsDeleting(false)
+        setIndex((prev) => (prev + 1) % slogans.length)
+      }
+    }
+
+    return () => clearTimeout(timeout)
+  }, [displayText, isDeleting, index, slogans])
+
+  return displayText
+}
+
 export default function Home({ posts }) {
   const featuredPosts = posts.slice(0, 2)
   const recentPosts = posts.slice(2, MAX_DISPLAY)
@@ -50,23 +86,14 @@ export default function Home({ posts }) {
   const discordLink = 'https://discord.gg/b5QSSdu3VW'
 
   const slogans = [
-    '把想法轉化成可被看見的作品',
-    '用程式打造你的第二個大腦',
-    '讓設計與工程一起發生',
-    '從靈感到實作，只差一個開始',
+    '把想法做成可被看見的作品',
+    '用程式打造有價值的體驗',
+    '定義/實踐/進化',
+    '不預測未來，我們編寫它',
+    '創意值得一個更強大的載體'
   ]
 
-  const [index, setIndex] = useState(0)
-
-  useEffect(() => {
-    const len = slogans.length
-
-    const timer = setInterval(() => {
-      setIndex((prev) => (prev + 1) % len)
-    }, 8000)
-
-    return () => clearInterval(timer)
-  }, [slogans.length])
+  const displayText = useTypewriter(slogans)
 
   return (
     <div className="mb-20 space-y-10">
@@ -126,33 +153,41 @@ export default function Home({ posts }) {
             PopJ0ker Workshop
           </motion.div>
 
-          {/* ✨ Split Text（核心升級） */}
-          <h1 className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-400 bg-clip-text text-5xl font-extrabold tracking-tight text-transparent sm:text-6xl md:text-7xl dark:from-white dark:via-gray-200 dark:to-gray-500">
-            <AnimatePresence mode="wait">
+          <h1 className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-400 bg-clip-text text-4xl font-extrabold tracking-tight text-transparent sm:text-6xl md:text-7xl dark:from-white dark:via-gray-200 dark:to-gray-500">
+            <span className="inline-flex">
+              {displayText.split('').map((char, i) => (
+                <motion.span
+                  className="inline-block bg-gradient-to-br from-gray-900 via-gray-800 to-gray-400 bg-clip-text text-transparent dark:from-white dark:via-gray-200 dark:to-gray-500"
+                  key={`${char}-${i}`}
+                  initial={{
+                    opacity: 0,
+                    filter: 'blur(8px)',
+                    letterSpacing: '-0.2em',
+                  }}
+                  animate={{
+                    opacity: 1,
+                    filter: 'blur(0px)',
+                    letterSpacing: '0em',
+                  }}
+                  transition={{
+                    duration: 0.35,
+                    ease: [0.22, 1, 0.36, 1],
+                    delay: i * 0.03,
+                  }}
+                >
+                  {char}
+                </motion.span>
+              ))}
+
+              {/* 游標 */}
               <motion.span
-                key={slogans[index]}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                className="inline-block"
+                className="ml-2 inline-block"
+                animate={{ opacity: [0, 1, 0] }}
+                transition={{ repeat: Infinity, duration: 1.2 }}
               >
-                {slogans[index].split('').map((char, i) => (
-                  <motion.span
-                    key={`${slogans[index]}-${i}`}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      delay: i * 0.03,
-                      duration: 0.4,
-                    }}
-                    className="inline-block"
-                  >
-                    {char}
-                  </motion.span>
-                ))}
+
               </motion.span>
-            </AnimatePresence>
+            </span>
           </h1>
           {/* <h1 className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-400 bg-clip-text text-5xl font-extrabold tracking-tight text-transparent sm:text-6xl md:text-7xl dark:from-white dark:via-gray-200 dark:to-gray-500">
             <motion.span
@@ -194,10 +229,9 @@ export default function Home({ posts }) {
             </Link>
             <Link
               href={discordLink}
-              className="group relative flex items-center gap-2 overflow-hidden rounded-full border border-[#5865F2] px-6 py-3 text-sm font-semibold text-[#5865F2] transition hover:scale-105 hover:text-white"
-            >
+              className="group relative flex items-center gap-2 overflow-hidden rounded-full border border-[#5865F2] px-6 py-3 text-sm font-semibold text-[#5865F2] transition hover:scale-105 hover:text-white">
               {/* 背景動畫 */}
-              <span className="absolute inset-0 scale-0 rounded-full bg-[#5865F2] transition-transform duration-300 group-hover:scale-100" />
+              <span className="absolute inset-0 w-0 bg-[#5865F2] transition-all duration-300 group-hover:w-full" />
 
               {/* icon */}
               <svg className="relative z-10 h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
@@ -248,77 +282,49 @@ export default function Home({ posts }) {
   )
 }
 
+import SpotlightCard from '@/components/components/SpotlightCard'
+
 function PostCard({ post, index, featured = false }) {
   const { slug, date, title, summary, body } = post
   const stats = readingTimeEstimator(body?.raw || summary || '')
-
-  // --- 滑鼠追蹤邏輯開始 ---
-  const mouseX = motionValue(0)
-  const mouseY = motionValue(0)
-
-  // 使用 spring 讓光效跟隨時更平滑，不會太生硬
-  const springConfig = { damping: 20, stiffness: 150 }
-  const smoothX = useSpring(mouseX, springConfig)
-  const smoothY = useSpring(mouseY, springConfig)
-
-  // 將座標轉換為 CSS 變數或直接應用於 background
-  const background = useMotionTemplate`
-    radial-gradient(
-      650px circle at ${smoothX}px ${smoothY}px,
-      rgba(99, 102, 241, 0.15),
-      transparent 80%
-    )
-  `
-
-  function handleMouseMove({ currentTarget, clientX, clientY }) {
-    const { left, top } = currentTarget.getBoundingClientRect()
-    mouseX.set(clientX - left)
-    mouseY.set(clientY - top)
-  }
-  // --- 滑鼠追蹤邏輯結束 ---
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06 }}
-      onMouseMove={handleMouseMove} // 綁定滑鼠移動事件
       whileHover={{
         scale: 1.02,
         y: -5,
       }}
-      className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 transition-colors dark:border-gray-800 dark:bg-gray-900/50"
     >
-      {/* ✨ 滑鼠跟隨光效 (Spotlight) */}
-      <motion.div
-        className="pointer-events-none absolute -inset-px rounded-2xl opacity-0 transition duration-300 group-hover:opacity-100"
-        style={{ background }}
-      />
+      <SpotlightCard className="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900/50">
+        <div className="relative z-10">
+          <div className="text-sm text-gray-500">
+            {formatDate(date)} • {stats.text}
+          </div>
 
-      {/* 為了防止光效遮擋文字，內容需放在 relative 層 */}
-      <div className="relative z-10">
-        <div className="text-sm text-gray-500">
-          {formatDate(date)} • {stats.text}
+          <Link href={`/blog/${slug}`}>
+            <h3 className="mt-3 text-xl font-bold transition-colors group-hover:text-indigo-500 dark:group-hover:text-indigo-400">
+              {title}
+            </h3>
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+              {summary}
+            </p>
+          </Link>
+
+          <div className="mt-4 flex items-center text-sm font-semibold text-gray-900 dark:text-white">
+            <span>Read Article</span>
+            <motion.span
+              className="ml-1"
+              animate={{ x: [0, 4, 0] }}
+              transition={{ repeat: Infinity, duration: 1.5 }}
+            >
+              →
+            </motion.span>
+          </div>
         </div>
-
-        <Link href={`/blog/${slug}`}>
-          <h3 className="mt-3 text-xl font-bold transition-colors group-hover:text-indigo-500 dark:group-hover:text-indigo-400">
-            {title}
-          </h3>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{summary}</p>
-        </Link>
-
-        <div className="mt-4 flex items-center text-sm font-semibold text-gray-900 dark:text-white">
-          <span>Read Article</span>
-          <motion.span
-            className="ml-1"
-            animate={{ x: [0, 4, 0] }}
-            transition={{ repeat: Infinity, duration: 1.5 }}
-          >
-            →
-          </motion.span>
-        </div>
-      </div>
+      </SpotlightCard>
     </motion.div>
   )
 }

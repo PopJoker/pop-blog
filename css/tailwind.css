@@ -38,6 +38,7 @@
 }
 
 @layer base {
+
   *,
   ::after,
   ::before,
@@ -64,9 +65,11 @@
     border-radius: var(--radius-sm);
     outline-color: var(--color-primary-500);
   }
+
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -90,7 +93,7 @@
     & :where(h1, h2) {
       font-weight: 800;
       letter-spacing: -0.02em;
-      color: var(--color-gray-900);
+      color: var(--color-white-900);
       /* 讓標題有一點漸層感 */
       background: linear-gradient(135deg, var(--color-gray-900) 0%, var(--color-primary-700) 100%);
       -webkit-background-clip: text;
@@ -125,7 +128,7 @@
       &:hover {
         color: var(--color-primary-300);
         /* 深色模式下的微發光效果 */
-        text-shadow: 0 0 8px oklch(0.68 0.2 265 / 0.4);
+        text-shadow: 0 0 8px oklch(77.68% 0.11293 264.988);
       }
     }
 
