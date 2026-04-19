@@ -77,6 +77,7 @@ const Card = ({ title, description, imgSrc, href, tags }) => {
                   <Image
                     alt={title}
                     src={imgSrc}
+                    priority={true}
                     className="object-cover object-center transition-transform duration-500 hover:scale-105 md:h-36 lg:h-48"
                     width={544}
                     height={306}

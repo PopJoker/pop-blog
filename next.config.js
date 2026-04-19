@@ -5,8 +5,9 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: process.env.EXPORT ? 'export' : undefined,
-  basePath: process.env.BASE_PATH || undefined,
+  // 強制開啟 export 模式與 basePath
+  output: 'export',
+  basePath: '/pop-blog',
   reactStrictMode: true,
   trailingSlash: true,
   // Note: Contentlayer does not support Turbopack yet.
@@ -41,7 +42,9 @@ const nextConfig = {
         hostname: 'picsum.photos',
       },
     ],
-    unoptimized: process.env.UNOPTIMIZED ? true : undefined,
+    // 💡 修改 2: GitHub Pages 必改！強制關閉圖片優化
+    // 這是解決圖片刷不出來的關鍵
+    unoptimized: true,
   },
   async headers() {
     // Only apply headers if not exporting to static HTML
