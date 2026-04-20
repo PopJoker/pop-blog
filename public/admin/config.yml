@@ -30,7 +30,7 @@ collections:
 
       - { label: '標籤', name: 'tags', widget: 'list' }
 
-      - {  label: '作者', name: 'authors', widget: 'list' ,default: ['default'] }
+      - { label: '作者', name: 'authors', widget: 'list', default: ['default'] }
 
       - { label: '是否草稿', name: 'draft', widget: 'boolean', default: false }
 
