@@ -133,7 +133,7 @@ export default function About() {
 
             <h4 className="mt-8">我的經歷</h4>
             <ul>
-              <li>2025 - Present: 在 XX 公司擔任前端工程師</li>
+              <li>2025 - Present: 在格斯科技公司公司擔任研發軟體工程師</li>
               <li>2024 - 2025: 瑞健股份有限公司擔任設備工程師</li>
               <li>2024: 畢業於宜蘭大學電子工程系</li>
             </ul>
