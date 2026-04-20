@@ -10,9 +10,6 @@ export default function Comments({ slug }: { slug: string }) {
   const [mounted, setMounted] = useState(false)
   const commentRef = useRef<HTMLDivElement>(null)
 
-  // 1. 修复 Error: Unexpected any.
-  // 这里不再使用 as any，而是直接安全访问。如果 siteMetadata 结构正确，TypeScript 应该能推断。
-  // 如果还有报错，可以使用 (siteMetadata.comments as Record<string, any>) 绕过
   const commentsConfig = siteMetadata.comments as { giscusConfig: Record<string, string> }
   const { giscusConfig } = commentsConfig
 
@@ -26,10 +23,8 @@ export default function Comments({ slug }: { slug: string }) {
   useEffect(() => {
     if (!mounted || !commentRef.current) return
 
-    // 每次主题或 Slug 改变时，先清空旧的留言区
     commentRef.current.innerHTML = ''
 
-    // 手动建立 Giscus 脚本
     const script = document.createElement('script')
     script.src = 'https://giscus.app/client.js'
     script.setAttribute('data-repo', giscusConfig.repo)
@@ -46,9 +41,6 @@ export default function Comments({ slug }: { slug: string }) {
     script.async = true
 
     commentRef.current.appendChild(script)
-
-    // 2. 修复 Warning: React Hook useEffect has missing dependencies.
-    // 按照报错提示，把 giscusConfig 的相关属性都放进依赖数组
   }, [
     mounted,
     currentTheme,
@@ -56,7 +48,7 @@ export default function Comments({ slug }: { slug: string }) {
     giscusConfig.category,
     giscusConfig.categoryId,
     giscusConfig.repo,
-    giscusConfig.repositoryId
+    giscusConfig.repositoryId,
   ])
 
   if (!mounted) return null
@@ -69,7 +61,7 @@ export default function Comments({ slug }: { slug: string }) {
     >
       <div className="mx-auto max-w-4xl px-4">
         <div className="rounded-2xl border border-gray-100 bg-gray-50/50 p-6 xl:p-8 dark:border-gray-800 dark:bg-gray-900/50">
-          <h2 className="mb-8 text-lg font-bold text-gray-900 dark:text-gray-100">交流讨论</h2>
+          <h2 className="mb-8 text-lg font-bold text-gray-900 dark:text-gray-100">交流討論</h2>
           <div ref={commentRef} className="giscus" />
         </div>
       </div>
