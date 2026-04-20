@@ -107,7 +107,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Header />
 
             {/* 📦 CONTENT CONTAINER */}
-            <div className="mx-auto max-w-5xl px-4 sm:px-6">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6">
               <main className="mb-auto">{children}</main>
             </div>
           </SearchProvider>

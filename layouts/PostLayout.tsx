@@ -69,7 +69,6 @@ export default function PostLayout({
                 </div>
               </motion.dl>
               <div>
-                {/* 標題進場動畫 */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -80,10 +79,35 @@ export default function PostLayout({
               </div>
             </div>
           </header>
-
-          <div className="grid-rows-[auto_1fr] divide-y divide-gray-200 pb-8 xl:grid xl:grid-cols-4 xl:gap-x-12 xl:divide-y-0 dark:divide-gray-700">
-            {/* 左側欄：作者與標籤 */}
-            <aside className="pt-6 pb-10 xl:border-b xl:border-gray-200 xl:pt-11 xl:dark:border-gray-700">
+          <div className="mt-10 mb-8 block px-2 xl:hidden">
+            <details className="group rounded-xl border border-gray-200 bg-gray-50/50 dark:border-gray-800 dark:bg-gray-900/50">
+              <summary className="flex cursor-pointer items-center justify-between p-4 text-sm font-bold text-gray-500 uppercase dark:text-gray-400">
+                <span>本頁目錄</span> {/* 改為目錄，因為手機版標籤通常放底部或標題下 */}
+                <span className="transition-transform group-open:rotate-180">▼</span>
+              </summary>
+              <div className="border-t border-gray-200 p-4 dark:border-gray-800">
+                <div className="space-y-6">
+                  {/* 目錄最優先 */}
+                  <div>
+                    <TableOfContents toc={toc} />
+                  </div>
+                  {/* 標籤放目錄下面 */}
+                  <div className="border-t border-gray-100 pt-4 dark:border-gray-800">
+                    <h3 className="mb-2 text-xs font-bold text-gray-400 uppercase">標籤</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {tags?.map((tag) => (
+                        <Tag key={tag} text={tag} />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </details>
+          </div>
+          {/* 調整為 xl:grid-cols-12 讓比例分配更靈活 */}
+          <div className="grid-rows-[auto_1fr] divide-y divide-gray-200 pb-8 xl:grid xl:grid-cols-12 xl:gap-x-12 xl:divide-y-0 dark:divide-gray-700">
+            {/* 左側欄：佔 2 欄 */}
+            <aside className="pt-6 pb-10 xl:col-span-2 xl:border-b xl:border-gray-200 xl:pt-11 xl:dark:border-gray-700">
               <dt className="sr-only">Authors</dt>
               <dd>
                 <ul className="flex flex-wrap justify-center gap-4 sm:space-x-12 xl:block xl:space-y-8 xl:space-x-0">
@@ -132,8 +156,8 @@ export default function PostLayout({
               </div>
             </aside>
 
-            {/* 中間欄：文章主體 */}
-            <div className="divide-y divide-gray-200 xl:col-span-2 xl:row-span-2 xl:pb-0 dark:divide-gray-700">
+            {/* 中間主體：佔 8 欄 (原本是 2/4，現在是 8/12，比例從 50% 提升到 66%) */}
+            <div className="divide-y divide-gray-200 xl:col-span-8 xl:row-span-2 xl:pb-0 dark:divide-gray-700">
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -167,8 +191,8 @@ export default function PostLayout({
               )}
             </div>
 
-            {/* 右側欄：Sticky TOC */}
-            <aside className="hidden xl:block">
+            {/* 右側欄：佔 2 欄 */}
+            <aside className="hidden xl:col-span-2 xl:block">
               <div className="sticky top-24 pt-11">
                 <div className="rounded-2xl border border-gray-100 bg-gray-50/30 p-4 backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900/30">
                   <h2 className="mb-4 text-xs font-bold tracking-wide text-gray-500 uppercase dark:text-gray-400">
@@ -179,8 +203,8 @@ export default function PostLayout({
               </div>
             </aside>
 
-            {/* 底部導覽 */}
-            <footer className="xl:col-start-1 xl:row-start-2">
+            {/* 底部導覽：同樣佔 2 欄，維持在左下方 */}
+            <footer className="xl:col-span-2 xl:col-start-1 xl:row-start-2">
               <div className="divide-gray-200 text-sm leading-5 font-medium xl:divide-y dark:divide-gray-700">
                 {(next || prev) && (
                   <div className="flex justify-between py-4 xl:block xl:space-y-8 xl:py-8">

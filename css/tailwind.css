@@ -77,6 +77,8 @@
 
 @layer utilities {
   .prose {
+    max-width: none !important;
+
     & a {
       font-weight: 600;
       color: var(--color-primary-500);

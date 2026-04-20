@@ -153,8 +153,9 @@ export default function Home({ posts }) {
             PopJ0ker Workshop
           </motion.div>
 
-          <h1 className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-400 bg-clip-text text-4xl font-extrabold tracking-tight text-transparent sm:text-6xl md:text-7xl dark:from-white dark:via-gray-200 dark:to-gray-500">
-            <span className="inline-flex">
+          <h1 className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-400 bg-clip-text text-5xl font-extrabold tracking-tight text-transparent sm:text-6xl md:text-7xl dark:from-white dark:via-gray-200 dark:to-gray-500">
+            {/* 移除 inline-flex，改用標準布局，並確保容器寬度適應螢幕 */}
+            <span className="relative inline-block w-full px-4 sm:px-0">
               {displayText.split('').map((char, i) => (
                 <motion.span
                   className="inline-block bg-gradient-to-br from-gray-900 via-gray-800 to-gray-400 bg-clip-text text-transparent dark:from-white dark:via-gray-200 dark:to-gray-500"
@@ -175,16 +176,17 @@ export default function Home({ posts }) {
                     delay: i * 0.03,
                   }}
                 >
-                  {char}
+                  {/* 處理空格，避免空格折行時消失 */}
+                  {char === ' ' ? '\u00A0' : char}
                 </motion.span>
               ))}
 
-              {/* 游標 */}
+              {/* 游標：放在文字最後面 */}
               <motion.span
-                className="ml-2 inline-block"
+                className="ml-1 inline-block h-[0.9em] w-1 bg-gray-400 dark:bg-gray-500"
                 animate={{ opacity: [0, 1, 0] }}
                 transition={{ repeat: Infinity, duration: 1.2 }}
-              ></motion.span>
+              />
             </span>
           </h1>
           {/* <h1 className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-400 bg-clip-text text-5xl font-extrabold tracking-tight text-transparent sm:text-6xl md:text-7xl dark:from-white dark:via-gray-200 dark:to-gray-500">

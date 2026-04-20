@@ -43,7 +43,8 @@ const siteMetadata = {
       metadata: '0',
       theme: 'light',
       darkTheme: 'transparent_dark',
-      lang: 'en',
+      lang: 'zh-TW', // 改為繁體中文
+      inputPosition: 'top', // 留言框放在上面更直觀
     },
   },
   search: {

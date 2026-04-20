@@ -6,6 +6,8 @@ interface Props {
 
 export default function SectionContainer({ children }: Props) {
   return (
-    <section className="mx-auto max-w-3xl px-4 sm:px-6 xl:max-w-5xl xl:px-0">{children}</section>
+    // 移除所有 max-w 限制，改用 w-full
+    // px-4 sm:px-6 確保手機版有留白，xl:px-8 確保電腦版兩側不會貼死
+    <section className="mx-auto w-full max-w-7xl px-4 sm:px-6 xl:px-0">{children}</section>
   )
 }

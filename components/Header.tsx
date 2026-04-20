@@ -189,7 +189,7 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
             <li key={item.label} className="relative">
               <Link
                 href={item.href}
-                className={`block px-4 py-2 text-sm font-medium transition-colors duration-300 ${
+                className={`block px-3 py-1.5 text-sm font-medium transition-colors duration-300 ${
                   activeIndex === index
                     ? 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100' // 隱藏原本文字，讓 effect.text 顯示
                     : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100'
@@ -215,7 +215,7 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
 // --- 主 Header 組件 ---
 const Header = () => {
   let headerClass =
-    'flex items-center w-full justify-between px-5 sm:px-6 lg:px-10 py-4 backdrop-blur-xl bg-white/60 dark:bg-gray-950/40 border-b border-black/5 dark:border-white/10'
+    'flex items-center w-full justify-between px-4 sm:px-5 lg:px-6 py-2 backdrop-blur-xl bg-white/60 dark:bg-gray-950/40 border-b border-black/5 dark:border-white/10'
   if (siteMetadata.stickyNav) {
     headerClass += ' sticky top-0 z-50'
   }
@@ -231,9 +231,10 @@ const Header = () => {
     <header className={headerClass}>
       <Link href="/" aria-label={siteMetadata.headerTitle}>
         <div className="flex items-center justify-between">
-          <div className="mr-6">
+          <div className="mr-3">
             <Logo />
           </div>
+
           {typeof siteMetadata.headerTitle === 'string' ? (
             <div className="hidden h-6 text-2xl font-semibold sm:block">
               {siteMetadata.headerTitle}
@@ -241,10 +242,11 @@ const Header = () => {
           ) : (
             siteMetadata.headerTitle
           )}
+          <div className="block text-base font-semibold sm:hidden">{siteMetadata.headerTitle}</div>
         </div>
       </Link>
 
-      <div className="flex items-center space-x-4 leading-5 sm:-mr-6 sm:space-x-6">
+      <div className="flex items-center space-x-3 leading-5 sm:-mr-6 sm:space-x-4">
         <div className="hidden sm:block">
           <GooeyNav items={navItems} />
         </div>
