@@ -1,10 +1,6 @@
 'use client'
 
-import {
-  motion,
-  Variants,
-  useReducedMotion,
-} from 'framer-motion'
+import { motion, Variants, useReducedMotion } from 'framer-motion'
 import Link from '@/components/Link'
 import siteMetadata from '@/data/siteMetadata'
 import { formatDate } from 'pliny/utils/formatDate'
@@ -14,7 +10,6 @@ import SpotlightCard from '@/components/components/SpotlightCard'
 
 const MAX_DISPLAY = 6
 
-// 🚀 動效優化：移除 Blur 與複雜濾鏡，改用硬體加速
 const fadeInUp: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: {
@@ -94,24 +89,30 @@ export default function Home({ posts }) {
 
   return (
     <div className="mb-20 space-y-10">
-      {/* 🚀 HERO SECTION */}
       <section className="relative overflow-hidden pt-24 pb-20">
-        {/* 🌈 背景優化：移除 blur-3xl 這種極耗能的動態濾鏡，改用透明度與輕微位移 */}
         <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
           <motion.div
-            className="absolute -top-32 -left-32 h-[400px] w-[400px] rounded-full bg-indigo-500/10 blur-[100px] transform-gpu"
-            animate={shouldReduceMotion ? {} : {
-              x: [0, 20, 0],
-              opacity: [0.2, 0.4, 0.2],
-            }}
+            className="transform-gpu absolute -top-32 -left-32 h-[400px] w-[400px] rounded-full bg-indigo-500/10 blur-[100px]"
+            animate={
+              shouldReduceMotion
+                ? {}
+                : {
+                    x: [0, 20, 0],
+                    opacity: [0.2, 0.4, 0.2],
+                  }
+            }
             transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
           />
           <motion.div
-            className="absolute -right-32 -bottom-32 h-[500px] w-[500px] rounded-full bg-cyan-500/10 blur-[100px] transform-gpu"
-            animate={shouldReduceMotion ? {} : {
-              x: [0, -20, 0],
-              opacity: [0.1, 0.3, 0.1],
-            }}
+            className="transform-gpu absolute -right-32 -bottom-32 h-[500px] w-[500px] rounded-full bg-cyan-500/10 blur-[100px]"
+            animate={
+              shouldReduceMotion
+                ? {}
+                : {
+                    x: [0, -20, 0],
+                    opacity: [0.1, 0.3, 0.1],
+                  }
+            }
             transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
           />
         </div>
@@ -124,7 +125,7 @@ export default function Home({ posts }) {
         >
           <motion.div
             variants={fadeInUp}
-            className="mb-4 rounded-full bg-primary-500/10 px-3 py-1 text-sm font-medium text-primary-500 dark:bg-primary-500/20"
+            className="bg-primary-500/10 text-primary-500 dark:bg-primary-500/20 mb-4 rounded-full px-3 py-1 text-sm font-medium"
           >
             PopJ0ker Workshop
           </motion.div>
@@ -144,9 +145,9 @@ export default function Home({ posts }) {
                 </motion.span>
               ))}
               <motion.span
-                className="ml-1 inline-block h-[0.8em] w-1 bg-gray-400 transform-gpu dark:bg-gray-500"
+                className="transform-gpu ml-1 inline-block h-[0.8em] w-1 bg-gray-400 dark:bg-gray-500"
                 animate={{ opacity: [0, 1, 0] }}
-                transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
               />
             </span>
           </h1>
@@ -158,8 +159,10 @@ export default function Home({ posts }) {
             {siteMetadata.description}
           </motion.p>
 
-          {/* ⚡ CTA BUTTONS */}
-          <motion.div variants={fadeInUp} className="mt-10 flex flex-wrap justify-center gap-4 px-4">
+          <motion.div
+            variants={fadeInUp}
+            className="mt-10 flex flex-wrap justify-center gap-4 px-4"
+          >
             <Link
               href="/blog"
               className="group relative overflow-hidden rounded-full bg-gray-900 px-6 py-3 text-sm font-semibold text-white transition-transform active:scale-95 dark:bg-white dark:text-black"
@@ -179,7 +182,6 @@ export default function Home({ posts }) {
               About Me
             </Link>
 
-            {/* ✅ Discord 按鈕回歸 */}
             <Link
               href={discordLink}
               className="group relative flex items-center gap-2 overflow-hidden rounded-full border border-[#5865F2] px-6 py-3 text-sm font-semibold text-[#5865F2] transition-all hover:scale-105 hover:text-white active:scale-95"
@@ -194,7 +196,7 @@ export default function Home({ posts }) {
 
           <button
             onClick={handleCopy}
-            className="group mt-8 flex items-center gap-2 text-xs text-gray-500 transition-colors hover:text-primary-500"
+            className="hover:text-primary-500 mt-8 flex items-center gap-2 text-xs text-gray-500 transition-colors"
           >
             <span>或來信談談：</span>
             <span className="font-mono underline underline-offset-4">{copyLabel}</span>
@@ -202,7 +204,6 @@ export default function Home({ posts }) {
         </motion.div>
       </section>
 
-      {/* 🌟 POSTS SECTION */}
       <div className="space-y-16">
         <section className="space-y-8">
           <h2 className="text-3xl font-bold">Featured Posts</h2>
@@ -216,7 +217,10 @@ export default function Home({ posts }) {
         <section className="space-y-8">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold">Recent Updates</h2>
-            <Link href="/blog" className="text-sm font-semibold text-primary-500 hover:underline">
+            <Link
+              href="/blog"
+              className="text-primary-500 text-sm font-semibold hover:underline"
+            >
               View all →
             </Link>
           </div>
@@ -239,7 +243,7 @@ function PostCard({ post, index }) {
     <motion.div
       initial={{ opacity: 0, y: 15 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
+      viewport={{ once: true, margin: '-50px' }}
       transition={{ delay: index * 0.05 }}
       whileHover={{ y: -4 }}
       className="transform-gpu"
@@ -251,10 +255,12 @@ function PostCard({ post, index }) {
               {formatDate(date)} • {stats.text}
             </div>
             <Link href={`/blog/${slug}`} className="group">
-              <h3 className="mt-3 text-xl font-bold transition-colors group-hover:text-primary-500">
+              <h3 className="group-hover:text-primary-500 mt-3 text-xl font-bold transition-colors">
                 {title}
               </h3>
-              <p className="mt-2 line-clamp-2 text-sm text-gray-600 dark:text-gray-400">{summary}</p>
+              <p className="mt-2 line-clamp-2 text-sm text-gray-600 dark:text-gray-400">
+                {summary}
+              </p>
             </Link>
           </div>
           <div className="mt-4 flex items-center text-sm font-semibold text-gray-900 dark:text-white">
