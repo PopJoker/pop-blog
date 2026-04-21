@@ -133,8 +133,8 @@ export default function About() {
 
             <h4 className="mt-8">我的經歷</h4>
             <ul>
-              <li>2025 - Present: 在格斯科技公司公司擔任研發軟體工程師</li>
-              <li>2024 - 2025: 瑞健股份有限公司擔任設備工程師</li>
+              <li>2025 - Present: 在格斯科技公司公司擔任研發軟體工程師 負責開發與維護各種應用程式和系統Server</li>
+              <li>2024 - 2025: 瑞健股份有限公司擔任設備工程師 累積HMI設計經驗與建立穩固的PLC通訊基礎</li>
               <li>2024: 畢業於宜蘭大學電子工程系</li>
             </ul>
           </motion.div>
