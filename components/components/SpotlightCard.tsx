@@ -49,7 +49,7 @@ export default function SpotlightCard({
   return (
     <div
       onMouseMove={handleMouseMove}
-      className={`group relative overflow-hidden transform-gpu ${className}`}
+      className={`group relative transform-gpu overflow-hidden ${className}`}
     >
       {/* 只在非手機端渲染聚光燈層 */}
       {!isMobile && (

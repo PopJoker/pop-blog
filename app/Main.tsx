@@ -72,13 +72,16 @@ export default function Home({ posts }) {
   const recentPosts = posts.slice(2, MAX_DISPLAY)
   const [copyLabel, setCopyLabel] = useState('mavericktu0@gmail.com')
 
-  const slogans = useMemo(() => [
-    '把想法做成可被看見的作品',
-    '用程式打造有價值的體驗',
-    '定義/實踐/進化',
-    '不預測未來，我們編寫它',
-    '創意值得一個更強大的載體',
-  ], [])
+  const slogans = useMemo(
+    () => [
+      '把想法做成可被看見的作品',
+      '用程式打造有價值的體驗',
+      '定義/實踐/進化',
+      '不預測未來，我們編寫它',
+      '創意值得一個更強大的載體',
+    ],
+    []
+  )
 
   const displayText = useTypewriter(slogans)
 
@@ -106,17 +109,17 @@ export default function Home({ posts }) {
           initial="hidden"
           animate="visible"
           variants={staggerContainer}
-          className="flex flex-col items-center text-center transform-gpu"
+          className="flex transform-gpu flex-col items-center text-center"
         >
           <motion.div
             variants={fadeInUp}
-            className="mb-4 rounded-full bg-primary-500/10 px-3 py-1 text-sm font-medium text-primary-500 dark:bg-primary-500/20"
+            className="bg-primary-500/10 text-primary-500 dark:bg-primary-500/20 mb-4 rounded-full px-3 py-1 text-sm font-medium"
           >
             PopJ0ker Workshop
           </motion.div>
 
           <h1 className="min-h-[1.2em] px-4 text-4xl font-extrabold tracking-tight sm:text-6xl md:text-7xl">
-            <span className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-400 bg-clip-text text-transparent dark:from-white dark:via-gray-200 dark:to-gray-500 transform-gpu">
+            <span className="transform-gpu bg-gradient-to-br from-gray-900 via-gray-800 to-gray-400 bg-clip-text text-transparent dark:from-white dark:via-gray-200 dark:to-gray-500">
               {displayText}
               <span className="ml-1 inline-block h-[0.8em] w-1 animate-pulse bg-gray-400 align-middle dark:bg-gray-500" />
             </span>
@@ -148,7 +151,7 @@ export default function Home({ posts }) {
 
           <button
             onClick={handleCopy}
-            className="mt-6 flex items-center gap-2 text-xs text-gray-500 transition-colors hover:text-primary-500"
+            className="hover:text-primary-500 mt-6 flex items-center gap-2 text-xs text-gray-500 transition-colors"
           >
             <span>或來信談談：</span>
             <span className="font-mono underline underline-offset-4">{copyLabel}</span>
@@ -157,7 +160,7 @@ export default function Home({ posts }) {
       </section>
 
       {/* 🌟 Featured & Recent */}
-      <div className="space-y-16 px-4 md:px-0 transform-gpu">
+      <div className="transform-gpu space-y-16 px-4 md:px-0">
         <section className="space-y-8">
           <h2 className="text-3xl font-bold">Featured Posts</h2>
           <div className="grid gap-6 md:grid-cols-2">
@@ -170,7 +173,7 @@ export default function Home({ posts }) {
         <section className="space-y-8">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold">Recent Updates</h2>
-            <Link href="/blog" className="text-sm font-semibold text-primary-500">
+            <Link href="/blog" className="text-primary-500 text-sm font-semibold">
               View all →
             </Link>
           </div>
@@ -193,7 +196,7 @@ function PostCard({ post, index }) {
     <motion.div
       initial={{ opacity: 0, y: 15 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
+      viewport={{ once: true, margin: '-50px' }}
       transition={{ delay: index * 0.03 }}
       // 手機端關閉 Hover 縮放以提升反應速度
       whileHover={typeof window !== 'undefined' && window.innerWidth > 768 ? { scale: 1.02 } : {}}
@@ -206,10 +209,10 @@ function PostCard({ post, index }) {
           </div>
 
           <Link href={`/blog/${slug}`} className="flex-grow">
-            <h3 className="mt-3 text-xl font-bold transition-colors group-hover:text-primary-500">
+            <h3 className="group-hover:text-primary-500 mt-3 text-xl font-bold transition-colors">
               {title}
             </h3>
-            <p className="mt-2 text-sm text-gray-600 line-clamp-2 dark:text-gray-400">{summary}</p>
+            <p className="mt-2 line-clamp-2 text-sm text-gray-600 dark:text-gray-400">{summary}</p>
           </Link>
 
           <div className="mt-4 flex items-center text-sm font-semibold text-gray-900 dark:text-white">
