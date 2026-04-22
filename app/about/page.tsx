@@ -1,23 +1,20 @@
 'use client'
 
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
-import { useRef } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import Image from '@/components/Image'
 import SocialIcon from '@/components/social-icons'
-import SpotlightCard from '@/components/components/SpotlightCard' // 使用剛改好的組件
+import SpotlightCard from '@/components/components/SpotlightCard'
 import siteMetadata from '@/data/siteMetadata'
 
 const skills = [
-  // Languages & Full Stack
   'React',
   'Next.js',
   'TypeScript',
   'Node.js',
   'Dart',
   'Flutter',
-  'Go', // 處理串流後端時接觸到的 Go
-
-  // Database & Logic Architecture
+  'Go',
   'PostgreSQL',
   'Supabase',
   'Prisma ORM',
@@ -25,26 +22,20 @@ const skills = [
   'Riverpod',
   'RESTful API Design',
   'CRUD logic optimization',
-
-  // Industrial Engineering & IoT (軟硬整合核心)
   'PLC通訊 (Mitsubishi / Siemens 等)',
   'HMI設計 (人機介面開發)',
-  'Modbus / TCP', // 工業設備常見通訊協定
+  'Modbus / TCP',
   'RTSP / WebRTC / go2rtc',
   'FFmpeg (串流轉碼與優化)',
-  'Equipment Automation', // 設備自動化邏輯
-
-  // System & DevOps
+  'Equipment Automation',
   'Docker & Containerization',
   'Git / GitHub Actions (CI/CD)',
   'Vercel / Netlify Deployment',
   'Linux CLI',
-
-  // Documentation & UI
   'Tailwind CSS',
   'Framer Motion',
   'Contentlayer / MDX',
-  'Technical Writing', // 你在 Dev Blog 上的產出能力
+  'Technical Writing',
 ]
 
 const experiences = [
@@ -70,16 +61,39 @@ const experiences = [
 
 export default function About() {
   const ref = useRef<HTMLDivElement>(null)
+  const [isMobile, setIsMobile] = useState(false)
+
+  // 裝置偵測優化
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024 || /Android|iPhone|iPad/i.test(navigator.userAgent))
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
   const x = useMotionValue(0)
   const y = useMotionValue(0)
-  const mouseXSpring = useSpring(x)
-  const mouseYSpring = useSpring(y)
 
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ['7deg', '-7deg'])
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ['-7deg', '7deg'])
+  // 手機端調高阻尼感，電腦端保持靈敏
+  const mouseXSpring = useSpring(x, { stiffness: 150, damping: 25 })
+  const mouseYSpring = useSpring(y, { stiffness: 150, damping: 25 })
+
+  // 手機端直接固定在 0deg，不進行任何旋轉運算
+  const rotateX = useTransform(
+    mouseYSpring,
+    [-0.5, 0.5],
+    isMobile ? ['0deg', '0deg'] : ['7deg', '-7deg']
+  )
+  const rotateY = useTransform(
+    mouseXSpring,
+    [-0.5, 0.5],
+    isMobile ? ['0deg', '0deg'] : ['-7deg', '7deg']
+  )
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!ref.current) return
+    if (isMobile || !ref.current) return
     const rect = ref.current.getBoundingClientRect()
     x.set((e.clientX - rect.left) / rect.width - 0.5)
     y.set((e.clientY - rect.top) / rect.height - 0.5)
@@ -87,9 +101,9 @@ export default function About() {
 
   return (
     <div className="relative pb-20">
-      {/* 背景裝飾光暈 */}
-      <div className="bg-primary-500/10 absolute top-0 -left-20 -z-10 h-72 w-72 rounded-full blur-[120px]" />
-      <div className="absolute top-1/2 -right-20 -z-10 h-72 w-72 rounded-full bg-blue-500/10 blur-[120px]" />
+      {/* 背景裝飾 - 降低手機端的模糊計算量 */}
+      <div className="bg-primary-500/10 absolute top-0 -left-20 -z-10 h-72 w-72 rounded-full blur-[80px] lg:blur-[120px]" />
+      <div className="absolute top-1/2 -right-20 -z-10 h-72 w-72 rounded-full bg-blue-500/10 blur-[80px] lg:blur-[120px]" />
 
       <div className="pt-10 pb-8">
         <motion.h1
@@ -102,7 +116,6 @@ export default function About() {
       </div>
 
       <div className="items-start space-y-2 xl:grid xl:grid-cols-3 xl:space-y-0 xl:gap-x-12">
-        {/* 左側：精緻個人卡片 */}
         <div className="relative mb-6 flex justify-center py-10">
           <motion.div
             ref={ref}
@@ -117,54 +130,53 @@ export default function About() {
               perspective: 1000,
               transformStyle: 'preserve-3d',
             }}
-            className="group relative w-full max-w-[320px] will-change-transform"
+            // 關鍵：電腦端開啟 GPU 加速，手機端關閉以節省記憶體
+            className={`group relative w-full max-w-[320px] ${!isMobile ? 'will-change-transform' : ''}`}
           >
-            {/* ✨ 加強版背光 - 透過毛玻璃滲透出來顏色會更美 */}
+            {/* 加強版背光 */}
             <div
-              className="from-primary-500/30 absolute -inset-8 rounded-[3rem] bg-gradient-to-br via-purple-500/20 to-blue-500/30 opacity-0 blur-3xl transition-opacity duration-700 group-hover:opacity-100"
-              style={{ transform: 'translateZ(-60px)' }}
+              className={`from-primary-500/30 absolute -inset-8 rounded-[3rem] bg-gradient-to-br via-purple-500/20 to-blue-500/30 opacity-0 transition-opacity duration-700 group-hover:opacity-100 ${isMobile ? 'blur-2xl' : 'blur-3xl'}`}
+              style={{ transform: isMobile ? 'none' : 'translateZ(-60px)' }}
             />
 
-            {/* 🧊 毛玻璃主體容器 */}
             <SpotlightCard className="relative overflow-hidden rounded-[2.5rem] border border-white/40 bg-white/40 p-8 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] backdrop-blur-md dark:border-gray-700/30 dark:bg-gray-950/40">
               <div
                 className="flex flex-col items-center text-center"
                 style={{ transformStyle: 'preserve-3d' }}
               >
-                {/* 👤 頭像部分 */}
-                {/* 👤 頭像部分 */}
                 <div
                   className="relative mb-8"
                   style={{
-                    transform: 'translateZ(50px)',
+                    transform: isMobile ? 'none' : 'translateZ(50px)',
                     transformStyle: 'preserve-3d',
                   }}
                 >
                   <div className="relative h-32 w-32">
-                    {/* 👻 敘利亞鼠的靈魂：利用 grayscale 和 blur 營造死掉感 */}
-                    <span
-                      className="absolute top-0 left-0 text-5xl opacity-0 transition-all duration-700 ease-out group-hover:-translate-x-14 group-hover:-translate-y-10 group-hover:rotate-[-25deg] group-hover:opacity-60"
-                      style={{
-                        transform: 'translateZ(-40px)',
-                        filter: 'grayscale(1) blur(1.5px) drop-shadow(0 0 10px white)',
-                      }}
-                    >
-                      🐹
-                    </span>
+                    {/* 👻 鼠靈魂：手機端直接移除渲染 */}
+                    {!isMobile && (
+                      <>
+                        <span
+                          className="absolute top-0 left-0 text-5xl opacity-0 transition-all duration-700 ease-out group-hover:-translate-x-14 group-hover:-translate-y-10 group-hover:rotate-[-25deg] group-hover:opacity-60"
+                          style={{
+                            transform: 'translateZ(-40px)',
+                            filter: 'grayscale(1) blur(1.5px) drop-shadow(0 0 10px white)',
+                          }}
+                        >
+                          🐹
+                        </span>
+                        <span
+                          className="absolute top-0 right-0 text-5xl opacity-0 transition-all duration-500 ease-out group-hover:translate-x-14 group-hover:-translate-y-8 group-hover:rotate-[20deg] group-hover:opacity-100"
+                          style={{
+                            transform: 'translateZ(-35px)',
+                            filter:
+                              'sepia(0.5) brightness(1.1) drop-shadow(0 0 5px rgba(255,255,255,0.5))',
+                          }}
+                        >
+                          🐹
+                        </span>
+                      </>
+                    )}
 
-                    {/* 白金鼠 */}
-                    <span
-                      className="absolute top-0 right-0 text-5xl opacity-0 transition-all duration-500 ease-out group-hover:translate-x-14 group-hover:-translate-y-8 group-hover:rotate-[20deg] group-hover:opacity-100"
-                      style={{
-                        transform: 'translateZ(-35px)',
-                        filter:
-                          'sepia(0.5) brightness(1.1) drop-shadow(0 0 5px rgba(255,255,255,0.5))',
-                      }}
-                    >
-                      🐹
-                    </span>
-
-                    {/* 原有的頭像本體層 (維持不變) */}
                     <div className="from-primary-500 absolute -inset-2 rounded-2xl bg-gradient-to-tr to-blue-400 opacity-30 blur-md transition-opacity duration-500 group-hover:opacity-60" />
                     <div className="relative h-full w-full overflow-hidden rounded-2xl border-2 border-white/60 shadow-2xl dark:border-gray-700/50">
                       <Image
@@ -178,8 +190,12 @@ export default function About() {
                   </div>
                 </div>
 
-                {/* 📝 文字內容層 */}
-                <div style={{ transform: 'translateZ(35px)', transformStyle: 'preserve-3d' }}>
+                <div
+                  style={{
+                    transform: isMobile ? 'none' : 'translateZ(35px)',
+                    transformStyle: 'preserve-3d',
+                  }}
+                >
                   <h3 className="text-2xl font-black tracking-tight text-gray-900 dark:text-white">
                     Maverick Tu
                   </h3>
@@ -188,35 +204,27 @@ export default function About() {
                   </p>
 
                   <div className="mt-6 space-y-3 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    <p className="flex items-center justify-center gap-2">📍 Taoyuan, Taiwan</p>
                     <p className="flex items-center justify-center gap-2">
-                      <span className="drop-shadow-sm">📍</span> Taoyuan, Taiwan
-                    </p>
-                    <p className="flex items-center justify-center gap-2">
-                      <span className="drop-shadow-sm">🎓</span> NIU Electronic Engineering
+                      🎓 NIU Electronic Engineering
                     </p>
                   </div>
                 </div>
 
-                {/* 🔗 社群圖標：半透明毛玻璃底座 */}
                 <div
-                  className="group mt-8 flex flex-col items-center" // 💡 加上 group 讓內層可以連動
+                  className="group mt-8 flex flex-col items-center"
                   style={{
-                    transform: 'translateZ(20px)',
+                    transform: isMobile ? 'none' : 'translateZ(20px)',
                     transformStyle: 'preserve-3d',
                   }}
                 >
-                  {/* 💡 發亮文字：加上 transition 和 hover 效果 */}
-                  <p className="group-hover:text-primary-500 mb-3 text-[11px] font-bold tracking-[0.2em] text-gray-400 uppercase transition-all duration-500 ease-out group-hover:drop-shadow-[0_0_8px_rgba(var(--primary-rgb),0.8)] dark:text-gray-500">
+                  <p className="group-hover:text-primary-500 mb-3 text-[11px] font-bold tracking-[0.2em] text-gray-400 uppercase transition-all duration-500 group-hover:drop-shadow-[0_0_8px_rgba(var(--primary-rgb),0.8)] dark:text-gray-500">
                     Drop me a line & Let's talk
                   </p>
 
-                  {/* 🔗 社群圖標容器 */}
                   <div
-                    className="group-hover:border-primary-500/30 flex flex-wrap justify-center gap-x-4 gap-y-3 rounded-2xl border border-white/50 bg-white/30 px-5 py-4 shadow-sm backdrop-blur-sm transition-all duration-500 group-hover:bg-white/50 dark:border-gray-700/30 dark:bg-gray-800/30 dark:group-hover:bg-gray-800/50"
-                    style={{
-                      transform: 'translateZ(10px)',
-                      transformStyle: 'preserve-3d',
-                    }}
+                    className="flex flex-wrap justify-center gap-x-4 gap-y-3 rounded-2xl border border-white/50 bg-white/30 px-5 py-4 shadow-sm backdrop-blur-sm transition-all duration-500 group-hover:bg-white/50 dark:border-gray-700/30 dark:bg-gray-800/30 dark:group-hover:bg-gray-800/50"
+                    style={{ transform: isMobile ? 'none' : 'translateZ(10px)' }}
                   >
                     {[
                       { kind: 'mail', href: `mailto:${siteMetadata.email}` },
@@ -236,9 +244,8 @@ export default function About() {
                           <span
                             key={social.kind}
                             className="hover:text-primary-500 transition-all duration-300 hover:-translate-y-1 hover:scale-125 active:scale-95"
-                            style={{ transform: 'translateZ(15px)' }}
+                            style={{ transform: isMobile ? 'none' : 'translateZ(15px)' }}
                           >
-                            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                             <SocialIcon kind={social.kind as any} href={social.href} size={6} />
                           </span>
                         )
@@ -250,20 +257,18 @@ export default function About() {
           </motion.div>
         </div>
 
-        {/* 右側：故事與經歷 */}
         <div className="xl:col-span-2">
           <section className="prose dark:prose-invert max-w-none pt-8">
             <p className="text-xl leading-relaxed text-gray-600 dark:text-gray-300">
               我是 Maverick，一名從<span className="text-primary-500 font-semibold">電子工程</span>
-              背景跨足到<span className="text-primary-500 font-semibold">軟體開發</span>的工程師。
-              我熱衷於連接硬體與雲端，並將數據轉化為美觀、易用的介面。
+              背景跨足到<span className="text-primary-500 font-semibold">軟體開發</span>
+              的工程師。我熱衷於連接硬體與雲端，並將數據轉化為美觀、易用的介面。
             </p>
 
             {/* 技能區域 */}
             <div className="my-10">
               <h3 className="mb-6 flex items-center text-2xl font-bold">
-                <span className="bg-primary-500 mr-4 h-px w-8"></span>
-                技術棧
+                <span className="bg-primary-500 mr-4 h-px w-8"></span>技術棧
               </h3>
               <div className="flex flex-wrap gap-3">
                 {skills.map((skill, i) => (
@@ -271,7 +276,8 @@ export default function About() {
                     key={skill}
                     initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
+                    viewport={{ once: true, margin: '-50px' }} // 滑入視窗才動，且只動一次
+                    transition={{ delay: isMobile ? 0 : i * 0.01 }} // 手機端取消延遲，提升操作反饋
                     className="rounded-xl border border-gray-200 bg-white/50 px-4 py-2 text-sm font-medium backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/50"
                   >
                     {skill}
@@ -280,11 +286,10 @@ export default function About() {
               </div>
             </div>
 
-            {/* 時間軸經歷 */}
+            {/* 工作經歷 */}
             <div className="my-10">
               <h3 className="mb-8 flex items-center text-2xl font-bold">
-                <span className="bg-primary-500 mr-4 h-px w-8"></span>
-                工作經歷
+                <span className="bg-primary-500 mr-4 h-px w-8"></span>工作經歷
               </h3>
               <div className="space-y-8">
                 {experiences.map((exp, i) => (
@@ -292,6 +297,7 @@ export default function About() {
                     key={i}
                     initial={{ opacity: 0, x: 20 }}
                     whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
                     className="relative pl-8 before:absolute before:top-2 before:left-0 before:h-full before:w-[2px] before:bg-gray-200 dark:before:bg-gray-800"
                   >
                     <div className="bg-primary-500 absolute top-2 left-[-5px] h-3 w-3 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]" />

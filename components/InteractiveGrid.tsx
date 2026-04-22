@@ -1,9 +1,9 @@
 'use client'
 
 import React, { useEffect, useRef } from 'react'
-import { Renderer, Program, Mesh, Color, Triangle } from 'ogl'
+import { Renderer, Program, Mesh, Color, Triangle, Transform } from 'ogl'
 
-// --- Shader 部分：優化 Light Mode 下的 getColor 邏輯 ---
+// --- Shader 部分：加入手機判斷與安全邏輯 ---
 const vertexShader = `
 attribute vec2 position;
 attribute vec2 uv;
@@ -35,6 +35,7 @@ uniform float uMouseStrength;
 uniform float uUseMouse;
 uniform float uBrightness;
 uniform float uIsLightMode; 
+uniform float uIsMobile; // 新增：判斷是否為手機
 
 float time;
 
@@ -58,26 +59,20 @@ float fbm(vec2 p) {
   p *= 1.1;
   float f = 0.0;
   float amp = 0.5 * uNoiseAmp;
-  mat2 modify0 = rotate(time * 0.02);
   f += amp * noise(p);
-  p = modify0 * p * 2.0;
+  p = rotate(time * 0.02) * p * 2.0;
   amp *= 0.454545;
-  mat2 modify1 = rotate(time * 0.02);
+  if (uIsMobile > 0.5) return f; // 手機端：減少迭代
   f += amp * noise(p);
-  p = modify1 * p * 2.0;
+  p = rotate(time * 0.02) * p * 2.0;
   amp *= 0.454545;
-  mat2 modify2 = rotate(time * 0.08);
   f += amp * noise(p);
   return f;
 }
 
 float pattern(vec2 p, out vec2 q, out vec2 r) {
-  vec2 offset1 = vec2(1.0);
-  vec2 offset0 = vec2(0.0);
-  mat2 rot01 = rotate(0.1 * time);
-  mat2 rot1 = rotate(0.1);
-  q = vec2(fbm(p + offset1), fbm(rot01 * p + offset1));
-  r = vec2(fbm(rot1 * q + offset0), fbm(q + offset0));
+  q = vec2(fbm(p + 1.0), fbm(rotate(0.1 * time) * p + 1.0));
+  r = vec2(fbm(rotate(0.1) * q), fbm(q));
   return fbm(p + r);
 }
 
@@ -92,22 +87,14 @@ float digit(vec2 p){
         float distToMouse = distance(s, mouseWorld);
         float mouseInfluence = exp(-distToMouse * 8.0) * uMouseStrength * 10.0;
         intensity += mouseInfluence;
-        float ripple = sin(distToMouse * 20.0 - iTime * 5.0) * 0.1 * mouseInfluence;
-        intensity += ripple;
+        if (uIsMobile < 0.5) { // 手機端關閉漣漪計算
+           intensity += sin(distToMouse * 20.0 - iTime * 5.0) * 0.1 * mouseInfluence;
+        }
     }
-    p = fract(p);
-    p *= uDigitSize;
-    float px5 = p.x * 5.0;
-    float py5 = (1.0 - p.y) * 5.0;
-    float x = fract(px5);
-    float y = fract(py5);
-    float i = floor(py5) - 2.0;
-    float j = floor(px5) - 2.0;
-    float n = i * i + j * j;
-    float f = n * 0.0625;
-    float isOn = step(0.1, intensity - f);
-    float brightness = isOn * (0.2 + y * 0.8) * (0.75 + x * 0.25);
-    return step(0.0, p.x) * step(p.x, 1.0) * step(0.0, p.y) * step(p.y, 1.0) * brightness;
+    p = fract(p) * uDigitSize;
+    float n = dot(floor(p.xy * 5.0) - 2.0, floor(p.xy * 5.0) - 2.0);
+    float isOn = step(0.1, intensity - (n * 0.0625));
+    return step(0.0, p.x) * step(p.x, 1.0) * step(0.0, p.y) * step(p.y, 1.0) * isOn * (0.2 + (1.0-p.y) * 0.8);
 }
 
 float onOff(float a, float b, float c) {
@@ -123,24 +110,23 @@ float displace(vec2 look) {
 vec3 getColor(vec2 p){
     float bar = step(mod(p.y + time * 20.0, 1.0), 0.2) * 0.4 + 1.0;
     bar *= uScanlineIntensity;
-    float displacement = displace(p);
+    float displacement = (uIsMobile > 0.5) ? 0.0 : displace(p);
     p.x += displacement;
-    if (uGlitchAmount != 1.0) {
-      float extra = displacement * (uGlitchAmount - 1.0);
-      p.x += extra;
-    }
+    
     float middle = digit(p);
-    const float off = 0.002;
-    float sum = digit(p + vec2(-off, -off)) + digit(p + vec2(0.0, -off)) + digit(p + vec2(off, -off)) +
-                digit(p + vec2(-off, 0.0)) + digit(p + vec2(0.0, 0.0)) + digit(p + vec2(off, 0.0)) +
-                digit(p + vec2(-off, off)) + digit(p + vec2(0.0, off)) + digit(p + vec2(off, off));
+    float sum = middle; 
     
-    vec3 baseColor = vec3(0.9) * middle + sum * 0.1 * vec3(1.0) * bar;
-    
-    if (uIsLightMode > 0.5) {
-        // Light Mode: 將原本暗色背景轉為淺灰色，並加深網格線條對比
-        return (1.0 - baseColor * 0.4);
+    // 手機端跳過九次採樣優化效能
+    if (uIsMobile < 0.5) {
+        const float off = 0.002;
+        sum = digit(p + vec2(-off, -off)) + digit(p + vec2(0.0, -off)) + digit(p + vec2(off, -off)) +
+              digit(p + vec2(-off, 0.0)) + digit(p + vec2(0.0, 0.0)) + digit(p + vec2(off, 0.0)) +
+              digit(p + vec2(-off, off)) + digit(p + vec2(0.0, off)) + digit(p + vec2(off, off));
+        sum *= 0.1;
     }
+    
+    vec3 baseColor = vec3(0.9) * middle + sum * vec3(1.0) * bar;
+    if (uIsLightMode > 0.5) return (1.0 - baseColor * 0.4);
     return baseColor;
 }
 
@@ -154,22 +140,17 @@ vec2 barrel(vec2 uv){
 void main() {
     time = iTime * 0.333333;
     vec2 uv = vUv;
-    if(uCurvature != 0.0){ uv = barrel(uv); }
+    if(uCurvature != 0.0 && uIsMobile < 0.5){ uv = barrel(uv); }
     vec2 p = uv * uScale;
     vec3 col = getColor(p);
-    if(uChromaticAberration != 0.0){
+    if(uChromaticAberration != 0.0 && uIsMobile < 0.5){
       vec2 ca = vec2(uChromaticAberration) / iResolution.xy;
       col.r = getColor(p + ca).r;
       col.b = getColor(p - ca).b;
     }
     
     col *= uTint;
-    
-    if (uIsLightMode > 0.5) {
-        // 增加混色比例，讓網格線條更清晰 (0.7 代表保留 70% 的網格色)
-        col = mix(vec3(1.0), col, 0.15);
-    }
-    
+    if (uIsLightMode > 0.5) col = mix(vec3(1.0), col, 0.15);
     col *= uBrightness;
     
     if(uDither > 0.0){
@@ -188,32 +169,18 @@ export const InteractiveGrid = () => {
   const programRef = useRef<Program | null>(null)
 
   useEffect(() => {
-    const updateTheme = () => {
-      if (!programRef.current) return
-      const isDark = document.documentElement.classList.contains('dark')
-
-      // Light Mode 使用明顯的深藍色線條 [0.1, 0.2, 0.5]
-      // Dark Mode 使用原本亮眼的賽博藍 [0.3, 0.45, 1.0]
-      const tint = isDark ? [0.31, 0.46, 0.97] : [0.4, 0.6, 1.0]
-
-      programRef.current.uniforms.uTint.value = new Color(tint[0], tint[1], tint[2])
-      programRef.current.uniforms.uIsLightMode.value = isDark ? 0 : 1
-      programRef.current.uniforms.uBrightness.value = isDark ? 1.2 : 0.95 // 降低一點亮度避免過曝
-    }
-
-    updateTheme()
-    const observer = new MutationObserver(updateTheme)
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
-    return () => observer.disconnect()
-  }, [])
-
-  useEffect(() => {
     const ctn = containerRef.current
     if (!ctn) return
 
-    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+    // 判斷手機端
+    const isMobile =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+      window.innerWidth < 768
+    const dpr = isMobile ? 1 : Math.min(window.devicePixelRatio || 1, 2)
+
     const renderer = new Renderer({ dpr, alpha: true })
     const gl = renderer.gl
+    const scene = new Transform() // 解決 forEach 報錯的關鍵
 
     const geometry = new Triangle(gl)
     const program = new Program(gl, {
@@ -233,23 +200,37 @@ export const InteractiveGrid = () => {
         uNoiseAmp: { value: 0.8 },
         uChromaticAberration: { value: 0.04 },
         uDither: { value: 1 },
-        uCurvature: { value: 0.05 }, // 稍微降低扭曲讓 Light mode 更清爽
+        uCurvature: { value: 0.05 },
         uTint: { value: new Color(0.31, 0.46, 0.97) },
         uMouse: { value: new Float32Array([0.5, 0.5]) },
         uMouseStrength: { value: 0.8 },
         uUseMouse: { value: 1 },
         uBrightness: { value: 1.2 },
         uIsLightMode: { value: 0 },
+        uIsMobile: { value: isMobile ? 1 : 0 },
       },
     })
 
     programRef.current = program
     const mesh = new Mesh(gl, { geometry, program })
+    mesh.setParent(scene)
+
+    const updateTheme = () => {
+      if (!programRef.current) return
+      const isDark = document.documentElement.classList.contains('dark')
+      const tint = isDark ? [0.31, 0.46, 0.97] : [0.4, 0.6, 1.0]
+      programRef.current.uniforms.uTint.value = new Color(tint[0], tint[1], tint[2])
+      programRef.current.uniforms.uIsLightMode.value = isDark ? 0 : 1
+      programRef.current.uniforms.uBrightness.value = isDark ? 1.2 : 0.95
+    }
+    updateTheme()
+    const observer = new MutationObserver(updateTheme)
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
 
     const handleResize = () => {
-      if (!ctn) return
+      if (!ctn || !programRef.current) return
       renderer.setSize(ctn.offsetWidth, ctn.offsetHeight)
-      program.uniforms.iResolution.value = new Color(
+      programRef.current.uniforms.iResolution.value = new Color(
         gl.canvas.width,
         gl.canvas.height,
         gl.canvas.width / gl.canvas.height
@@ -270,12 +251,16 @@ export const InteractiveGrid = () => {
 
     const update = (t: number) => {
       rafRef.current = requestAnimationFrame(update)
-      program.uniforms.iTime.value = t * 0.001 * 0.2
+      if (!programRef.current || !programRef.current.uniforms.uMouse) return
+
+      programRef.current.uniforms.iTime.value = t * 0.001 * 0.2
       smoothMouseRef.current.x += (mouseRef.current.x - smoothMouseRef.current.x) * 0.08
       smoothMouseRef.current.y += (mouseRef.current.y - smoothMouseRef.current.y) * 0.08
-      program.uniforms.uMouse.value[0] = smoothMouseRef.current.x
-      program.uniforms.uMouse.value[1] = smoothMouseRef.current.y
-      renderer.render({ scene: mesh })
+
+      programRef.current.uniforms.uMouse.value[0] = smoothMouseRef.current.x
+      programRef.current.uniforms.uMouse.value[1] = smoothMouseRef.current.y
+
+      renderer.render({ scene })
     }
     rafRef.current = requestAnimationFrame(update)
     ctn.appendChild(gl.canvas)
@@ -284,6 +269,8 @@ export const InteractiveGrid = () => {
       cancelAnimationFrame(rafRef.current)
       window.removeEventListener('resize', handleResize)
       window.removeEventListener('mousemove', handleMouseMove)
+      observer.disconnect()
+      programRef.current = null
       if (gl.canvas.parentElement === ctn) ctn.removeChild(gl.canvas)
       gl.getExtension('WEBGL_lose_context')?.loseContext()
     }
@@ -291,16 +278,11 @@ export const InteractiveGrid = () => {
 
   return (
     <div className="pointer-events-none fixed inset-0 z-[-1]">
-      {/* 1. 底層渲染器：背景色 */}
       <div
         ref={containerRef}
         className="absolute inset-0 z-[-2] bg-white transition-colors duration-500 dark:bg-gray-950"
       />
-
-      {/* 2. 毛玻璃蓋層：大幅降低 Light Mode 下的遮蓋感 (20% -> 15%) */}
       <div className="absolute inset-0 z-[-1] bg-white/30 backdrop-blur-[6px] transition-colors duration-500 dark:bg-gray-950/40" />
-
-      {/* 3. 裝飾性遮罩：邊緣暗角在亮色模式下調得很淡 */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.03)_100%)] dark:bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)]" />
     </div>
   )
