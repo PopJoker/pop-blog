@@ -1,17 +1,16 @@
-const { withContentlayer } = require('next-contentlayer2') // Use 'next-contentlayer' if not using the fork
+const { withContentlayer } = require('next-contentlayer2')
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // 強制開啟 export 模式與 basePath
   output: 'export',
   basePath: '/pop-blog',
   reactStrictMode: true,
   trailingSlash: true,
-  // Note: Contentlayer does not support Turbopack yet.
-  // If you use 'next dev --turbo', Contentlayer won't auto-generate.
+
+  // 1. Turbopack 配置保留
   turbopack: {
     root: process.cwd(),
     rules: {
@@ -21,20 +20,12 @@ const nextConfig = {
       },
     },
   },
-  theme: {
-    extend: {
-      animation: {
-        'infinite-scroll': 'infinite-scroll 10s linear infinite',
-      },
-      keyframes: {
-        'infinite-scroll': {
-          from: { transform: 'translateX(0)' },
-          to: { transform: 'translateX(-50%)' },
-        },
-      },
-    },
-  },
+
+  // ❌ 删除了原本在这里的 theme 属性
+  // 因为 theme 应该写在 tailwind.config.js 里，而不是 next.config.js
+
   pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
+
   images: {
     remotePatterns: [
       {
@@ -42,51 +33,12 @@ const nextConfig = {
         hostname: 'picsum.photos',
       },
     ],
-    // 💡 修改 2: GitHub Pages 必改！強制關閉圖片優化
-    // 這是解決圖片刷不出來的關鍵
     unoptimized: true,
   },
-  async headers() {
-    // Only apply headers if not exporting to static HTML
-    if (process.env.EXPORT) return []
 
-    return [
-      {
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'Content-Security-Policy',
-            value:
-              "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' giscus.app analytics.umami.is;",
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'strict-origin-when-cross-origin',
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'DENY',
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'X-DNS-Prefetch-Control',
-            value: 'on',
-          },
-          {
-            key: 'Strict-Transport-Security',
-            value: 'max-age=31536000; includeSubDomains',
-          },
-          {
-            key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=()',
-          },
-        ],
-      },
-    ]
-  },
+  // ❌ 删除了 async headers() 整个函数
+  // 因为你开启了 output: 'export'，Next.js 不允许在静态导出中使用 headers
+
   webpack: (config, options) => {
     config.module.rules.push({
       test: /\.svg$/,
@@ -97,5 +49,4 @@ const nextConfig = {
   },
 }
 
-// Wrap the config with both Contentlayer and BundleAnalyzer
 module.exports = withBundleAnalyzer(withContentlayer(nextConfig))

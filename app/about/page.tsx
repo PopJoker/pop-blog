@@ -63,24 +63,24 @@ export default function About() {
   const ref = useRef<HTMLDivElement>(null)
   const [isMobile, setIsMobile] = useState(false)
 
-  // 裝置偵測優化
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024 || /Android|iPhone|iPad/i.test(navigator.userAgent))
+    const checkDevice = () => {
+      // 偵測螢幕寬度或觸控點，確保精準判斷行動裝置
+      setIsMobile(window.innerWidth < 1024 || window.matchMedia('(pointer: coarse)').matches)
     }
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
+    checkDevice()
+    window.addEventListener('resize', checkDevice)
+    return () => window.removeEventListener('resize', checkDevice)
   }, [])
 
   const x = useMotionValue(0)
   const y = useMotionValue(0)
 
-  // 手機端調高阻尼感，電腦端保持靈敏
+  // 電腦端彈簧效果
   const mouseXSpring = useSpring(x, { stiffness: 150, damping: 25 })
   const mouseYSpring = useSpring(y, { stiffness: 150, damping: 25 })
 
-  // 手機端直接固定在 0deg，不進行任何旋轉運算
+  // 手機端直接固定在 0deg，不進行任何 Transform 運算
   const rotateX = useTransform(
     mouseYSpring,
     [-0.5, 0.5],
@@ -101,7 +101,7 @@ export default function About() {
 
   return (
     <div className="relative pb-20">
-      {/* 背景裝飾 - 降低手機端的模糊計算量 */}
+      {/* 背景裝飾 */}
       <div className="bg-primary-500/10 absolute top-0 -left-20 -z-10 h-72 w-72 rounded-full blur-[80px] lg:blur-[120px]" />
       <div className="absolute top-1/2 -right-20 -z-10 h-72 w-72 rounded-full bg-blue-500/10 blur-[80px] lg:blur-[120px]" />
 
@@ -119,113 +119,97 @@ export default function About() {
         <div className="relative mb-6 flex justify-center py-10">
           <motion.div
             ref={ref}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={() => {
-              x.set(0)
-              y.set(0)
-            }}
+            // 💡 僅非手機端掛載事件
+            onMouseMove={!isMobile ? handleMouseMove : undefined}
+            onMouseLeave={
+              !isMobile
+                ? () => {
+                    x.set(0)
+                    y.set(0)
+                  }
+                : undefined
+            }
             style={{
               rotateX,
               rotateY,
               perspective: 1000,
-              transformStyle: 'preserve-3d',
+              transformStyle: isMobile ? 'flat' : 'preserve-3d',
             }}
-            // 關鍵：電腦端開啟 GPU 加速，手機端關閉以節省記憶體
             className={`group relative w-full max-w-[320px] ${!isMobile ? 'will-change-transform' : ''}`}
           >
             {/* 加強版背光 */}
             <div
-              className={`from-primary-500/30 absolute -inset-8 rounded-[3rem] bg-gradient-to-br via-purple-500/20 to-blue-500/30 opacity-0 transition-opacity duration-700 group-hover:opacity-100 ${isMobile ? 'blur-2xl' : 'blur-3xl'}`}
+              className={`from-primary-500/30 absolute -inset-8 rounded-[3rem] bg-gradient-to-br via-purple-500/20 to-blue-500/30 transition-opacity duration-700 ${
+                isMobile ? 'opacity-40 blur-2xl' : 'opacity-0 blur-3xl group-hover:opacity-100'
+              }`}
               style={{ transform: isMobile ? 'none' : 'translateZ(-60px)' }}
             />
 
-            <SpotlightCard className="relative overflow-hidden rounded-[2.5rem] border border-white/40 bg-white/40 p-8 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] backdrop-blur-md dark:border-gray-700/30 dark:bg-gray-950/40">
-              <div
-                className="flex flex-col items-center text-center"
-                style={{ transformStyle: 'preserve-3d' }}
-              >
+            <SpotlightCard className="relative overflow-hidden rounded-[2.5rem] border border-white/40 bg-white/40 p-8 shadow-xl backdrop-blur-md dark:border-gray-700/30 dark:bg-gray-950/40">
+              <div className="flex flex-col items-center text-center">
+                {/* 👤 頭像部分 */}
                 <div
                   className="relative mb-8"
-                  style={{
-                    transform: isMobile ? 'none' : 'translateZ(50px)',
-                    transformStyle: 'preserve-3d',
-                  }}
+                  style={{ transform: isMobile ? 'none' : 'translateZ(50px)' }}
                 >
                   <div className="relative h-32 w-32">
-                    {/* 👻 鼠靈魂：手機端直接移除渲染 */}
+                    {/* 👻 鼠靈魂：手機端徹底移除，不佔用 filter 運算資源 */}
                     {!isMobile && (
                       <>
                         <span
                           className="absolute top-0 left-0 text-5xl opacity-0 transition-all duration-700 ease-out group-hover:-translate-x-14 group-hover:-translate-y-10 group-hover:rotate-[-25deg] group-hover:opacity-60"
                           style={{
                             transform: 'translateZ(-40px)',
-                            filter: 'grayscale(1) blur(1.5px) drop-shadow(0 0 10px white)',
+                            filter: 'grayscale(1) blur(1.5px)',
                           }}
                         >
                           🐹
                         </span>
                         <span
                           className="absolute top-0 right-0 text-5xl opacity-0 transition-all duration-500 ease-out group-hover:translate-x-14 group-hover:-translate-y-8 group-hover:rotate-[20deg] group-hover:opacity-100"
-                          style={{
-                            transform: 'translateZ(-35px)',
-                            filter:
-                              'sepia(0.5) brightness(1.1) drop-shadow(0 0 5px rgba(255,255,255,0.5))',
-                          }}
+                          style={{ transform: 'translateZ(-35px)', filter: 'sepia(0.5)' }}
                         >
                           🐹
                         </span>
                       </>
                     )}
 
-                    <div className="from-primary-500 absolute -inset-2 rounded-2xl bg-gradient-to-tr to-blue-400 opacity-30 blur-md transition-opacity duration-500 group-hover:opacity-60" />
+                    <div className="from-primary-500 absolute -inset-2 rounded-2xl bg-gradient-to-tr to-blue-400 opacity-30 blur-md" />
                     <div className="relative h-full w-full overflow-hidden rounded-2xl border-2 border-white/60 shadow-2xl dark:border-gray-700/50">
                       <Image
                         src="/static/images/avatar.png"
                         alt="avatar"
                         width={128}
                         height={128}
-                        className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                        className="h-full w-full object-cover transition-transform duration-700 ease-out lg:group-hover:scale-110"
                       />
                     </div>
                   </div>
                 </div>
 
-                <div
-                  style={{
-                    transform: isMobile ? 'none' : 'translateZ(35px)',
-                    transformStyle: 'preserve-3d',
-                  }}
-                >
+                {/* 📝 文字內容層 */}
+                <div style={{ transform: isMobile ? 'none' : 'translateZ(35px)' }}>
                   <h3 className="text-2xl font-black tracking-tight text-gray-900 dark:text-white">
                     Maverick Tu
                   </h3>
                   <p className="bg-primary-500/10 text-primary-600 dark:bg-primary-500/20 dark:text-primary-400 mt-1.5 inline-block rounded-full px-3 py-0.5 text-xs font-bold tracking-widest uppercase">
                     Full-stack Developer
                   </p>
-
                   <div className="mt-6 space-y-3 text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    <p className="flex items-center justify-center gap-2">📍 Taoyuan, Taiwan</p>
-                    <p className="flex items-center justify-center gap-2">
-                      🎓 NIU Electronic Engineering
-                    </p>
+                    <p>📍 Taoyuan, Taiwan</p>
+                    <p>🎓 NIU Electronic Engineering</p>
                   </div>
                 </div>
 
+                {/* 🔗 社群圖標 */}
                 <div
-                  className="group mt-8 flex flex-col items-center"
-                  style={{
-                    transform: isMobile ? 'none' : 'translateZ(20px)',
-                    transformStyle: 'preserve-3d',
-                  }}
+                  className="mt-8 flex flex-col items-center"
+                  style={{ transform: isMobile ? 'none' : 'translateZ(20px)' }}
                 >
-                  <p className="group-hover:text-primary-500 mb-3 text-[11px] font-bold tracking-[0.2em] text-gray-400 uppercase transition-all duration-500 group-hover:drop-shadow-[0_0_8px_rgba(var(--primary-rgb),0.8)] dark:text-gray-500">
-                    Drop me a line & Let's talk
+                  <p className="lg:group-hover:text-primary-500 mb-3 text-[11px] font-bold tracking-[0.2em] text-gray-400 uppercase transition-all duration-500 lg:group-hover:drop-shadow-[0_0_8px_rgba(var(--primary-rgb),0.8)] dark:text-gray-500">
+                    Drop me a line
                   </p>
-
-                  <div
-                    className="flex flex-wrap justify-center gap-x-4 gap-y-3 rounded-2xl border border-white/50 bg-white/30 px-5 py-4 shadow-sm backdrop-blur-sm transition-all duration-500 group-hover:bg-white/50 dark:border-gray-700/30 dark:bg-gray-800/30 dark:group-hover:bg-gray-800/50"
-                    style={{ transform: isMobile ? 'none' : 'translateZ(10px)' }}
-                  >
+                  <div className="flex flex-wrap justify-center gap-x-4 gap-y-3 rounded-2xl border border-white/50 bg-white/30 px-5 py-4 backdrop-blur-sm transition-all duration-500 lg:group-hover:bg-white/50 dark:border-gray-700/30 dark:bg-gray-800/30">
                     {[
                       { kind: 'mail', href: `mailto:${siteMetadata.email}` },
                       { kind: 'github', href: siteMetadata.github },
@@ -243,8 +227,7 @@ export default function About() {
                         social.href && (
                           <span
                             key={social.kind}
-                            className="hover:text-primary-500 transition-all duration-300 hover:-translate-y-1 hover:scale-125 active:scale-95"
-                            style={{ transform: isMobile ? 'none' : 'translateZ(15px)' }}
+                            className="hover:text-primary-500 transition-all duration-300 active:scale-95 lg:hover:-translate-y-1 lg:hover:scale-125"
                           >
                             <SocialIcon kind={social.kind as any} href={social.href} size={6} />
                           </span>
@@ -276,8 +259,8 @@ export default function About() {
                     key={skill}
                     initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: '-50px' }} // 滑入視窗才動，且只動一次
-                    transition={{ delay: isMobile ? 0 : i * 0.01 }} // 手機端取消延遲，提升操作反饋
+                    viewport={{ once: true, margin: '-50px' }}
+                    transition={{ delay: isMobile ? 0 : i * 0.01 }}
                     className="rounded-xl border border-gray-200 bg-white/50 px-4 py-2 text-sm font-medium backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/50"
                   >
                     {skill}
