@@ -1,23 +1,24 @@
 'use client'
 
-import { AnimatePresence, motion, Variants } from 'framer-motion'
+import { motion, Variants } from 'framer-motion'
 import Link from '@/components/Link'
 import siteMetadata from '@/data/siteMetadata'
 import { formatDate } from 'pliny/utils/formatDate'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import readingTimeEstimator from 'reading-time'
 import SpotlightCard from '@/components/components/SpotlightCard'
 
 const MAX_DISPLAY = 6
 
+// 簡化動畫曲線，對手機端更友好
 const fadeInUp: Variants = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.6,
-      ease: [0.22, 1, 0.36, 1],
+      duration: 0.5,
+      ease: 'easeOut',
     },
   },
 }
@@ -25,7 +26,7 @@ const fadeInUp: Variants = {
 const staggerContainer = {
   hidden: {},
   visible: {
-    transition: { staggerChildren: 0.08 },
+    transition: { staggerChildren: 0.05 },
   },
 }
 
@@ -38,8 +39,8 @@ function useTypewriter(slogans: string[]) {
     const current = slogans[index]
     let timeout: NodeJS.Timeout
 
-    // 稍微放慢速度，減少手機端頻繁 Re-render 的壓力
-    const typingSpeed = isDeleting ? 40 : 80
+    // 調節速度，避免過高頻率的 State 更新
+    const typingSpeed = isDeleting ? 30 : 60
 
     if (!isDeleting) {
       if (displayText.length < current.length) {
@@ -47,7 +48,7 @@ function useTypewriter(slogans: string[]) {
           setDisplayText(current.slice(0, displayText.length + 1))
         }, typingSpeed)
       } else {
-        timeout = setTimeout(() => setIsDeleting(true), 4000)
+        timeout = setTimeout(() => setIsDeleting(true), 3000)
       }
     } else {
       if (displayText.length > 0) {
@@ -69,8 +70,17 @@ function useTypewriter(slogans: string[]) {
 export default function Home({ posts }) {
   const featuredPosts = posts.slice(0, 2)
   const recentPosts = posts.slice(2, MAX_DISPLAY)
-
   const [copyLabel, setCopyLabel] = useState('mavericktu0@gmail.com')
+
+  const slogans = useMemo(() => [
+    '把想法做成可被看見的作品',
+    '用程式打造有價值的體驗',
+    '定義/實踐/進化',
+    '不預測未來，我們編寫它',
+    '創意值得一個更強大的載體',
+  ], [])
+
+  const displayText = useTypewriter(slogans)
 
   const handleCopy = () => {
     navigator.clipboard.writeText('mavericktu0@gmail.com')
@@ -78,95 +88,43 @@ export default function Home({ posts }) {
     setTimeout(() => setCopyLabel('mavericktu0@gmail.com'), 2000)
   }
 
-  const discordLink = 'https://discord.gg/b5QSSdu3VW'
-
-  const slogans = [
-    '把想法做成可被看見的作品',
-    '用程式打造有價值的體驗',
-    '定義/實踐/進化',
-    '不預測未來，我們編寫它',
-    '創意值得一個更強大的載體',
-  ]
-
-  const displayText = useTypewriter(slogans)
-
   return (
-    <div className="mb-20 space-y-10">
+    <div className="mb-20 space-y-10 overflow-x-hidden">
       {/* 🚀 HERO */}
-      <section className="relative overflow-hidden pt-24 pb-20">
-        {/* 🌈 背景（優化：手機端簡化動畫） */}
-        <div className="relative inset-0 -z-10 overflow-hidden">
+      <section className="relative pt-24 pb-20">
+        <div className="absolute inset-0 -z-10">
+          {/* 只在桌面端執行複雜動畫，手機端使用靜態漸層 */}
           <motion.div
-            className="fixed -top-32 -left-32 hidden h-[400px] w-[400px] rounded-full bg-indigo-500/20 blur-3xl md:block"
-            animate={{
-              x: [0, 40, 0],
-              y: [0, 30, 0],
-            }}
-            transition={{
-              duration: 15,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
+            className="fixed -top-32 -left-32 hidden h-[400px] w-[400px] rounded-full bg-indigo-500/10 blur-3xl md:block"
+            animate={{ x: [0, 20, 0], y: [0, 20, 0] }}
+            transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
           />
-
-          <motion.div
-            className="fixed -right-32 -bottom-32 h-[500px] w-[500px] rounded-full bg-cyan-500/20 blur-3xl"
-            animate={{
-              x: [0, -30, 0],
-              y: [0, -20, 0],
-            }}
-            transition={{
-              duration: 18,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
-          />
-
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-purple-500/5 to-cyan-500/5" />
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-cyan-500/5" />
         </div>
 
         <motion.div
           initial="hidden"
           animate="visible"
           variants={staggerContainer}
-          className="flex flex-col items-center text-center"
+          className="flex flex-col items-center text-center transform-gpu"
         >
           <motion.div
             variants={fadeInUp}
-            className="bg-primary-500/10 text-primary-500 dark:bg-primary-500/20 mb-4 rounded-full px-3 py-1 text-sm font-medium"
+            className="mb-4 rounded-full bg-primary-500/10 px-3 py-1 text-sm font-medium text-primary-500 dark:bg-primary-500/20"
           >
             PopJ0ker Workshop
           </motion.div>
 
-          {/* 優化：加入 will-change 提升硬體加速，移除耗能的 blur */}
-          <h1 className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-400 bg-clip-text text-4xl font-extrabold tracking-tight text-transparent [will-change:transform,opacity] sm:text-6xl md:text-7xl dark:from-white dark:via-gray-200 dark:to-gray-500">
-            <span className="relative inline-block w-full px-4 sm:px-0">
-              {displayText.split('').map((char, i) => (
-                <motion.span
-                  className="inline-block bg-gradient-to-br from-gray-900 via-gray-800 to-gray-400 bg-clip-text text-transparent dark:from-white dark:via-gray-200 dark:to-gray-500"
-                  key={`${char}-${i}`}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{
-                    duration: 0.2,
-                    delay: i * 0.01, // 縮小延遲讓手機渲染更流暢
-                  }}
-                >
-                  {char === ' ' ? '\u00A0' : char}
-                </motion.span>
-              ))}
-
-              <motion.span
-                className="ml-1 inline-block h-[0.8em] w-1 bg-gray-400 align-middle dark:bg-gray-500"
-                animate={{ opacity: [0, 1, 0] }}
-                transition={{ repeat: Infinity, duration: 1.2 }}
-              />
+          <h1 className="min-h-[1.2em] px-4 text-4xl font-extrabold tracking-tight sm:text-6xl md:text-7xl">
+            <span className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-400 bg-clip-text text-transparent dark:from-white dark:via-gray-200 dark:to-gray-500 transform-gpu">
+              {displayText}
+              <span className="ml-1 inline-block h-[0.8em] w-1 animate-pulse bg-gray-400 align-middle dark:bg-gray-500" />
             </span>
           </h1>
 
           <motion.p
             variants={fadeInUp}
-            className="mt-6 max-w-2xl px-6 text-lg leading-8 text-gray-600 md:px-0 dark:text-gray-400"
+            className="mt-6 max-w-2xl px-6 text-lg leading-8 text-gray-600 dark:text-gray-400"
           >
             {siteMetadata.description}
           </motion.p>
@@ -175,34 +133,22 @@ export default function Home({ posts }) {
           <motion.div variants={fadeInUp} className="mt-10 flex flex-wrap justify-center gap-4">
             <Link
               href="/blog"
-              className="group relative overflow-hidden rounded-full bg-gray-900 px-6 py-3 text-sm font-semibold text-white transition active:scale-95 md:hover:scale-105 dark:bg-white dark:text-black"
+              className="rounded-full bg-gray-900 px-6 py-3 text-sm font-semibold text-white transition-transform active:scale-95 dark:bg-white dark:text-black"
             >
-              <span className="relative z-10">Read Blog</span>
+              Read Blog
             </Link>
 
             <Link
-              href="/about"
-              className="rounded-full border border-gray-200 px-6 py-3 text-sm font-semibold transition active:bg-gray-100 md:hover:bg-gray-50 dark:border-gray-700 dark:active:bg-gray-800 dark:md:hover:bg-gray-800"
+              href="https://discord.gg/b5QSSdu3VW"
+              className="flex items-center gap-2 rounded-full border border-[#5865F2] px-6 py-3 text-sm font-semibold text-[#5865F2] transition-colors active:bg-[#5865F2] active:text-white"
             >
-              About Me
-            </Link>
-
-            <Link
-              href={discordLink}
-              className="group relative flex items-center gap-2 overflow-hidden rounded-full border border-[#5865F2] px-6 py-3 text-sm font-semibold text-[#5865F2] transition active:scale-95 md:hover:scale-105 md:hover:text-white"
-            >
-              <span className="absolute inset-0 w-0 bg-[#5865F2] transition-all duration-300 md:group-hover:w-full" />
-              <svg className="relative z-10 h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.076.076 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.086 2.157 2.419c0 1.334-.947 2.419-2.157 2.419zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.086 2.157 2.419c0 1.334-.946 2.419-2.157 2.419z" />
-              </svg>
-              <span className="relative z-10">Discord</span>
+              Discord
             </Link>
           </motion.div>
 
-          {/* 📩 Email */}
           <button
             onClick={handleCopy}
-            className="group md:hover:text-primary-500 mt-6 flex items-center gap-2 text-xs text-gray-500 transition"
+            className="mt-6 flex items-center gap-2 text-xs text-gray-500 transition-colors hover:text-primary-500"
           >
             <span>或來信談談：</span>
             <span className="font-mono underline underline-offset-4">{copyLabel}</span>
@@ -210,62 +156,60 @@ export default function Home({ posts }) {
         </motion.div>
       </section>
 
-      {/* 🌟 Featured */}
-      <section className="space-y-8 px-4 md:px-0">
-        <h2 className="text-3xl font-bold">Featured Posts</h2>
-        <div className="grid gap-6 md:grid-cols-2">
-          {featuredPosts.map((post, i) => (
-            <PostCard key={post.slug} post={post} index={i} featured />
-          ))}
-        </div>
-      </section>
+      {/* 🌟 Featured & Recent */}
+      <div className="space-y-16 px-4 md:px-0 transform-gpu">
+        <section className="space-y-8">
+          <h2 className="text-3xl font-bold">Featured Posts</h2>
+          <div className="grid gap-6 md:grid-cols-2">
+            {featuredPosts.map((post, i) => (
+              <PostCard key={post.slug} post={post} index={i} />
+            ))}
+          </div>
+        </section>
 
-      {/* 📝 Recent */}
-      <section className="space-y-8 px-4 md:px-0">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold">Recent Updates</h2>
-          <Link href="/blog" className="text-primary-500 text-sm font-semibold">
-            View all →
-          </Link>
-        </div>
-
-        <div className="grid gap-6 sm:grid-cols-2">
-          {recentPosts.map((post, i) => (
-            <PostCard key={post.slug} post={post} index={i} />
-          ))}
-        </div>
-      </section>
+        <section className="space-y-8">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold">Recent Updates</h2>
+            <Link href="/blog" className="text-sm font-semibold text-primary-500">
+              View all →
+            </Link>
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2">
+            {recentPosts.map((post, i) => (
+              <PostCard key={post.slug} post={post} index={i} />
+            ))}
+          </div>
+        </section>
+      </div>
     </div>
   )
 }
 
-function PostCard({ post, index, featured = false }) {
+function PostCard({ post, index }) {
   const { slug, date, title, summary, body } = post
-  const stats = readingTimeEstimator(body?.raw || summary || '')
+  const stats = useMemo(() => readingTimeEstimator(body?.raw || summary || ''), [body, summary])
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 15 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.1 }}
-      transition={{ delay: index * 0.05 }}
-      // 手機端減少 hover 規模以節省效能
-      whileHover={{
-        scale: 1.01,
-        transition: { duration: 0.2 },
-      }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ delay: index * 0.03 }}
+      // 手機端關閉 Hover 縮放以提升反應速度
+      whileHover={typeof window !== 'undefined' && window.innerWidth > 768 ? { scale: 1.02 } : {}}
+      className="transform-gpu"
     >
-      <SpotlightCard className="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900/50">
-        <div className="relative z-10">
+      <SpotlightCard className="h-full rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900/50">
+        <div className="relative z-10 flex h-full flex-col">
           <div className="text-sm text-gray-500">
             {formatDate(date)} • {stats.text}
           </div>
 
-          <Link href={`/blog/${slug}`}>
-            <h3 className="mt-3 text-xl font-bold transition-colors md:group-hover:text-indigo-500 dark:md:group-hover:text-indigo-400">
+          <Link href={`/blog/${slug}`} className="flex-grow">
+            <h3 className="mt-3 text-xl font-bold transition-colors group-hover:text-primary-500">
               {title}
             </h3>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{summary}</p>
+            <p className="mt-2 text-sm text-gray-600 line-clamp-2 dark:text-gray-400">{summary}</p>
           </Link>
 
           <div className="mt-4 flex items-center text-sm font-semibold text-gray-900 dark:text-white">
