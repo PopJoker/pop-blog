@@ -10,6 +10,7 @@ import SpotlightCard from '@/components/components/SpotlightCard'
 
 const MAX_DISPLAY = 6
 
+// ... ( fadeInUp 和 staggerContainer 保持不變)
 const fadeInUp: Variants = {
   hidden: { opacity: 0, y: 30 },
   visible: {
@@ -38,7 +39,7 @@ function useTypewriter(slogans: string[]) {
     const current = slogans[index]
     let timeout: NodeJS.Timeout
 
-    // 稍微放慢速度，減少手機端頻繁 Re-render 的壓力
+    // 手機端再放慢一點點以減輕壓力
     const typingSpeed = isDeleting ? 40 : 80
 
     if (!isDeleting) {
@@ -69,6 +70,14 @@ function useTypewriter(slogans: string[]) {
 export default function Home({ posts }) {
   const featuredPosts = posts.slice(0, 2)
   const recentPosts = posts.slice(2, MAX_DISPLAY)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   const [copyLabel, setCopyLabel] = useState('mavericktu0@gmail.com')
 
@@ -79,7 +88,6 @@ export default function Home({ posts }) {
   }
 
   const discordLink = 'https://discord.gg/b5QSSdu3VW'
-
   const slogans = [
     '把想法做成可被看見的作品',
     '用程式打造有價值的體驗',
@@ -94,34 +102,22 @@ export default function Home({ posts }) {
     <div className="mb-20 space-y-10">
       {/* 🚀 HERO */}
       <section className="relative overflow-hidden pt-24 pb-20">
-        {/* 🌈 背景（優化：手機端簡化動畫） */}
+        {/* 🌈 背景優化：手機端直接移除動態模糊圓圈，改用靜態漸層 */}
         <div className="relative inset-0 -z-10 overflow-hidden">
-          <motion.div
-            className="fixed -top-32 -left-32 hidden h-[400px] w-[400px] rounded-full bg-indigo-500/20 blur-3xl md:block"
-            animate={{
-              x: [0, 40, 0],
-              y: [0, 30, 0],
-            }}
-            transition={{
-              duration: 15,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
-          />
-
-          <motion.div
-            className="fixed -right-32 -bottom-32 h-[500px] w-[500px] rounded-full bg-cyan-500/20 blur-3xl"
-            animate={{
-              x: [0, -30, 0],
-              y: [0, -20, 0],
-            }}
-            transition={{
-              duration: 18,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
-          />
-
+          {!isMobile && (
+            <>
+              <motion.div
+                className="fixed -top-32 -left-32 h-[400px] w-[400px] rounded-full bg-indigo-500/20 blur-3xl"
+                animate={{ x: [0, 40, 0], y: [0, 30, 0] }}
+                transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
+              />
+              <motion.div
+                className="fixed -right-32 -bottom-32 h-[500px] w-[500px] rounded-full bg-cyan-500/20 blur-3xl"
+                animate={{ x: [0, -30, 0], y: [0, -20, 0] }}
+                transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
+              />
+            </>
+          )}
           <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-purple-500/5 to-cyan-500/5" />
         </div>
 
@@ -138,29 +134,34 @@ export default function Home({ posts }) {
             PopJ0ker Workshop
           </motion.div>
 
-          {/* 優化：加入 will-change 提升硬體加速，移除耗能的 blur */}
-          <h1 className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-400 bg-clip-text text-4xl font-extrabold tracking-tight text-transparent [will-change:transform,opacity] sm:text-6xl md:text-7xl dark:from-white dark:via-gray-200 dark:to-gray-500">
+          <h1 className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-400 bg-clip-text text-4xl font-extrabold tracking-tight text-transparent sm:text-6xl md:text-7xl dark:from-white dark:via-gray-200 dark:to-gray-500">
             <span className="relative inline-block w-full px-4 sm:px-0">
-              {displayText.split('').map((char, i) => (
-                <motion.span
-                  className="inline-block bg-gradient-to-br from-gray-900 via-gray-800 to-gray-400 bg-clip-text text-transparent dark:from-white dark:via-gray-200 dark:to-gray-500"
-                  key={`${char}-${i}`}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{
-                    duration: 0.2,
-                    delay: i * 0.01, // 縮小延遲讓手機渲染更流暢
-                  }}
-                >
-                  {char === ' ' ? '\u00A0' : char}
-                </motion.span>
-              ))}
-
-              <motion.span
-                className="ml-1 inline-block h-[0.8em] w-1 bg-gray-400 align-middle dark:bg-gray-500"
-                animate={{ opacity: [0, 1, 0] }}
-                transition={{ repeat: Infinity, duration: 1.2 }}
-              />
+              {isMobile ? (
+                // 手機端：補上與原本一模一樣的漸層色類別
+                <span className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-400 bg-clip-text text-transparent dark:from-white dark:via-gray-200 dark:to-gray-500">
+                  {slogans[0]}
+                </span>
+              ) : (
+                // 電腦端：原封不動
+                <>
+                  {displayText.split('').map((char, i) => (
+                    <motion.span
+                      className="inline-block bg-gradient-to-br from-gray-900 via-gray-800 to-gray-400 bg-clip-text text-transparent dark:from-white dark:via-gray-200 dark:to-gray-500"
+                      key={`${char}-${i}`}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.2, delay: i * 0.01 }}
+                    >
+                      {char === ' ' ? '\u00A0' : char}
+                    </motion.span>
+                  ))}
+                  <motion.span
+                    className="ml-1 inline-block h-[0.8em] w-1 bg-gray-400 align-middle dark:bg-gray-500"
+                    animate={{ opacity: [0, 1, 0] }}
+                    transition={{ repeat: Infinity, duration: 1.2 }}
+                  />
+                </>
+              )}
             </span>
           </h1>
 
@@ -171,7 +172,6 @@ export default function Home({ posts }) {
             {siteMetadata.description}
           </motion.p>
 
-          {/* ⚡ CTA */}
           <motion.div variants={fadeInUp} className="mt-10 flex flex-wrap justify-center gap-4">
             <Link
               href="/blog"
@@ -199,7 +199,6 @@ export default function Home({ posts }) {
             </Link>
           </motion.div>
 
-          {/* 📩 Email */}
           <button
             onClick={handleCopy}
             className="group md:hover:text-primary-500 mt-6 flex items-center gap-2 text-xs text-gray-500 transition"
@@ -210,17 +209,16 @@ export default function Home({ posts }) {
         </motion.div>
       </section>
 
-      {/* 🌟 Featured */}
+      {/* Featured & Recent */}
       <section className="space-y-8 px-4 md:px-0">
         <h2 className="text-3xl font-bold">Featured Posts</h2>
         <div className="grid gap-6 md:grid-cols-2">
           {featuredPosts.map((post, i) => (
-            <PostCard key={post.slug} post={post} index={i} featured />
+            <PostCard key={post.slug} post={post} index={i} featured isMobile={isMobile} />
           ))}
         </div>
       </section>
 
-      {/* 📝 Recent */}
       <section className="space-y-8 px-4 md:px-0">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold">Recent Updates</h2>
@@ -228,10 +226,9 @@ export default function Home({ posts }) {
             View all →
           </Link>
         </div>
-
         <div className="grid gap-6 sm:grid-cols-2">
           {recentPosts.map((post, i) => (
-            <PostCard key={post.slug} post={post} index={i} />
+            <PostCard key={post.slug} post={post} index={i} isMobile={isMobile} />
           ))}
         </div>
       </section>
@@ -239,39 +236,34 @@ export default function Home({ posts }) {
   )
 }
 
-function PostCard({ post, index, featured = false }) {
+function PostCard({ post, index, featured = false, isMobile = false }) {
   const { slug, date, title, summary, body, tags } = post
   const stats = readingTimeEstimator(body?.raw || summary || '')
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={isMobile ? { opacity: 0 } : { opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.1 }}
-      transition={{ delay: index * 0.05 }}
-      // 微微提升 Hover 感，不用縮放太大以免影響文字邊緣模糊
-      whileHover={{ y: -4 }}
+      transition={{ delay: isMobile ? 0 : index * 0.05 }}
+      whileHover={isMobile ? {} : { y: -4 }}
     >
       <Link href={`/blog/${slug}`} aria-label={`Read more about ${title}`}>
-        <SpotlightCard className="group relative flex h-full flex-col justify-between rounded-2xl border border-gray-200 bg-white p-6 transition-colors hover:border-indigo-500/50 dark:border-gray-800 dark:bg-gray-900/50 dark:hover:border-indigo-400/50">
+        <SpotlightCard className="group relative flex h-full flex-col justify-between rounded-2xl border border-gray-200 bg-white p-6 transition-colors md:hover:border-indigo-500/50 dark:border-gray-800 dark:bg-gray-900/50 dark:md:hover:border-indigo-400/50">
           <div className="relative z-10">
-            {/* 上方資訊列 */}
             <div className="flex items-center justify-between text-xs text-gray-500">
               <span>{formatDate(date)}</span>
               <span>{stats.text}</span>
             </div>
 
-            {/* 標題：Hover 時變色 */}
-            <h3 className="mt-3 text-xl font-bold text-gray-900 transition-colors group-hover:text-indigo-600 dark:text-gray-100 dark:group-hover:text-indigo-400">
+            <h3 className="mt-3 text-xl font-bold text-gray-900 transition-colors md:group-hover:text-indigo-600 dark:text-gray-100 dark:md:group-hover:text-indigo-400">
               {title}
             </h3>
 
-            {/* 摘要：限制兩行，保持對齊 */}
             <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
               {summary}
             </p>
 
-            {/* 標籤 (選擇性) */}
             {tags && (
               <div className="mt-4 flex flex-wrap gap-2">
                 {tags.slice(0, 3).map((tag) => (
@@ -286,10 +278,9 @@ function PostCard({ post, index, featured = false }) {
             )}
           </div>
 
-          {/* 底部導引：原本的 "Read Article" */}
           <div className="relative z-10 mt-6 flex items-center text-sm font-semibold text-gray-900 dark:text-white">
-            <span className="transition-transform group-hover:translate-x-1">Read Article</span>
-            <span className="ml-1 transition-transform group-hover:translate-x-2">→</span>
+            <span className="transition-transform md:group-hover:translate-x-1">Read Article</span>
+            <span className="ml-1 transition-transform md:group-hover:translate-x-2">→</span>
           </div>
         </SpotlightCard>
       </Link>
