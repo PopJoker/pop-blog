@@ -8,15 +8,43 @@ import SpotlightCard from '@/components/components/SpotlightCard' // 使用剛�
 import siteMetadata from '@/data/siteMetadata'
 
 const skills = [
+  // Languages & Full Stack
   'React',
   'Next.js',
   'TypeScript',
+  'Node.js',
+  'Dart',
+  'Flutter',
+  'Go', // 處理串流後端時接觸到的 Go
+
+  // Database & Logic Architecture
+  'PostgreSQL',
+  'Supabase',
+  'Prisma ORM',
+  'Zustand',
+  'Riverpod',
+  'RESTful API Design',
+  'CRUD logic optimization',
+
+  // Industrial Engineering & IoT (軟硬整合核心)
+  'PLC通訊 (Mitsubishi / Siemens 等)',
+  'HMI設計 (人機介面開發)',
+  'Modbus / TCP', // 工業設備常見通訊協定
+  'RTSP / WebRTC / go2rtc',
+  'FFmpeg (串流轉碼與優化)',
+  'Equipment Automation', // 設備自動化邏輯
+
+  // System & DevOps
+  'Docker & Containerization',
+  'Git / GitHub Actions (CI/CD)',
+  'Vercel / Netlify Deployment',
+  'Linux CLI',
+
+  // Documentation & UI
   'Tailwind CSS',
   'Framer Motion',
-  'Node.js',
-  'PostgreSQL',
-  'PLC通訊',
-  'HMI設計',
+  'Contentlayer / MDX',
+  'Technical Writing', // 你在 Dev Blog 上的產出能力
 ]
 
 const experiences = [
