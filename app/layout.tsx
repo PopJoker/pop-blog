@@ -12,6 +12,7 @@ import siteMetadata from '@/data/siteMetadata'
 import { ThemeProviders } from './theme-providers'
 import { Metadata } from 'next'
 import { cn } from '@/components/lib/utils'
+import { InteractiveGrid } from '@/components/InteractiveGrid'
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-sans' })
 
@@ -105,7 +106,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <SearchProvider searchConfig={siteMetadata.search as SearchConfig}>
             {/* 🔥 FULL WIDTH HEADER 現在可以抓到 Search context 了 */}
             <Header />
-
+            <InteractiveGrid />
             {/* 📦 CONTENT CONTAINER */}
             <div className="mx-auto max-w-7xl px-4 sm:px-6">
               <main className="mb-auto">{children}</main>

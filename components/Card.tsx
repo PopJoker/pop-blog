@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef, useState, useCallback } from 'react'
 import Image from './Image'
 import Link from './Link'
 
@@ -10,19 +10,24 @@ const Card = ({ title, description, imgSrc, href, tags }) => {
   const [opacity, setOpacity] = useState(0)
   const [rotate, setRotate] = useState({ x: 0, y: 0 })
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (!containerRef.current) return
 
     const rect = containerRef.current.getBoundingClientRect()
-    setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top })
 
+    // 計算滑鼠在卡片內的相對位置
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    setPosition({ x, y })
+
+    // 計算旋轉角度：將分母調大 (從 20 改到 35) 讓傾斜更優雅
     const centerX = rect.width / 2
     const centerY = rect.height / 2
-    const rotateX = (e.clientY - rect.top - centerY) / 20
-    const rotateY = (centerX - (e.clientX - rect.left)) / 20
+    const rotateX = (y - centerY) / 35
+    const rotateY = (centerX - x) / 35
 
     setRotate({ x: rotateX, y: rotateY })
-  }
+  }, [])
 
   const handleMouseEnter = () => setOpacity(1)
   const handleMouseLeave = () => {
@@ -30,98 +35,87 @@ const Card = ({ title, description, imgSrc, href, tags }) => {
     setRotate({ x: 0, y: 0 })
   }
 
-  return (
-    <div className="group h-full w-full p-4">
+  // 封裝內容，避免重複寫 Link
+  const CardContent = (
+    <div
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        transform: `perspective(1000px) rotateX(${rotate.x}deg) rotateY(${rotate.y}deg)`,
+        transition: 'transform 0.2s ease-out', // 稍微增加一點平滑感
+        transformStyle: 'preserve-3d',
+      }}
+      className="group relative h-full w-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:shadow-xl dark:border-gray-700 dark:bg-gray-900"
+    >
+      {/* 聚光燈背景層 (Spotlight) */}
       <div
-        ref={containerRef}
-        onMouseMove={handleMouseMove}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        className="pointer-events-none absolute -inset-px z-30 transition duration-300"
         style={{
-          transform: `perspective(1000px) rotateX(${rotate.x}deg) rotateY(${rotate.y}deg)`,
-          transition: 'transform 0.1s ease-out',
-          transformStyle: 'preserve-3d',
+          opacity,
+          background: `radial-gradient(400px circle at ${position.x}px ${position.y}px, rgba(99, 102, 241, 0.1), transparent 80%)`,
         }}
-        className="relative h-full overflow-hidden rounded-xl bg-white dark:bg-gray-800"
-      >
-        {/* 內層容器 (用來遮掉跑馬燈中心，只留下邊緣 2px) */}
-        <div className="relative z-10 h-full w-full overflow-hidden rounded-[calc(0.75rem-1px)] bg-blue-200 dark:bg-blue-950">
-          {/* 聚光燈背景層 (Spotlight) */}
-          <div
-            className="pointer-events-none absolute -inset-px z-0 transition duration-300"
-            style={{
-              opacity,
-              background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(59, 130, 246, 0.15), transparent 40%)`,
-            }}
-          />
+      />
 
-          {imgSrc && (
-            <div
-              className="relative z-10 overflow-hidden"
-              style={{ transform: 'translateZ(50px)' }}
-            >
-              {/* 💡 2. 技術棧標籤 (Tech Stack Badges) */}
-              <div className="absolute top-3 right-3 z-20 flex flex-wrap gap-2">
-                {tags?.map((tag) => (
-                  <span
-                    key={tag}
-                    className="rounded-md border border-white/20 bg-black/40 px-2 py-1 text-[10px] font-bold tracking-wider text-white uppercase backdrop-blur-md"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-
-              {href ? (
-                <Link href={href} aria-label={`Link to ${title}`}>
-                  <Image
-                    alt={title}
-                    src={imgSrc}
-                    priority={true}
-                    className="object-cover object-center transition-transform duration-500 hover:scale-105 md:h-36 lg:h-48"
-                    width={544}
-                    height={306}
-                  />
-                </Link>
-              ) : (
-                <Image
-                  alt={title}
-                  src={imgSrc}
-                  className="object-cover object-center md:h-36 lg:h-48"
-                  width={544}
-                  height={306}
-                />
-              )}
-            </div>
-          )}
-
-          <div className="relative z-10 p-6" style={{ transform: 'translateZ(30px)' }}>
-            <h2 className="mb-3 text-2xl leading-8 font-bold tracking-tight">
-              {href ? (
-                <Link
-                  href={href}
-                  aria-label={`Link to ${title}`}
-                  className="hover:text-primary-500 dark:hover:text-primary-400"
-                >
-                  {title}
-                </Link>
-              ) : (
-                title
-              )}
-            </h2>
-            <p className="prose mb-3 max-w-none text-gray-500 dark:text-gray-400">{description}</p>
-            {href && (
-              <Link
-                href={href}
-                className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400 text-base leading-6 font-medium"
-                aria-label={`Link to ${title}`}
+      {/* 圖片區域 */}
+      {imgSrc && (
+        <div
+          className="relative h-48 w-full overflow-hidden"
+          style={{ transform: 'translateZ(20px)' }}
+        >
+          {/* Tech Stack Tags */}
+          <div className="absolute top-3 right-3 z-40 flex flex-wrap gap-2">
+            {tags?.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full border border-white/10 bg-black/50 px-2.5 py-1 text-[10px] font-bold text-white backdrop-blur-md"
               >
-                Learn more &rarr;
-              </Link>
-            )}
+                {tag}
+              </span>
+            ))}
           </div>
+
+          <Image
+            alt={title}
+            src={imgSrc}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+            width={544}
+            height={306}
+          />
+          {/* 圖片上的漸層遮罩，讓文字銜接更自然 */}
+          <div className="absolute inset-0 bg-gradient-to-t from-gray-900/20 to-transparent" />
         </div>
+      )}
+
+      {/* 文字內容區 */}
+      <div className="p-6" style={{ transform: 'translateZ(40px)' }}>
+        <h2 className="group-hover:text-primary-500 dark:group-hover:text-primary-400 mb-2 text-xl font-bold tracking-tight text-gray-900 transition-colors dark:text-gray-100">
+          {title}
+        </h2>
+        <p className="line-clamp-3 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+          {description}
+        </p>
+
+        {href && (
+          <div className="text-primary-500 mt-4 flex items-center text-sm font-bold">
+            <span>View Project</span>
+            <span className="ml-1 transition-transform group-hover:translate-x-1">→</span>
+          </div>
+        )}
       </div>
+    </div>
+  )
+
+  return (
+    <div className="h-full w-full p-4">
+      {href ? (
+        <Link href={href} aria-label={`Link to ${title}`} className="block h-full">
+          {CardContent}
+        </Link>
+      ) : (
+        CardContent
+      )}
     </div>
   )
 }

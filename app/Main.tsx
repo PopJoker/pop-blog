@@ -240,7 +240,7 @@ export default function Home({ posts }) {
 }
 
 function PostCard({ post, index, featured = false }) {
-  const { slug, date, title, summary, body } = post
+  const { slug, date, title, summary, body, tags } = post
   const stats = readingTimeEstimator(body?.raw || summary || '')
 
   return (
@@ -249,31 +249,50 @@ function PostCard({ post, index, featured = false }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.1 }}
       transition={{ delay: index * 0.05 }}
-      // 手機端減少 hover 規模以節省效能
-      whileHover={{
-        scale: 1.01,
-        transition: { duration: 0.2 },
-      }}
+      // 微微提升 Hover 感，不用縮放太大以免影響文字邊緣模糊
+      whileHover={{ y: -4 }}
     >
-      <SpotlightCard className="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900/50">
-        <div className="relative z-10">
-          <div className="text-sm text-gray-500">
-            {formatDate(date)} • {stats.text}
-          </div>
+      <Link href={`/blog/${slug}`} aria-label={`Read more about ${title}`}>
+        <SpotlightCard className="group relative flex h-full flex-col justify-between rounded-2xl border border-gray-200 bg-white p-6 transition-colors hover:border-indigo-500/50 dark:border-gray-800 dark:bg-gray-900/50 dark:hover:border-indigo-400/50">
+          <div className="relative z-10">
+            {/* 上方資訊列 */}
+            <div className="flex items-center justify-between text-xs text-gray-500">
+              <span>{formatDate(date)}</span>
+              <span>{stats.text}</span>
+            </div>
 
-          <Link href={`/blog/${slug}`}>
-            <h3 className="mt-3 text-xl font-bold transition-colors md:group-hover:text-indigo-500 dark:md:group-hover:text-indigo-400">
+            {/* 標題：Hover 時變色 */}
+            <h3 className="mt-3 text-xl font-bold text-gray-900 transition-colors group-hover:text-indigo-600 dark:text-gray-100 dark:group-hover:text-indigo-400">
               {title}
             </h3>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{summary}</p>
-          </Link>
 
-          <div className="mt-4 flex items-center text-sm font-semibold text-gray-900 dark:text-white">
-            <span>Read Article</span>
-            <span className="ml-1">→</span>
+            {/* 摘要：限制兩行，保持對齊 */}
+            <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+              {summary}
+            </p>
+
+            {/* 標籤 (選擇性) */}
+            {tags && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {tags.slice(0, 3).map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-[10px] tracking-wider text-indigo-500 uppercase dark:text-indigo-400"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
-        </div>
-      </SpotlightCard>
+
+          {/* 底部導引：原本的 "Read Article" */}
+          <div className="relative z-10 mt-6 flex items-center text-sm font-semibold text-gray-900 dark:text-white">
+            <span className="transition-transform group-hover:translate-x-1">Read Article</span>
+            <span className="ml-1 transition-transform group-hover:translate-x-2">→</span>
+          </div>
+        </SpotlightCard>
+      </Link>
     </motion.div>
   )
 }

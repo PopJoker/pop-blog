@@ -13675,6 +13675,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ogl@npm:^1.0.11":
+  version: 1.0.11
+  resolution: "ogl@npm:1.0.11"
+  checksum: 00c596ea6755dfb1236f0b754c4434fff01873c0677230a24b6ffe9f31d5ca27ea3bc6363a140c827510327f7c2e823b0711f40cb52864182b58bea95806db4e
+  languageName: node
+  linkType: hard
+
 "on-finished@npm:^2.4.1":
   version: 2.4.1
   resolution: "on-finished@npm:2.4.1"
@@ -16900,6 +16907,7 @@ __metadata:
     next: ^15.5.15
     next-contentlayer2: ^0.5.8
     next-themes: ^0.4.6
+    ogl: ^1.0.11
     outstatic: ^2.1.5
     pliny: 0.4.1
     postcss: ^8.5.6
@@ -16924,6 +16932,7 @@ __metadata:
     shadcn: latest
     tailwind-merge: ^3.5.0
     tailwindcss: ^4.1.18
+    three: ^0.167.1
     tw-animate-css: ^1.4.0
     typescript: ^5.9.3
     unist-util-visit: ^5.1.0
@@ -16979,6 +16988,13 @@ __metadata:
   peerDependencies:
     tslib: ^2
   checksum: 44a2cf1cb8f6646b28f78a1d247fdc78558ea60004bc7ffe60b89452f433904298f972f785923e27bb7e8c3089faa986f182c29d6fdac9b35263d6e9924c5d9c
+  languageName: node
+  linkType: hard
+
+"three@npm:^0.167.1":
+  version: 0.167.1
+  resolution: "three@npm:0.167.1"
+  checksum: 4500a7eb16dc9143f0e71b11c4886d003f31cd8e4cd4e755a045afbcdce0f3f9cec47ab1c9d00eb45fa2bb3ace6ef17b105eee93b90b15b43f0af1139db8741d
   languageName: node
   linkType: hard
 

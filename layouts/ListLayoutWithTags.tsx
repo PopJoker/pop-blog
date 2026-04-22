@@ -10,7 +10,7 @@ import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
 import tagData from 'app/tag-data.json'
 import { motion } from 'framer-motion'
-import { useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 
 interface PaginationProps {
   totalPages: number
@@ -26,26 +26,20 @@ interface ListLayoutProps {
 // 模擬 React Bits 的 Spotlight Card 效果
 const SpotlightCard = ({ children, className = '' }) => {
   const divRef = useRef<HTMLDivElement>(null)
-  const [isFocused, setIsFocused] = useState(false)
   const [position, setPosition] = useState({ x: 0, y: 0 })
   const [opacity, setOpacity] = useState(0)
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!divRef.current || isFocused) return
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!divRef.current) return
 
     const div = divRef.current
     const rect = div.getBoundingClientRect()
 
     setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top })
-  }
+  }, [])
 
-  const handleMouseEnter = () => {
-    setOpacity(1)
-  }
-
-  const handleMouseLeave = () => {
-    setOpacity(0)
-  }
+  const handleMouseEnter = () => setOpacity(1)
+  const handleMouseLeave = () => setOpacity(0)
 
   return (
     <div
@@ -53,16 +47,33 @@ const SpotlightCard = ({ children, className = '' }) => {
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className={`relative overflow-hidden rounded-xl border border-gray-200 bg-transparent px-8 py-6 transition-all duration-300 dark:border-gray-800 ${className}`}
+      className={`relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 transition-all duration-300 dark:border-gray-800 dark:bg-gray-900/50 ${className}`}
     >
+      {/* 💡 第一層：背景柔光 (Ambient Glow) */}
       <div
-        className="pointer-events-none absolute -inset-px opacity-0 transition duration-300"
+        className="pointer-events-none absolute -inset-px z-0 transition-opacity duration-500"
         style={{
           opacity,
-          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(var(--primary-rgb), 0.1), transparent 40%)`,
+          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(99, 102, 241, 0.06), transparent 40%)`,
         }}
       />
-      {children}
+
+      {/* 💡 第二層：邊框精確高光 (Border Spotlight) */}
+      {/* 利用 mask-image 只讓邊框部分顯示出 gradient */}
+      <div
+        className="pointer-events-none absolute -inset-px z-10 transition-opacity duration-500"
+        style={{
+          opacity,
+          background: `radial-gradient(300px circle at ${position.x}px ${position.y}px, rgba(99, 102, 241, 0.4), transparent 80%)`,
+          WebkitMaskImage: `linear-gradient(white, white) content-box, linear-gradient(white, white)`,
+          WebkitMaskComposite: 'xor',
+          maskComposite: 'exclude',
+          padding: '1px', // 這裡的寬度決定了高光邊框的粗細
+        }}
+      />
+
+      {/* 內容物需確保在光效之上 */}
+      <div className="relative z-20">{children}</div>
     </div>
   )
 }
