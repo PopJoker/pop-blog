@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from 'react'
 import { Renderer, Program, Mesh, Color, Triangle } from 'ogl'
 
-// --- Shader 程式碼保持不變 ---
+// --- Shader 部分：優化 Light Mode 下的 getColor 邏輯 ---
 const vertexShader = `
 attribute vec2 position;
 attribute vec2 uv;
@@ -34,6 +34,7 @@ uniform vec2 uMouse;
 uniform float uMouseStrength;
 uniform float uUseMouse;
 uniform float uBrightness;
+uniform float uIsLightMode; 
 
 float time;
 
@@ -133,7 +134,13 @@ vec3 getColor(vec2 p){
     float sum = digit(p + vec2(-off, -off)) + digit(p + vec2(0.0, -off)) + digit(p + vec2(off, -off)) +
                 digit(p + vec2(-off, 0.0)) + digit(p + vec2(0.0, 0.0)) + digit(p + vec2(off, 0.0)) +
                 digit(p + vec2(-off, off)) + digit(p + vec2(0.0, off)) + digit(p + vec2(off, off));
+    
     vec3 baseColor = vec3(0.9) * middle + sum * 0.1 * vec3(1.0) * bar;
+    
+    if (uIsLightMode > 0.5) {
+        // Light Mode: 將原本暗色背景轉為淺灰色，並加深網格線條對比
+        return (1.0 - baseColor * 1.5); 
+    }
     return baseColor;
 }
 
@@ -155,8 +162,16 @@ void main() {
       col.r = getColor(p + ca).r;
       col.b = getColor(p - ca).b;
     }
+    
     col *= uTint;
+    
+    if (uIsLightMode > 0.5) {
+        // 增加混色比例，讓網格線條更清晰 (0.7 代表保留 70% 的網格色)
+        col = mix(vec3(0.96), col, 0.7); 
+    }
+    
     col *= uBrightness;
+    
     if(uDither > 0.0){
       float rnd = hash21(gl_FragCoord.xy);
       col += (rnd - 0.5) * (uDither * 0.003922);
@@ -170,9 +185,27 @@ export const InteractiveGrid = () => {
   const mouseRef = useRef({ x: 0.5, y: 0.5 })
   const smoothMouseRef = useRef({ x: 0.5, y: 0.5 })
   const rafRef = useRef(0)
+  const programRef = useRef<Program | null>(null)
 
-  // 參考 CSS 的賽博藍紫色：oklch(0.58 0.24 265)
-  const tintColor = [0.31, 0.46, 0.97]
+  useEffect(() => {
+    const updateTheme = () => {
+      if (!programRef.current) return
+      const isDark = document.documentElement.classList.contains('dark')
+
+      // Light Mode 使用明顯的深藍色線條 [0.1, 0.2, 0.5]
+      // Dark Mode 使用原本亮眼的賽博藍 [0.3, 0.45, 1.0]
+      const tint = isDark ? [0.31, 0.46, 0.97] : [0.15, 0.3, 0.6]
+
+      programRef.current.uniforms.uTint.value = new Color(tint[0], tint[1], tint[2])
+      programRef.current.uniforms.uIsLightMode.value = isDark ? 0 : 1
+      programRef.current.uniforms.uBrightness.value = isDark ? 1.2 : 0.95 // 降低一點亮度避免過曝
+    }
+
+    updateTheme()
+    const observer = new MutationObserver(updateTheme)
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     const ctn = containerRef.current
@@ -195,20 +228,22 @@ export const InteractiveGrid = () => {
         uGridMul: { value: new Float32Array([2, 1]) },
         uDigitSize: { value: 1.8 },
         uScanlineIntensity: { value: 0.6 },
-        uGlitchAmount: { value: 1.2 },
-        uFlickerAmount: { value: 0.5 },
+        uGlitchAmount: { value: 1.1 },
+        uFlickerAmount: { value: 0.4 },
         uNoiseAmp: { value: 0.8 },
-        uChromaticAberration: { value: 0.05 },
+        uChromaticAberration: { value: 0.04 },
         uDither: { value: 1 },
-        uCurvature: { value: 0.1 },
-        uTint: { value: new Color(tintColor[0], tintColor[1], tintColor[2]) },
+        uCurvature: { value: 0.05 }, // 稍微降低扭曲讓 Light mode 更清爽
+        uTint: { value: new Color(0.31, 0.46, 0.97) },
         uMouse: { value: new Float32Array([0.5, 0.5]) },
         uMouseStrength: { value: 0.8 },
         uUseMouse: { value: 1 },
-        uBrightness: { value: 1.2 }, // 稍微調亮，補償毛玻璃帶來的亮度損失
+        uBrightness: { value: 1.2 },
+        uIsLightMode: { value: 0 },
       },
     })
 
+    programRef.current = program
     const mesh = new Mesh(gl, { geometry, program })
 
     const handleResize = () => {
@@ -256,14 +291,17 @@ export const InteractiveGrid = () => {
 
   return (
     <div className="pointer-events-none fixed inset-0 z-[-1]">
-      {/* 1. 底層渲染器：WebGL 網格 */}
-      <div ref={containerRef} className="absolute inset-0 z-[-2] bg-gray-950" />
+      {/* 1. 底層渲染器：背景色 */}
+      <div
+        ref={containerRef}
+        className="absolute inset-0 z-[-2] bg-white transition-colors duration-500 dark:bg-gray-950"
+      />
 
-      {/* 2. 毛玻璃蓋層：全畫面覆蓋 */}
-      <div className="absolute inset-0 z-[-1] bg-gray-950/20 backdrop-blur-[8px] dark:bg-gray-950/40" />
+      {/* 2. 毛玻璃蓋層：大幅降低 Light Mode 下的遮蓋感 (20% -> 15%) */}
+      <div className="absolute inset-0 z-[-1] bg-white/15 backdrop-blur-[6px] transition-colors duration-500 dark:bg-gray-950/40" />
 
-      {/* 3. 暗角效果：增加層次感 (可選) */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)]" />
+      {/* 3. 裝飾性遮罩：邊緣暗角在亮色模式下調得很淡 */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.03)_100%)] dark:bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)]" />
     </div>
   )
 }
