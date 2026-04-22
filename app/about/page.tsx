@@ -62,10 +62,11 @@ const experiences = [
 export default function About() {
   const ref = useRef<HTMLDivElement>(null)
   const [isMobile, setIsMobile] = useState(false)
+  // 🐹 新增：行動端倉鼠顯示開關
+  const [showHamsters, setShowHamsters] = useState(false)
 
   useEffect(() => {
     const checkDevice = () => {
-      // 偵測螢幕寬度或觸控點，確保精準判斷行動裝置
       setIsMobile(window.innerWidth < 1024 || window.matchMedia('(pointer: coarse)').matches)
     }
     checkDevice()
@@ -76,11 +77,9 @@ export default function About() {
   const x = useMotionValue(0)
   const y = useMotionValue(0)
 
-  // 電腦端彈簧效果
   const mouseXSpring = useSpring(x, { stiffness: 150, damping: 25 })
   const mouseYSpring = useSpring(y, { stiffness: 150, damping: 25 })
 
-  // 手機端直接固定在 0deg，不進行任何 Transform 運算
   const rotateX = useTransform(
     mouseYSpring,
     [-0.5, 0.5],
@@ -99,9 +98,27 @@ export default function About() {
     y.set((e.clientY - rect.top) / rect.height - 0.5)
   }
 
+  // 判斷倉鼠 Class 的輔助函式
+  const getHamsterClass = (side: 'left' | 'right') => {
+    if (isMobile) {
+      if (side === 'left') {
+        return showHamsters
+          ? 'opacity-60 -translate-x-14 -translate-y-10 -rotate-[25deg]'
+          : 'opacity-0 translate-x-0 translate-y-0 rotate-0'
+      }
+      return showHamsters
+        ? 'opacity-100 translate-x-14 -translate-y-8 rotate-[20deg]'
+        : 'opacity-0 translate-x-0 translate-y-0 rotate-0'
+    }
+    // 電腦端維持原有的 CSS 觸發
+    if (side === 'left') {
+      return 'opacity-0 group-hover:-translate-x-14 group-hover:-translate-y-10 group-hover:rotate-[-25deg] group-hover:opacity-60'
+    }
+    return 'opacity-0 group-hover:translate-x-14 group-hover:-translate-y-8 group-hover:rotate-[20deg] group-hover:opacity-100'
+  }
+
   return (
     <div className="relative pb-20">
-      {/* 背景裝飾 */}
       <div className="bg-primary-500/10 absolute top-0 -left-20 -z-10 h-72 w-72 rounded-full blur-[80px] lg:blur-[120px]" />
       <div className="absolute top-1/2 -right-20 -z-10 h-72 w-72 rounded-full bg-blue-500/10 blur-[80px] lg:blur-[120px]" />
 
@@ -119,7 +136,8 @@ export default function About() {
         <div className="relative mb-6 flex justify-center py-10">
           <motion.div
             ref={ref}
-            // 💡 僅非手機端掛載事件
+            // 💡 行動端點擊切換狀態
+            onClick={() => isMobile && setShowHamsters(!showHamsters)}
             onMouseMove={!isMobile ? handleMouseMove : undefined}
             onMouseLeave={
               !isMobile
@@ -135,44 +153,46 @@ export default function About() {
               perspective: 1000,
               transformStyle: isMobile ? 'flat' : 'preserve-3d',
             }}
-            className={`group relative w-full max-w-[320px] ${!isMobile ? 'will-change-transform' : ''}`}
+            className={`group relative w-full max-w-[320px] cursor-pointer ${!isMobile ? 'will-change-transform' : ''}`}
           >
             {/* 加強版背光 */}
             <div
               className={`from-primary-500/30 absolute -inset-8 rounded-[3rem] bg-gradient-to-br via-purple-500/20 to-blue-500/30 transition-opacity duration-700 ${
-                isMobile ? 'opacity-40 blur-2xl' : 'opacity-0 blur-3xl group-hover:opacity-100'
+                isMobile
+                  ? showHamsters
+                    ? 'opacity-40 blur-2xl'
+                    : 'opacity-10 blur-xl'
+                  : 'opacity-0 blur-3xl group-hover:opacity-100'
               }`}
               style={{ transform: isMobile ? 'none' : 'translateZ(-60px)' }}
             />
 
             <SpotlightCard className="relative overflow-hidden rounded-[2.5rem] border border-white/40 bg-white/40 p-8 shadow-xl backdrop-blur-md dark:border-gray-700/30 dark:bg-gray-950/40">
               <div className="flex flex-col items-center text-center">
-                {/* 👤 頭像部分 */}
                 <div
                   className="relative mb-8"
                   style={{ transform: isMobile ? 'none' : 'translateZ(50px)' }}
                 >
                   <div className="relative h-32 w-32">
-                    {/* 👻 鼠靈魂：手機端徹底移除，不佔用 filter 運算資源 */}
-                    {!isMobile && (
-                      <>
-                        <span
-                          className="absolute top-0 left-0 text-5xl opacity-0 transition-all duration-700 ease-out group-hover:-translate-x-14 group-hover:-translate-y-10 group-hover:rotate-[-25deg] group-hover:opacity-60"
-                          style={{
-                            transform: 'translateZ(-40px)',
-                            filter: 'grayscale(1) blur(1.5px)',
-                          }}
-                        >
-                          🐹
-                        </span>
-                        <span
-                          className="absolute top-0 right-0 text-5xl opacity-0 transition-all duration-500 ease-out group-hover:translate-x-14 group-hover:-translate-y-8 group-hover:rotate-[20deg] group-hover:opacity-100"
-                          style={{ transform: 'translateZ(-35px)', filter: 'sepia(0.5)' }}
-                        >
-                          🐹
-                        </span>
-                      </>
-                    )}
+                    {/* 👻 鼠靈魂：手機端改用狀態 Class 控制 */}
+                    <span
+                      className={`absolute top-0 left-0 text-5xl transition-all duration-700 ease-out ${getHamsterClass('left')}`}
+                      style={{
+                        transform: !isMobile ? 'translateZ(-40px)' : undefined,
+                        filter: 'grayscale(1) blur(1.5px)',
+                      }}
+                    >
+                      🐹
+                    </span>
+                    <span
+                      className={`absolute top-0 right-0 text-5xl transition-all duration-500 ease-out ${getHamsterClass('right')}`}
+                      style={{
+                        transform: !isMobile ? 'translateZ(-35px)' : undefined,
+                        filter: 'sepia(0.5)',
+                      }}
+                    >
+                      🐹
+                    </span>
 
                     <div className="from-primary-500 absolute -inset-2 rounded-2xl bg-gradient-to-tr to-blue-400 opacity-30 blur-md" />
                     <div className="relative h-full w-full overflow-hidden rounded-2xl border-2 border-white/60 shadow-2xl dark:border-gray-700/50">
@@ -187,7 +207,6 @@ export default function About() {
                   </div>
                 </div>
 
-                {/* 📝 文字內容層 */}
                 <div style={{ transform: isMobile ? 'none' : 'translateZ(35px)' }}>
                   <h3 className="text-2xl font-black tracking-tight text-gray-900 dark:text-white">
                     Maverick Tu
@@ -201,7 +220,6 @@ export default function About() {
                   </div>
                 </div>
 
-                {/* 🔗 社群圖標 */}
                 <div
                   className="mt-8 flex flex-col items-center"
                   style={{ transform: isMobile ? 'none' : 'translateZ(20px)' }}
@@ -252,7 +270,6 @@ export default function About() {
               的工程師。我熱衷於連接硬體與雲端，並將數據轉化為美觀、易用的介面。
             </p>
 
-            {/* 技能區域 */}
             <div className="my-10">
               <h3 className="mb-6 flex items-center text-2xl font-bold">
                 <span className="bg-primary-500 mr-4 h-px w-8"></span>技術棧
@@ -273,7 +290,6 @@ export default function About() {
               </div>
             </div>
 
-            {/* 工作經歷 */}
             <div className="my-10">
               <h3 className="mb-8 flex items-center text-2xl font-bold">
                 <span className="bg-primary-500 mr-4 h-px w-8"></span>工作經歷
