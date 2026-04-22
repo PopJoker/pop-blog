@@ -139,7 +139,7 @@ vec3 getColor(vec2 p){
     
     if (uIsLightMode > 0.5) {
         // Light Mode: 將原本暗色背景轉為淺灰色，並加深網格線條對比
-        return (1.0 - baseColor * 1.5); 
+        return (1.0 - baseColor * 0.4);
     }
     return baseColor;
 }
@@ -167,7 +167,7 @@ void main() {
     
     if (uIsLightMode > 0.5) {
         // 增加混色比例，讓網格線條更清晰 (0.7 代表保留 70% 的網格色)
-        col = mix(vec3(0.96), col, 0.7); 
+        col = mix(vec3(1.0), col, 0.15);
     }
     
     col *= uBrightness;
@@ -194,7 +194,7 @@ export const InteractiveGrid = () => {
 
       // Light Mode 使用明顯的深藍色線條 [0.1, 0.2, 0.5]
       // Dark Mode 使用原本亮眼的賽博藍 [0.3, 0.45, 1.0]
-      const tint = isDark ? [0.31, 0.46, 0.97] : [0.15, 0.3, 0.6]
+      const tint = isDark ? [0.31, 0.46, 0.97] : [0.4, 0.6, 1.0]
 
       programRef.current.uniforms.uTint.value = new Color(tint[0], tint[1], tint[2])
       programRef.current.uniforms.uIsLightMode.value = isDark ? 0 : 1
@@ -298,7 +298,7 @@ export const InteractiveGrid = () => {
       />
 
       {/* 2. 毛玻璃蓋層：大幅降低 Light Mode 下的遮蓋感 (20% -> 15%) */}
-      <div className="absolute inset-0 z-[-1] bg-white/15 backdrop-blur-[6px] transition-colors duration-500 dark:bg-gray-950/40" />
+      <div className="absolute inset-0 z-[-1] bg-white/30 backdrop-blur-[6px] transition-colors duration-500 dark:bg-gray-950/40" />
 
       {/* 3. 裝飾性遮罩：邊緣暗角在亮色模式下調得很淡 */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.03)_100%)] dark:bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)]" />
