@@ -50,7 +50,7 @@ export default function About() {
   const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ['7deg', '-7deg'])
   const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ['-7deg', '7deg'])
 
-  const handleMouseMove = (e) => {
+  const handleMouseMove = (e: React.MouseEvent) => {
     if (!ref.current) return
     const rect = ref.current.getBoundingClientRect()
     x.set((e.clientX - rect.left) / rect.width - 0.5)
@@ -208,8 +208,9 @@ export default function About() {
                           <span
                             key={social.kind}
                             className="hover:text-primary-500 transition-all duration-300 hover:-translate-y-1 hover:scale-125 active:scale-95"
-                            style={{ transform: 'translateZ(15px)' }} // 讓圖標比容器更浮出來
+                            style={{ transform: 'translateZ(15px)' }}
                           >
+                            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                             <SocialIcon kind={social.kind as any} href={social.href} size={6} />
                           </span>
                         )
