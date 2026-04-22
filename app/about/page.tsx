@@ -229,7 +229,11 @@ export default function About() {
                             key={social.kind}
                             className="hover:text-primary-500 transition-all duration-300 active:scale-95 lg:hover:-translate-y-1 lg:hover:scale-125"
                           >
-                            <SocialIcon kind={social.kind as any} href={social.href} size={6} />
+                            <SocialIcon
+                              kind={social.kind as Parameters<typeof SocialIcon>[0]['kind']}
+                              href={social.href}
+                              size={6}
+                            />
                           </span>
                         )
                     )}
