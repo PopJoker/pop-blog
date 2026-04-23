@@ -13,6 +13,7 @@ import { ThemeProviders } from './theme-providers'
 import { Metadata } from 'next'
 import { cn } from '@/components/lib/utils'
 import { InteractiveGrid } from '@/components/InteractiveGrid'
+import InstallPrompt from '@/components/InstallPrompt'
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-sans' })
 
@@ -110,6 +111,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {/* 📦 CONTENT CONTAINER */}
             <div className="mx-auto max-w-7xl px-4 sm:px-6">
               <main className="mb-auto">{children}</main>
+              <InstallPrompt />
             </div>
           </SearchProvider>
 
