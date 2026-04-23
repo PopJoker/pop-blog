@@ -2,8 +2,13 @@
 
 import { useEffect, useState } from 'react'
 
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>
+}
+
 export default function InstallPrompt() {
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [show, setShow] = useState(false)
   const [isIOS, setIsIOS] = useState(false)
   const [isInStandalone, setIsInStandalone] = useState(false)
@@ -11,31 +16,39 @@ export default function InstallPrompt() {
   useEffect(() => {
     const ua = window.navigator.userAgent.toLowerCase()
 
-    const isIOSDevice = /iphone|ipad|ipod/.test(ua) && !(window as any).MSStream
+    const isIOSDevice =
+      /iphone|ipad|ipod/.test(ua) && !(window as Window & { MSStream?: unknown }).MSStream
 
     const isStandalone =
       window.matchMedia('(display-mode: standalone)').matches ||
-      (window.navigator as any).standalone
+      (window.navigator as Navigator & { standalone?: boolean }).standalone === true
 
     setIsIOS(isIOSDevice)
     setIsInStandalone(isStandalone)
 
     // Android 安裝事件
-    window.addEventListener('beforeinstallprompt', (e: any) => {
+    const handler = (e: Event) => {
       e.preventDefault()
-      setDeferredPrompt(e)
+      const event = e as BeforeInstallPromptEvent
+      setDeferredPrompt(event)
       setShow(true)
-    })
+    }
+
+    window.addEventListener('beforeinstallprompt', handler)
 
     // iOS 顯示提示
     if (isIOSDevice && !isStandalone) {
       setShow(true)
     }
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handler)
+    }
   }, [])
 
   const handleInstall = async () => {
     if (!deferredPrompt) return
-    deferredPrompt.prompt()
+    await deferredPrompt.prompt()
     await deferredPrompt.userChoice
     setDeferredPrompt(null)
     setShow(false)
@@ -60,9 +73,7 @@ export default function InstallPrompt() {
         ) : (
           <>
             <div className="text-sm font-semibold">📱 安裝到主畫面</div>
-            <div className="text-xs text-gray-300">
-              點擊 Safari 下方「分享」按鈕 → 選擇「加入主畫面」
-            </div>
+            <div className="text-xs text-gray-300">點擊 Safari 下方「分享」→「加入主畫面」</div>
           </>
         )}
 
