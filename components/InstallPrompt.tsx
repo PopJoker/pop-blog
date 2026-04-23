@@ -1,7 +1,17 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { X, Download, Share } from 'lucide-react' // 建議安裝 lucide-react 以獲得更好的視覺效果
+import { X, Download, Share } from 'lucide-react'
+
+/** * 定義擴充介面以解決 ESLint 的 no-explicit-any 報錯
+ */
+interface ExtendedWindow extends Window {
+  MSStream?: unknown
+}
+
+interface ExtendedNavigator extends Navigator {
+  standalone?: boolean
+}
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>
@@ -22,10 +32,13 @@ export default function InstallPrompt() {
     const oneDay = 24 * 60 * 60 * 1000
 
     const ua = window.navigator.userAgent.toLowerCase()
-    const isIOSDevice = /iphone|ipad|ipod/.test(ua) && !(window as any).MSStream
+
+    // 透過斷言轉型為 ExtendedWindow，不再使用 any
+    const isIOSDevice = /iphone|ipad|ipod/.test(ua) && !(window as ExtendedWindow).MSStream
+
     const isStandalone =
       window.matchMedia('(display-mode: standalone)').matches ||
-      (window.navigator as any).standalone === true
+      (window.navigator as ExtendedNavigator).standalone === true
 
     setIsIOS(isIOSDevice)
     setIsInStandalone(isStandalone)
@@ -35,6 +48,7 @@ export default function InstallPrompt() {
     const handler = (e: Event) => {
       e.preventDefault()
       setDeferredPrompt(e as BeforeInstallPromptEvent)
+      // 如果超過一天沒被關閉，則顯示
       if (now - lastDismissed > oneDay) {
         setShow(true)
       }
@@ -42,7 +56,7 @@ export default function InstallPrompt() {
 
     window.addEventListener('beforeinstallprompt', handler)
 
-    // iOS 邏輯
+    // iOS 邏輯：手動觸發提示
     if (isIOSDevice && !isStandalone && now - lastDismissed > oneDay) {
       setShow(true)
     }
@@ -73,11 +87,13 @@ export default function InstallPrompt() {
         <button
           onClick={handleDismiss}
           className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+          aria-label="關閉安裝提示"
         >
           <X size={18} />
         </button>
 
         <div className="flex items-start gap-4">
+          {/* 圖示區域 */}
           <div className="bg-primary-500 flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl text-white shadow-lg">
             <Download size={24} />
           </div>
@@ -86,16 +102,16 @@ export default function InstallPrompt() {
             <h3 className="text-sm font-bold text-gray-900 dark:text-white">
               {isIOS ? '安裝到 iPhone' : '安裝 Pop Blog'}
             </h3>
-            <p className="mt-1 text-xs leading-relaxed text-gray-500 dark:text-gray-400">
+            <div className="mt-1 text-xs leading-relaxed text-gray-500 dark:text-gray-400">
               {isIOS ? (
-                <span className="flex flex-wrap items-center gap-1">
+                <p className="flex flex-wrap items-center gap-1">
                   點擊瀏覽器下方的 <Share size={14} className="inline text-blue-500" />
                   然後選擇「加入主畫面」
-                </span>
+                </p>
               ) : (
-                '將部落格加入主畫面，享受如 App 般的流暢閱讀體驗。'
+                <p>將部落格加入主畫面，享受如 App 般的流暢閱讀體驗。</p>
               )}
-            </p>
+            </div>
 
             {!isIOS && (
               <button
