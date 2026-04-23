@@ -2,8 +2,6 @@
   "name": "Pop Blog",
   "short_name": "PopBlog",
   "description": "PopJoker 的技術與開發筆記",
-  "start_url": "/",
-  "scope": "/",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
