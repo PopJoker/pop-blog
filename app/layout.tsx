@@ -30,6 +30,9 @@ export const metadata: Metadata = {
     template: `%s | ${siteMetadata.title}`,
   },
   description: siteMetadata.description,
+  verification: {
+    google: 'google2c590ef1b979814d', // 只需要輸入這串 ID 即可
+  },
   openGraph: {
     title: siteMetadata.title,
     description: siteMetadata.description,
