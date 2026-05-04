@@ -39,6 +39,9 @@ export const metadata: Metadata = {
     locale: 'en_US',
     type: 'website',
   },
+  verification: {
+    google: 'IDgmB4YrHZvbv9RBWUWc5rUYrX8D-MdGf4lt23ubu24', // 貼上剛才從 Google 拿到的 ID
+  },
   alternates: {
     canonical: './',
     types: {
