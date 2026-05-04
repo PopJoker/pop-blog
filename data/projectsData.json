@@ -5,14 +5,11 @@
       "description": "待更新 - 這是一個關於金融科技或預算管理的創新實驗，專注於使用者體驗與數據視覺化。",
       "imgSrc": "/static/images/Meney_Slogan.png",
       "href": "/blog/meney",
-      "tags": ["code", "flutter", "supabase"]
-    },
-    {
-      "title": "Test",
-      "description": "測試專案後台發布",
-      "imgSrc": "/static/images/螢幕擷取畫面-2025-07-08-145300.png",
-      "tags": ["Test"],
-      "href": "/blog/testpublish"
+      "tags": [
+        "code",
+        "flutter",
+        "supabase"
+      ]
     }
   ]
 }
