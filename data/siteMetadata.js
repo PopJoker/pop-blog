@@ -6,7 +6,7 @@ const siteMetadata = {
   description: 'Code, Notes, and Dev Journals.',
   language: 'zh-TW',
   theme: 'system',
-  siteUrl: 'https://pop-blog-azy.pages.dev', // 已修正為你的網址
+  siteUrl: 'https://popjoker.github.io/pop-blog', // 已修正為你的網址
   siteRepo: 'https://github.com/PopJoker/pop-blog',
   // 這裡統一使用絕對路徑，確保 GitHub Pages 子目錄能抓到
   siteLogo: `/pop-blog/static/images/logo.png`,
