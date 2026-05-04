@@ -142,9 +142,9 @@ export default function About() {
             onMouseLeave={
               !isMobile
                 ? () => {
-                  x.set(0)
-                  y.set(0)
-                }
+                    x.set(0)
+                    y.set(0)
+                  }
                 : undefined
             }
             style={{
@@ -157,12 +157,13 @@ export default function About() {
           >
             {/* 加強版背光 */}
             <div
-              className={`from-primary-500/30 absolute -inset-8 rounded-[3rem] bg-gradient-to-br via-purple-500/20 to-blue-500/30 transition-opacity duration-700 ${isMobile
+              className={`from-primary-500/30 absolute -inset-8 rounded-[3rem] bg-gradient-to-br via-purple-500/20 to-blue-500/30 transition-opacity duration-700 ${
+                isMobile
                   ? showHamsters
                     ? 'opacity-40 blur-2xl'
                     : 'opacity-10 blur-xl'
                   : 'opacity-0 blur-3xl group-hover:opacity-100'
-                }`}
+              }`}
               style={{ transform: isMobile ? 'none' : 'translateZ(-60px)' }}
             />
 
