@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useRef, useEffect, useState, useCallback } from 'react'
-import { usePathname } from 'next/navigation' // 引入路徑監控
+import { usePathname } from 'next/navigation'
 import siteMetadata from '@/data/siteMetadata'
 import headerNavLinks from '@/data/headerNavLinks'
 import Logo from '@/data/logo.svg'
@@ -18,13 +18,11 @@ const GooeyNav = ({ items }: { items: { label: string; href: string }[] }) => {
   const filterRef = useRef<HTMLSpanElement>(null)
   const textRef = useRef<HTMLSpanElement>(null)
 
-  // 1. 根據目前 URL 找出對應的 Index
   const currentActiveIndex = items.findIndex(
     (item) => pathname === item.href || pathname.startsWith(`${item.href}/`)
   )
   const safeActiveIndex = currentActiveIndex === -1 ? 0 : currentActiveIndex
 
-  // 2. 更新背景位置的邏輯封裝
   const updateEffectPosition = useCallback((element: HTMLElement) => {
     if (!containerRef.current || !filterRef.current || !textRef.current) return
     const containerRect = containerRef.current.getBoundingClientRect()
@@ -42,13 +40,6 @@ const GooeyNav = ({ items }: { items: { label: string; href: string }[] }) => {
     textRef.current.innerText = element.innerText
   }, [])
 
-  // 3. 粒子效果 (保持原邏輯)
-  const makeParticles = (element: HTMLElement) => {
-    // ... 原本的粒子邏輯 ...
-    // 為簡潔，這裡維持你原本內部的實現
-  }
-
-  // 4. 當路徑改變時，自動移動背景
   useEffect(() => {
     const activeLi = navRef.current?.querySelectorAll('li')[safeActiveIndex]
     if (activeLi) {
@@ -62,7 +53,6 @@ const GooeyNav = ({ items }: { items: { label: string; href: string }[] }) => {
       className="relative"
       ref={containerRef}
       onMouseLeave={() => {
-        // 核心改進：滑鼠離開後回彈到當前頁面標籤
         const activeLi = navRef.current?.querySelectorAll('li')[safeActiveIndex]
         if (activeLi) updateEffectPosition(activeLi as HTMLElement)
       }}
@@ -85,7 +75,6 @@ const GooeyNav = ({ items }: { items: { label: string; href: string }[] }) => {
         .dark .effect.filter::after { background: #030f7e; }
         .effect.active::after { animation: pill 0.3s ease forwards; }
         @keyframes pill { to { transform: scale(1); opacity: 1; } }
-        /* 粒子動畫省略，維持原樣 */
       `}</style>
 
       <nav className="relative z-10">
@@ -100,7 +89,6 @@ const GooeyNav = ({ items }: { items: { label: string; href: string }[] }) => {
                     : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100'
                 }`}
                 onMouseEnter={(e) => {
-                  // 滑鼠進入暫時移動背景
                   updateEffectPosition(e.currentTarget.parentElement!)
                 }}
               >
@@ -116,22 +104,27 @@ const GooeyNav = ({ items }: { items: { label: string; href: string }[] }) => {
   )
 }
 
-// --- 主 Header ---
 // --- 主 Header 組件 ---
 const Header = () => {
-  // 保持你原本的 sticky 判斷邏輯
   let headerClass =
     'flex items-center w-full justify-between px-4 sm:px-5 lg:px-6 py-2 backdrop-blur-xl bg-white/60 dark:bg-gray-950/40 border-b border-black/5 dark:border-white/10'
   if (siteMetadata.stickyNav) {
     headerClass += ' sticky top-0 z-50'
   }
 
-  const navItems = headerNavLinks
-    .filter((link) => link.href !== '/')
-    .map((link) => ({
-      label: link.title,
-      href: link.href,
-    }))
+  // 🚀 在這裡整合原本的 navLinks 並加上 Note 按鈕
+  const navItems = [
+    ...headerNavLinks
+      .filter((link) => link.href !== '/')
+      .map((link) => ({
+        label: link.title,
+        href: link.href,
+      })),
+    {
+      label: 'Note',
+      href: 'https://popjoker.github.io/obsidian-notes/',
+    },
+  ]
 
   return (
     <header className={headerClass}>
@@ -141,8 +134,6 @@ const Header = () => {
             <Logo />
           </div>
 
-          {/* 這裡是補回來的邏輯： */}
-          {/* 1. 桌面端顯示（sm:block） */}
           {typeof siteMetadata.headerTitle === 'string' ? (
             <div className="hidden h-6 text-2xl font-semibold sm:block">
               {siteMetadata.headerTitle}
@@ -151,18 +142,15 @@ const Header = () => {
             <div className="hidden sm:block">{siteMetadata.headerTitle}</div>
           )}
 
-          {/* 2. 窄畫面（手機端）顯示（sm:hidden） */}
           <div className="block text-base font-semibold sm:hidden">{siteMetadata.headerTitle}</div>
         </div>
       </Link>
 
       <div className="flex items-center space-x-3 leading-5 sm:-mr-6 sm:space-x-4">
-        {/* 桌面端導航 */}
         <div className="hidden sm:block">
           <GooeyNav items={navItems} />
         </div>
 
-        {/* 右側按鈕組 */}
         <SearchButton />
         <ThemeSwitch />
         <MobileNav />
