@@ -38,6 +38,7 @@
 }
 
 @layer base {
+
   *,
   ::after,
   ::before,
@@ -91,10 +92,32 @@
       }
     }
 
-    & :where(h1, h2, h3) {
-      /* 深色模式下的漸層 */
-      background: linear-gradient(135deg, #fff 0%, var(--color-primary-300) 100%);
+    /* 1. 淺色模式下的標題漸層字體 */
+    .prose :is(h1, h2, h3) {
+      font-weight: 800;
+      letter-spacing: -0.02em;
+
+      /* 漸層字體核心代碼 */
+      background: linear-gradient(135deg, var(--color-gray-500) 0%, var(--color-primary-700) 100%);
       -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+      /* 雙重保險，確保文字本身不擋住背景 */
+
+      /* 移除標題可能存在的預設邊距影響（視需求調整） */
+      margin-top: 2em;
+      margin-bottom: 1em;
+    }
+
+    /* 2. 深色模式切換（當 html 具有 .dark 類別時） */
+    .dark .prose :is(h1, h2, h3) {
+      /* 覆蓋漸層顏色為白色到淺紫色 */
+      background: linear-gradient(135deg, #ffffff 0%, var(--color-primary-300) 100%);
+
+      /* 在某些瀏覽器下必須重新宣告 clip 以維持效果 */
+      -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
