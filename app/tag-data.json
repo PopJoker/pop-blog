@@ -1,4 +1,8 @@
 {
+  "docker": 1,
+  "minecraft": 1,
+  "ngrok": 1,
+  "playit": 1,
   "code": 1,
   "flutter": 1,
   "supabase": 1

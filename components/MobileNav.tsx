@@ -47,7 +47,13 @@ const FlowingItem = ({ link, onClick }: FlowingItemProps) => {
   )
 }
 
-const MobileNav = () => {
+// 1. 定義接收的 Props 型別
+interface MobileNavProps {
+  navItems?: { label: string; href: string }[]
+}
+
+// 2. 讓組件接收 navItems
+const MobileNav = ({ navItems }: MobileNavProps) => {
   const [navShow, setNavShow] = useState(false)
   const navRef = useRef<HTMLElement>(null)
 
@@ -72,6 +78,11 @@ const MobileNav = () => {
   useEffect(() => {
     return () => clearAllBodyScrollLocks()
   }, [])
+
+  // 3. 整合選單資料：如果 Header 有傳入整合了 Note 的新陣列，就轉換格式並使用它；沒有就 fallback 回原本的 headerNavLinks
+  const finalLinks = navItems
+    ? navItems.map((item) => ({ title: item.label, href: item.href }))
+    : headerNavLinks
 
   return (
     <>
@@ -130,7 +141,8 @@ const MobileNav = () => {
               </button>
 
               <nav ref={navRef} className="flex h-full flex-col justify-center overflow-y-auto">
-                {headerNavLinks.map((link) => (
+                {/* 4. 改用 finalLinks 進行渲染 */}
+                {finalLinks.map((link) => (
                   <FlowingItem key={link.title} link={link} onClick={handleLinkClick} />
                 ))}
               </nav>

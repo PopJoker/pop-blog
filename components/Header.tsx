@@ -153,7 +153,7 @@ const Header = () => {
 
         <SearchButton />
         <ThemeSwitch />
-        <MobileNav />
+        <MobileNav navItems={navItems} />
       </div>
     </header>
   )

@@ -38,7 +38,6 @@
 }
 
 @layer base {
-
   *,
   ::after,
   ::before,
@@ -103,19 +102,15 @@
       background-clip: text;
       -webkit-text-fill-color: transparent;
       color: transparent;
-      /* 雙重保險，確保文字本身不擋住背景 */
 
-      /* 移除標題可能存在的預設邊距影響（視需求調整） */
+      /* 移除標題可能存在的預設邊距影響 */
       margin-top: 2em;
       margin-bottom: 1em;
     }
 
     /* 2. 深色模式切換（當 html 具有 .dark 類別時） */
     .dark .prose :is(h1, h2, h3) {
-      /* 覆蓋漸層顏色為白色到淺紫色 */
       background: linear-gradient(135deg, #ffffff 0%, var(--color-primary-300) 100%);
-
-      /* 在某些瀏覽器下必須重新宣告 clip 以維持效果 */
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -128,16 +123,6 @@
       border-radius: 0.4rem;
       font-size: 0.9em;
       border: 1px solid var(--color-primary-100);
-    }
-
-    /* 讓 blockquote 更精緻 */
-    & blockquote {
-      border-left-width: 4px;
-      border-left-color: var(--color-primary-400);
-      background: var(--color-primary-50);
-      padding: 1rem 1.5rem;
-      border-radius: 0 0.75rem 0.75rem 0;
-      font-style: italic;
     }
   }
 
@@ -161,15 +146,35 @@
 
     & :where(code):not(pre code) {
       background-color: oklch(0.18 0.08 265 / 0.5);
-      /* 玻璃感 */
       color: var(--color-primary-300);
       border: 1px solid oklch(0.3 0.1 265 / 0.3);
     }
+  }
 
-    & blockquote {
-      background: oklch(0.15 0.05 265 / 0.3);
-      border-left-color: var(--color-primary-500);
-    }
+  /* ==========================================================================
+     【核心修正】全域 Blockquote 樣式控制（移出巢狀結構，直接綁定外層 .dark）
+     ========================================================================== */
+
+  /* 預設情況：淺色模式 */
+  .prose blockquote {
+    border-left-width: 4px !important;
+    border-left-color: var(--color-primary-400) !important;
+    background: var(--color-primary-50) !important;
+    color: var(--color-primary-900) !important;
+    /* 淺色模式下用深色字 */
+    padding: 1rem 1.5rem !important;
+    border-radius: 0 0.75rem 0.75rem 0 !important;
+    font-style: italic !important;
+  }
+
+  /* 當網頁切換成黑夜模式：強制扭轉底色與邊框 */
+  :where(.dark, .dark *) .prose blockquote {
+    background: oklch(0.18 0.05 265 / 0.6) !important;
+    /* 換成進階暗藍色玻璃底 */
+    border-left-color: var(--color-primary-500) !important;
+    /* 賽博藍紫邊框 */
+    color: oklch(0.95 0 0) !important;
+    /* 文字變成亮白色 */
   }
 }
 
