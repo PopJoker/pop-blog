@@ -5,7 +5,23 @@
       "description": "待更新 - 這是一個關於金融科技或預算管理的創新實驗，專注於使用者體驗與數據視覺化。",
       "imgSrc": "/static/images/Meney_Slogan.png",
       "href": "/blog/meney",
-      "tags": ["code", "flutter", "supabase"]
+      "tags": [
+        "code",
+        "flutter",
+        "supabase"
+      ]
+    },
+    {
+      "title": "利用 Docker 架設 Minecraft",
+      "imgSrc": "/static/images/chatgpt-image-2026年5月29日-下午02_31_21.png",
+      "href": "/blog/mc_server/",
+      "tags": [
+        "docker",
+        "minecraft",
+        "ngrok",
+        "playit"
+      ],
+      "description": "本專案利用 Docker 容器化技術，打造一個高可管理性、具備即時監控通知，且支援內網穿透的 Minecraft 伺服器架構。"
     }
   ]
 }
