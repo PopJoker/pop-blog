@@ -12,7 +12,7 @@
       ]
     },
     {
-      "title": "利用 Docker 架設 Minecraft",
+      "title": "利用 Docker 架設 Minecraft 伺服器",
       "imgSrc": "/static/images/chatgpt-image-2026年5月29日-下午02_31_21.png",
       "href": "/blog/mc_server/",
       "tags": [
@@ -22,6 +22,18 @@
         "playit"
       ],
       "description": "本專案利用 Docker 容器化技術，打造一個高可管理性、具備即時監控通知，且支援內網穿透的 Minecraft 伺服器架構。"
+    },
+    {
+      "title": "以Dijkstra為基底 建立尋蹤地圖可視化",
+      "description": "本專案利用純前端技術與非同步計算，打造一個具備流暢互動體驗、即時演算法動畫，且直接整合真實世界地圖資料的 Dijkstra 最短路徑視覺化系統。",
+      "imgSrc": "/static/images/dijkstra-visualizer-projectpic.png",
+      "href": "/blog/dijkstra_visualizer/",
+      "tags": [
+        "JavaScript",
+        "Leaflet",
+        "Web-Workers",
+        "Algorithm"
+      ]
     }
   ]
 }
