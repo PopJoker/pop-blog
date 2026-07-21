@@ -11,61 +11,54 @@ authors:
   - default
 draft: false
 ---
-這是一份整理好的筆記紀錄 幫你寫得更詳細也說明了為什麼有效
-
-
-
-錯誤紀錄 Threads API 抓取圖片失敗 (Code 2207052)
+# 錯誤紀錄 Threads API 抓取圖片失敗 (Code 2207052)
 
 錯誤 Log
 
-程式碼片段
-``` json
+## 程式碼片段
+
+```json
 \[Threads] 建立隨機梗圖貨櫃失敗: {"error":{"message":"An unknown error occurred","type":"OAuthException","code":1,"error_subcode":2207052,"is_transient":false,"error_user_title":"Media download has failed. The media URI doesn't meet me requirements.","error_user_msg":"The media could not be fetched from this URI: https:\/\/cdn.statically.io\/img\/i.imgflip.com\/3gdsh1.jpg..."}}
 ```
-問題原因分析
+
+## 問題原因分析
 
 1 Statically CDN 轉址機制不相容
 
-Meta 的爬蟲系統非常嚴格 遇到 statically.io 這類帶有轉址邏輯或非標準回應 Header 的 CDN 伺服器時 爬蟲會判定這不是合規的圖片來源
-
-
+* Meta 的爬蟲系統非常嚴格 遇到 statically.io 這類帶有轉址邏輯或非標準回應 Header 的 CDN 伺服器時 爬蟲會判定這不是合規的圖片來源
 
 2 Imgflip 防火牆阻擋 Meta 爬蟲
 
-Imgflip 原生圖片網址 (i.imgflip.com) 會擋掉來自 Meta (Threads/Instagram) 伺服器的存取請求 導致 Meta 在嘗試下載圖片時直接被阻擋
-
-
+* Imgflip 原生圖片網址 (i.imgflip.com) 會擋掉來自 Meta (Threads/Instagram) 伺服器的存取請求 導致 Meta 在嘗試下載圖片時直接被阻擋
 
 3 Meta 的 Header 與 MIME Type 校驗失敗
 
-Meta API 規定輸入的圖片網址必須回傳標準且明確的 Content-Type: image/jpeg 或 image/png 只要回傳的標頭缺少或不符 Meta 就會直接退回並拋出 2207052 錯誤
+* Meta API 規定輸入的圖片網址必須回傳標準且明確的 Content-Type: image/jpeg 或 image/png 只要回傳的標頭缺少或不符 Meta 就會直接退回並拋出 2207052 錯誤
 
+## 解決方案
 
-
-解決方案
-
-改用對 Meta API 友好的圖片代理服務 wsrv.nl 進行轉載
-
-
+### 改用對 Meta API 友好的圖片代理服務 wsrv.nl 進行轉載
 
 ```TypeScript
 const originalUrl = memes\[randomIndex].url;
 ```
-將 Imgflip 網址轉為 wsrv.nl CDN 代理網址 並強制指定輸出格式為 jpg
+
+### 將 Imgflip 網址轉為 wsrv.nl CDN 代理網址 並強制指定輸出格式為 jpg
+
 ```TypeScript
 const cdnUrl = \`https://wsrv.nl/?url=${encodeURIComponent(originalUrl)}&output=jpg\`;
 ```
-為什麼這個解法有用
+
+### 為什麼這個解法有用
 
 1 徹底繞過 Imgflip 的防爬蟲機制
 
-wsrv.nl 自己的伺服器會先去 Imgflip 把原始圖片抓下來 快取在自己的系統裡 Meta 的爬蟲再去向 wsrv.nl 拿圖片 就不會被 Imgflip 阻擋
+* wsrv.nl 自己的伺服器會先去 Imgflip 把原始圖片抓下來 快取在自己的系統裡 Meta 的爬蟲再去向 wsrv.nl 拿圖片 就不會被 Imgflip 阻擋
 
 2 強制輸出標準的圖片標頭 (HTTP Headers)
 
-網址尾端加上 &output=jpg 後 wsrv.nl 保證會回傳標準的 Content-Type: image/jpeg 標頭 完全符合 Meta 規範
+* 網址尾端加上 &output=jpg 後 wsrv.nl 保證會回傳標準的 Content-Type: image/jpeg 標頭 完全符合 Meta 規範
 
 3 極高的 CDN 相容性
 
-wsrv.nl 是專門為開發者與社群平台 API 設計的高速 Cache CDN 能夠穩定處理爬蟲請求 避免 Meta 再次跳出 Media download has failed 的錯誤
+* wsrv.nl 是專門為開發者與社群平台 API 設計的高速 Cache CDN 能夠穩定處理爬蟲請求 避免 Meta 再次跳出 Media download has failed 的錯誤
